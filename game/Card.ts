@@ -44,15 +44,22 @@ export const RANK_SEQUENCE = [
   Rank.KING,
 ]
 
+export enum Side {
+  FACE = 'Side.FACE',
+  BACK = 'Side.BACK',
+}
+
 export interface ICard {
   readonly color: Color
   readonly rank: Rank
+  readonly side: Side
 }
 
 export class Card implements ICard {
   constructor(
     public readonly color: Color,
     public readonly rank: Rank,
+    public readonly side: Side,
   ) {
   }
 }
@@ -68,4 +75,8 @@ export function compareRank(card1: ICard, card2: ICard): number {
   const card1NumericRank = RANK_SEQUENCE.indexOf(card1.rank)
   const card2NumericRank = RANK_SEQUENCE.indexOf(card2.rank)
   return card1NumericRank - card2NumericRank
+}
+
+export function showCardFace(card: Card): ICard {
+  return new Card(card.color, card.rank, Side.FACE)
 }
