@@ -58,13 +58,13 @@ export class Card implements ICard {
 }
 
 // https://en.wikipedia.org/wiki/French_playing_cards
-export function isSameColorInFrenchDeck(card1: Card, card2: Card): boolean {
+export function isSameColorInFrenchDeck(card1: ICard, card2: ICard): boolean {
   const isCard1Red = RED_COLORS.includes(card1.color)
   const isCard2Red = RED_COLORS.includes(card2.color)
   return isCard1Red === isCard2Red
 }
 
-export function compareRank(card1: Card, card2: Card): number {
+export function compareRank(card1: ICard, card2: ICard): number {
   const card1NumericRank = RANK_SEQUENCE.indexOf(card1.rank)
   const card2NumericRank = RANK_SEQUENCE.indexOf(card2.rank)
   return card1NumericRank - card2NumericRank
