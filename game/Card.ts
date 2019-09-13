@@ -52,7 +52,7 @@ export interface ICard {
 export class Card implements ICard {
   constructor(
     public readonly color: Color,
-    public readonly rank: Rank
+    public readonly rank: Rank,
   ) {
   }
 }
