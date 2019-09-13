@@ -4,7 +4,7 @@ export interface IPile {
   /**
    * The last card in the array is considered to be on the top - the cards in this pile are built from the bottom up.
    */
-  cards: ReadonlyArray<ICard>
+  readonly cards: ReadonlyArray<ICard>
 }
 
 export class Pile implements IPile {
