@@ -44,19 +44,28 @@ export const RANK_SEQUENCE = [
   Rank.KING,
 ]
 
-export class Card {
-  constructor(public readonly color: Color, public readonly rank: Rank) {}
+export interface ICard {
+  readonly color: Color
+  readonly rank: Rank
+}
 
-  // https://en.wikipedia.org/wiki/French_playing_cards
-  public isSameColorInFrenchDeck(card: Card): boolean {
-    const isThisCardRed = RED_COLORS.includes(this.color)
-    const isOtherCardRed = RED_COLORS.includes(card.color)
-    return isThisCardRed === isOtherCardRed
+export class Card implements ICard {
+  constructor(
+    public readonly color: Color,
+    public readonly rank: Rank
+  ) {
   }
+}
 
-  public compareRankTo(card: Card): number {
-    const thisCardRank = RANK_SEQUENCE.indexOf(this.rank)
-    const otherCardRank = RANK_SEQUENCE.indexOf(card.rank)
-    return thisCardRank - otherCardRank
-  }
+// https://en.wikipedia.org/wiki/French_playing_cards
+export function isSameColorInFrenchDeck(card1: Card, card2: Card): boolean {
+  const isCard1Red = RED_COLORS.includes(card1.color)
+  const isCard2Red = RED_COLORS.includes(card2.color)
+  return isCard1Red === isCard2Red
+}
+
+export function compareRank(card1: Card, card2: Card): number {
+  const card1NumericRank = RANK_SEQUENCE.indexOf(card1.rank)
+  const card2NumericRank = RANK_SEQUENCE.indexOf(card2.rank)
+  return card1NumericRank - card2NumericRank
 }
