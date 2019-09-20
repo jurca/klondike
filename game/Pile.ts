@@ -32,7 +32,7 @@ export function placePileOnTop(bottomPile: IPile, topPile: IPile): IPile {
 export function showCardFace(pile: IPile, cardToShow: ICard): IPile {
   const index = pile.cards.indexOf(cardToShow)
   if (index === -1) {
-    throw new Error('The provided card is not present in the specified pile')
+    throw new Error('The specified card is not present in the specified pile')
   }
 
   const patchedCards = pile.cards.slice()
