@@ -37,7 +37,7 @@ export function showCardFace(pile: IPile, cardToShow: ICard): IPile {
     patchedCards.splice(index, 1, newCard)
     return new Pile(patchedCards)
   }
-  return pile
+  throw new Error('The provided card is not present in the specified pile')
 }
 
 export function shuffle(pile: IPile): IPile {
