@@ -41,6 +41,17 @@ export function showCardFace(pile: IPile, cardToShow: ICard): IPile {
   return new Pile(patchedCards)
 }
 
+export function slicePile(pile: IPile, separatingCard: ICard): [IPile, IPile] {
+  const separatorIndex = pile.cards.indexOf(separatingCard)
+  if (separatorIndex === -1) {
+    throw new Error('The specified card is not present in the specified pile')
+  }
+
+  const topPile = new Pile(pile.cards.slice(0, separatorIndex))
+  const bottomPile = new Pile(pile.cards.slice(separatorIndex))
+  return [topPile, bottomPile]
+}
+
 export function shuffle(pile: IPile): IPile {
   // https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm
   const cards = pile.cards.slice()
