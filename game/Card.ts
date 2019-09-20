@@ -81,6 +81,6 @@ export function compareRank(card1: ICard, card2: ICard): number {
   return card1NumericRank - card2NumericRank
 }
 
-export function showCardFace(card: Card): ICard {
-  return new Card(card.color, card.rank, Side.FACE)
+export function turnOver(card: Card): ICard {
+  return new Card(card.color, card.rank, card.side === Side.FACE ? Side.BACK : Side.FACE)
 }
