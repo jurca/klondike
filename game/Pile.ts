@@ -31,13 +31,14 @@ export function placePileOnTop(bottomPile: IPile, topPile: IPile): IPile {
 
 export function showCardFace(pile: IPile, cardToShow: ICard): IPile {
   const index = pile.cards.indexOf(cardToShow)
-  if (index > -1) {
-    const patchedCards = pile.cards.slice()
-    const newCard = turnCardFaceUp(cardToShow)
-    patchedCards.splice(index, 1, newCard)
-    return new Pile(patchedCards)
+  if (index === -1) {
+    throw new Error('The provided card is not present in the specified pile')
   }
-  throw new Error('The provided card is not present in the specified pile')
+
+  const patchedCards = pile.cards.slice()
+  const newCard = turnCardFaceUp(cardToShow)
+  patchedCards.splice(index, 1, newCard)
+  return new Pile(patchedCards)
 }
 
 export function shuffle(pile: IPile): IPile {
