@@ -1,4 +1,4 @@
-import {ICard} from './Card.js'
+import {ICard, showCardFace as turnCardFaceUp} from './Card.js'
 
 export interface IPile {
   /**
@@ -29,10 +29,11 @@ export function placePileOnTop(bottomPile: IPile, topPile: IPile): IPile {
   return new Pile(bottomPile.cards.concat(topPile.cards))
 }
 
-export function replaceCard(pile: IPile, cardToReplace: ICard, newCard: ICard): IPile {
-  const index = pile.cards.indexOf(cardToReplace)
+export function showCardFace(pile: IPile, cardToShow: ICard): IPile {
+  const index = pile.cards.indexOf(cardToShow)
   if (index > -1) {
     const patchedCards = pile.cards.slice()
+    const newCard = turnCardFaceUp(cardToShow)
     patchedCards.splice(index, 1, newCard)
     return new Pile(patchedCards)
   }
