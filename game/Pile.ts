@@ -14,7 +14,7 @@ export class Pile implements IPile {
 
 export function draw(pile: IPile, numberOfCards: number): [IPile, ReadonlyArray<ICard>] {
   if (!Number.isSafeInteger(numberOfCards) || numberOfCards <= 0) {
-    throw new TypeError(`The cardCounts parameter must be a positive safe integer, ${numberOfCards} was provided`)
+    throw new TypeError(`The numberOfCards parameter must be a positive safe integer, ${numberOfCards} was provided`)
   }
   const drawnCards = pile.cards.slice(-numberOfCards).reverse()
   const pileRemainder = new Pile(pile.cards.slice(0, Math.max(pile.cards.length - numberOfCards, 0)))
