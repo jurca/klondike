@@ -50,7 +50,7 @@ export function moveTopWasteCardToFoundation(desk: IDesk): IDesk {
     throw new Error('There is no card on the waste pile')
   }
 
-  const cardToPlace = desk.waste.cards[0]
+  const [newWaste, [cardToPlace]] = draw(desk.waste, 1)
   const targetFoundationPile = desk.foundation[cardToPlace.color]
   const foundationTopCard = targetFoundationPile.cards[targetFoundationPile.cards.length - 1]
   if (!targetFoundationPile.cards.length && cardToPlace.rank !== Rank.ACE) {
