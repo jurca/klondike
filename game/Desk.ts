@@ -1,6 +1,6 @@
 import {Color, compareRank, ICard, Rank, RANK_SEQUENCE, turnOver} from './Card.js'
 import {draw, IPile, Pile, placeCardOnTop, placePileOnTop} from './Pile.js'
-import {ITableau} from './Tableau.js'
+import {addCardToPile, ITableau, movePilePart, removeTopCardFromPile, revealTopCard} from './Tableau.js'
 
 export interface IDesk {
   readonly stock: IPile
@@ -51,7 +51,83 @@ export function moveTopWasteCardToFoundation(desk: IDesk): IDesk {
   }
 
   const [newWaste, [cardToPlace]] = draw(desk.waste, 1)
-  const targetFoundationPile = desk.foundation[cardToPlace.color]
+  const newFoundation = addCardToFoundation(desk.foundation, cardToPlace)
+
+  return new Desk(
+    desk.stock,
+    newWaste,
+    newFoundation,
+    desk.tableau,
+  )
+}
+
+export function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDesk {
+  if (!desk.waste.cards.length) {
+    throw new Error('There is no card on the waste pile')
+  }
+
+  const [newWaste, [cardToPlace]] = draw(desk.waste, 1)
+  const newTableau = addCardToPile(desk.tableau, tableauPile, cardToPlace)
+
+  return new Desk(
+    desk.stock,
+    newWaste,
+    desk.foundation,
+    newTableau,
+  )
+}
+
+export function moveTopTableauPileCardToFoundation(desk: IDesk, tableauPile: IPile): IDesk {
+  const [newTableau, cardToPlace] = removeTopCardFromPile(desk.tableau, tableauPile)
+  const newFoundation = addCardToFoundation(desk.foundation, cardToPlace)
+  return new Desk(
+    desk.stock,
+    desk.waste,
+    newFoundation,
+    newTableau,
+  )
+}
+
+export function revealTopTableauPileCard(desk: IDesk, tableauPile: IPile): IDesk {
+  const newTableau = revealTopCard(desk.tableau, tableauPile)
+  return new Desk(
+    desk.stock,
+    desk.waste,
+    desk.foundation,
+    newTableau,
+  )
+}
+
+export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, tableauPile: IPile): IDesk {
+  if (!desk.foundation[color].cards.length) {
+    throw new Error(`The specified foundation (${color}) contains no cards`)
+  }
+
+  const [newFoundationPile, [cardToPlace]] = draw(desk.foundation[color], 1)
+  const newTableau = addCardToPile(desk.tableau, tableauPile, cardToPlace)
+  return new Desk(
+    desk.stock,
+    desk.waste,
+    {
+      ...desk.foundation,
+      [cardToPlace.color]: newFoundationPile,
+    },
+    newTableau,
+  )
+}
+
+export function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMove: ICard, targetPile: IPile): IDesk {
+  const newTableau = movePilePart(desk.tableau, sourcePile, topCardToMove, targetPile)
+  return new Desk(
+    desk.stock,
+    desk.waste,
+    desk.foundation,
+    newTableau,
+  )
+}
+
+function addCardToFoundation(foundation: IFoundation, cardToPlace: ICard): IFoundation {
+  const targetFoundationPile = foundation[cardToPlace.color]
   const foundationTopCard = targetFoundationPile.cards[targetFoundationPile.cards.length - 1]
   if (!targetFoundationPile.cards.length && cardToPlace.rank !== Rank.ACE) {
     throw new Error('Only the Ace can be placed at the bottom of a foundation')
@@ -64,25 +140,8 @@ export function moveTopWasteCardToFoundation(desk: IDesk): IDesk {
   }
 
   const newFoundationPile = placeCardOnTop(targetFoundationPile, cardToPlace)
-  const [newWaste] = draw(desk.waste, 1)
-
-  return new Desk(
-    desk.stock,
-    newWaste,
-    {
-      ...desk.foundation,
-      [cardToPlace.color]: newFoundationPile,
-    },
-    desk.tableau,
-  )
+  return {
+    ...foundation,
+    [cardToPlace.color]: newFoundationPile,
+  }
 }
-
-export function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDesk {}
-
-export function moveTopTableauPileCardToFoundation(desk: IDesk, tableauPile: IPile): IDesk {}
-
-export function revealTopTableauPileCard(desk: IDesk, tableauPile: IPile): IDesk {}
-
-export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, tableauPile: IPile): IDesk {}
-
-export function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMove: ICard, targetPile: IPile): IDesk {}
