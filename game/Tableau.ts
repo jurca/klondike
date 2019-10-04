@@ -27,6 +27,9 @@ export function removeTopCardFromPile(tableau: ITableau, pile: IPile): [ITableau
   if (pileIndex === -1) {
     throw new Error('The specified pile is not present in the specified tableau')
   }
+  if (!pile.cards.length) {
+    throw new Error('The specified pile contains no cards')
+  }
 
   const [pileRemainder, [topCard]] = draw(pile, 1)
   const patchedPiles = tableau.piles.slice()
