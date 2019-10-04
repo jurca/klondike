@@ -1,5 +1,6 @@
-import {Color} from './Card.js'
+import {Color, DECK, ICard, Side} from './Card.js'
 import {
+  Desk,
   drawCards,
   IDesk,
   moveFoundationCardToTableauPile,
@@ -10,15 +11,23 @@ import {
   redeal,
   revealTopTableauPileCard,
 } from './Desk.js'
+import {draw, IPile, Pile, shuffle, turnCard} from './Pile.js'
+import {Tableau} from './Tableau.js'
 
 export interface IGame {
   readonly history: ReadonlyArray<[IDesk, Move]>
   readonly state: IDesk
-  readonly rules: {
-    readonly drawnCards: number,
-    // The number of piles in tableau is already represented by the tableau itself, since the number of piles is
-    // immutable.
-  }
+  readonly rules: IGameRules
+}
+
+interface IGameRules {
+  readonly drawnCards: number,
+  // The number of piles in tableau is already represented by the tableau itself, since the number of piles is
+  // immutable.
+}
+
+interface INewGameRules extends IGameRules {
+  readonly tableauPiles: number
 }
 
 export enum MoveType {
@@ -86,6 +95,41 @@ type Move =
   IRevealTableauCardMove |
   IFoundationToTableauMove |
   ITableauToTableauMove
+
+export function createNewGame(gameRules: INewGameRules, cardDeck: null | ReadonlyArray<ICard> = null): IGame {
+  let cardsToDeal = cardDeck ? new Pile(cardDeck) : shuffle(new Pile(DECK))
+  for (const card of cardsToDeal.cards) {
+    if (card.side === Side.FACE) {
+      cardsToDeal = turnCard(cardsToDeal, card)
+    }
+  }
+
+  const piles: IPile[] = []
+  for (let i = 0; i < gameRules.tableauPiles; i++) {
+    const [remainingCards, cardsForPile] = draw(cardsToDeal, i + 1)
+    const currentPile = new Pile(cardsForPile)
+    piles.push(turnCard(currentPile, currentPile.cards[currentPile.cards.length - 1]))
+    cardsToDeal = remainingCards
+  }
+
+  return {
+    history: [],
+    rules: {
+      drawnCards: gameRules.drawnCards,
+    },
+    state: new Desk(
+      cardsToDeal,
+      new Pile([]),
+      {
+        [Color.DIAMONDS]: new Pile([]),
+        [Color.HEARTHS]: new Pile([]),
+        [Color.CLUBS]: new Pile([]),
+        [Color.SPADES]: new Pile([]),
+      },
+      new Tableau(piles),
+    ),
+  }
+}
 
 export function executeMove(game: IGame, move: Move): IGame {
   const {state} = game
