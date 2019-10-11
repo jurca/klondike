@@ -49,10 +49,6 @@ export enum Side {
   BACK = 'Side.BACK',
 }
 
-export const DECK: ReadonlyArray<ICard> = ([] as ICard[]).concat(...Object.values(Color).map(
-  (color: Color) => RANK_SEQUENCE.map((rank: Rank) => new Card(color, rank, Side.BACK)),
-))
-
 export interface ICard {
   readonly color: Color
   readonly rank: Rank
@@ -67,6 +63,10 @@ export class Card implements ICard {
   ) {
   }
 }
+
+export const DECK: ReadonlyArray<ICard> = ([] as ICard[]).concat(...Object.values(Color).map(
+  (color: Color) => RANK_SEQUENCE.map((rank: Rank) => new Card(color, rank, Side.BACK)),
+))
 
 // https://en.wikipedia.org/wiki/French_playing_cards
 export function isSameColorInFrenchDeck(card1: ICard, card2: ICard): boolean {
