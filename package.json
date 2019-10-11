@@ -5,7 +5,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "tslint --project . && jest"
+    "compile": "tsc --project .",
+    "build": "rm -rf dist && npm test && npm run compile && mkdir dist/node_modules/ && cp -r node_modules/@jurca dist/node_modules && cp ui/minimalistic/index.html dist/ui/minimalistic/",
+    "test": "tslint --project ."
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,9 @@
   },
   "homepage": "https://github.com/jurca/klondike#readme",
   "devDependencies": {
+    "@jurca/-x-ignore": "^0.1.0",
+    "@jurca/-x-ignore-tpl": "^0.1.4",
+    "serve": "^11.2.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3"
   }
