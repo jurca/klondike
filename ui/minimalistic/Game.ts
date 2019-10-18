@@ -33,6 +33,7 @@ define(
 
         <klondike-desk
           .desk="${state}"
+          .selectedcard="${this.selectedcard && this.selectedcard[0]}"
           .ondraw="${this.onDraw}"
           .onredeal="${this.onRedeal}"
           .oncardselected="${this.onCardSelected}"

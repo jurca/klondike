@@ -3,16 +3,17 @@ import {Component, define, tpl} from '../../node_modules/@jurca/-x-ignore/ignore
 
 interface IProps {
   card: ICard
+  isselected: boolean
 }
 
 define(
   class Card extends Component<IProps> {
     public static is = 'klondike-card'
     public static useShadowDom = true
-    public static props = ['card'] as Array<keyof IProps>
+    public static props = ['card', 'isselected'] as Array<keyof IProps>
 
     public render(): any {
-      const {card} = this.props
+      const {card, isselected} = this.props
 
       return tpl`
         <style>
@@ -28,9 +29,22 @@ define(
           .red {
             color: red;
           }
+
+          .selected {
+            position: relative;
+
+            box-shadow: 0 0 2px 2px firebrick;
+          }
         </style>
 
-        <button class="${card.side === Side.FACE && RED_COLORS.includes(card.color) ? 'red' : ''}">
+        <button
+          class="${
+            [
+              card.side === Side.FACE && RED_COLORS.includes(card.color) ? 'red' : '',
+              isselected && 'selected',
+            ].filter((cssClassName) => cssClassName).join(' ')
+          }"
+        >
           ${asString(card)}
         </button>
       `

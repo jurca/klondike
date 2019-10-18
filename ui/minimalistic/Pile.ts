@@ -5,6 +5,7 @@ import './Card.js'
 
 interface IProps {
   pile: IPile
+  selectedcard: null | ICard
   oncardselected: (card: ICard) => void
 }
 
@@ -12,7 +13,7 @@ define(
   class Pile extends Component<IProps> {
     public static is = 'klondike-pile'
     public static useShadowDom = true
-    public static props = ['pile', 'oncardselected'] as Array<keyof IProps>
+    public static props = ['pile', 'selectedcard', 'oncardselected'] as Array<keyof IProps>
 
     public render(): any {
       return tpl`
@@ -25,6 +26,7 @@ define(
         ${this.props.pile.cards.map((card) => keyed(card)`
           <klondike-card
             .card="${card}"
+            .isselected="${card === this.props.selectedcard}"
             .onclick="${
               () => card.side === Side.FACE || isTopCard(card, this.props.pile) ?
                   this.props.oncardselected(card)

@@ -8,6 +8,7 @@ import './Tableau.js'
 
 interface IProps {
   desk: IDesk
+  selectedcard: null | ICard
   ondraw: () => void
   onredeal: () => void
   oncardselected: (card: ICard, pile: IPile) => void
@@ -18,7 +19,14 @@ define(
   class Desk extends Component<IProps> {
     public static is = 'klondike-desk'
     public static useShadowDom = true
-    public static props = ['desk', 'ondraw', 'onredeal', 'oncardselected', 'onfoundationselected'] as Array<keyof IProps>
+    public static props = [
+      'desk',
+      'selectedcard',
+      'ondraw',
+      'onredeal',
+      'oncardselected',
+      'onfoundationselected',
+    ] as Array<keyof IProps>
 
     public render(): any {
       const {stock, tableau, waste} = this.props.desk
@@ -38,6 +46,7 @@ define(
 
         <div class="top">
           ${topStockCard ?
+            // stock cards are never selected
             tpl`<klondike-card .card="${topStockCard}" .onclick="${this.props.ondraw}"></klondike-card>`
           :
             tpl`<button .onclick="${this.props.onredeal}"></button>`
@@ -46,6 +55,7 @@ define(
             tpl`
               <klondike-card
                 .card="${topWasteCard}"
+                .isselected="${topWasteCard === this.props.selectedcard}"
                 .onclick="${() => this.props.oncardselected(topWasteCard, waste)}"
               >
               </klondike-card>
@@ -54,11 +64,20 @@ define(
             tpl`<button></button>`
           }
 
-          <klondike-foundation .desk="${this.props.desk}" .onfoundationselected="${this.props.onfoundationselected}">
+          <klondike-foundation
+            .desk="${this.props.desk}"
+            .selectedcard="${this.props.selectedcard}"
+            .onfoundationselected="${this.props.onfoundationselected}"
+          >
           </klondike-foundation>
         </div>
 
-        <klondike-tableau .tableau="${tableau}" .oncardselected="${this.props.oncardselected}"></klondike-tableau>
+        <klondike-tableau
+          .tableau="${tableau}"
+          .selectedcard="${this.props.selectedcard}"
+          .oncardselected="${this.props.oncardselected}"
+        >
+        </klondike-tableau>
       `
     }
   },

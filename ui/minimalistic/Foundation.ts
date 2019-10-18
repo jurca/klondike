@@ -1,10 +1,11 @@
-import {Color, RED_COLORS} from '../../game/Card.js'
+import {Color, ICard, RED_COLORS} from '../../game/Card.js'
 import {IDesk} from '../../game/Desk.js'
 import {Component, define, keyed, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './Card.js'
 
 interface IProps {
   desk: IDesk
+  selectedcard: null | ICard
   onfoundationselected: (color: Color) => void
 }
 
@@ -26,7 +27,7 @@ define(
   class Foundation extends Component<IProps> {
     public static is = 'klondike-foundation'
     public static useShadowDom = true
-    public static props = ['desk', 'onfoundationselected'] as Array<keyof IProps>
+    public static props = ['desk', 'selectedcard', 'onfoundationselected'] as Array<keyof IProps>
 
     public render(): any {
       const topCards = COLOR_ORDER.map(
@@ -56,6 +57,7 @@ define(
             tpl`
               <klondike-card
                 .card="${topCards[colorIndex]}"
+                .isselected="${topCards[colorIndex] === this.props.selectedcard}"
                 .onclick="${() => this.props.onfoundationselected(color)}"
               >
               </klondike-card>
