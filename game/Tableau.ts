@@ -12,7 +12,7 @@ export class Tableau implements ITableau {
 
 export function addCardToPile(tableau: ITableau, pile: IPile, card: ICard): ITableau {
   const pileIndex = tableau.piles.indexOf(pile)
-  if (pileIndex > -1) {
+  if (pileIndex === -1) {
     throw new Error('The specified pile is not present in the specified tableau')
   }
 
