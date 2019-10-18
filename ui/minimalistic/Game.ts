@@ -81,7 +81,8 @@ define(
         return
       }
 
-      const {tableau, waste} = this.props.game.state
+      const {foundation, tableau, waste} = this.props.game.state
+      const foundationPiles = Object.values(foundation)
       switch (true) {
         case this.selectedcard[1] === waste:
           this.props.onmove({
@@ -97,6 +98,13 @@ define(
             topMovedCardIndex: this.selectedcard[1].cards.indexOf(this.selectedcard[0]),
           })
           break
+        case foundationPiles.includes(this.selectedcard[1]):
+          this.props.onmove({
+            color: this.selectedcard[0].color,
+            move: MoveType.FOUNDATION_TO_TABLEAU,
+            pileIndex: tableau.piles.indexOf(pile),
+          })
+          break
         default:
           break // nothing to do
       }
@@ -106,6 +114,12 @@ define(
 
     private onFoundationSelected = (color: Color): void => {
       if (!this.selectedcard) {
+        const {foundation} = this.props.game.state
+        const foundationPile = foundation[color]
+        if (foundationPile.cards.length) {
+          this.selectedcard = [foundationPile.cards[foundationPile.cards.length - 1], foundationPile]
+        }
+
         return
       }
 
@@ -136,7 +150,8 @@ define(
     }
 
     private executeTableauMove(sourceCard: ICard, sourcePile: IPile, targetPile: IPile): void {
-      const {tableau, waste} = this.props.game.state
+      const {foundation, tableau, waste} = this.props.game.state
+      const foundationPiles = Object.values(foundation)
       switch (true) {
         case tableau.piles.includes(sourcePile) && tableau.piles.includes(targetPile):
           this.props.onmove({
@@ -149,6 +164,13 @@ define(
         case sourcePile === waste && tableau.piles.includes(targetPile):
           this.props.onmove({
             move: MoveType.WASTE_TO_TABLEAU,
+            pileIndex: tableau.piles.indexOf(targetPile),
+          })
+          break
+        case foundationPiles.includes(sourcePile):
+          this.props.onmove({
+            color: sourceCard.color,
+            move: MoveType.FOUNDATION_TO_TABLEAU,
             pileIndex: tableau.piles.indexOf(targetPile),
           })
           break
