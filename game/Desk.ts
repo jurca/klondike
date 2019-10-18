@@ -38,7 +38,7 @@ export function redeal(desk: IDesk) {
   }
 
   return new Desk(
-    new Pile(desk.waste.cards.map((card) => turnOver(card))),
+    new Pile(desk.waste.cards.map((card) => turnOver(card)).reverse()),
     new Pile([]),
     desk.foundation,
     desk.tableau,
