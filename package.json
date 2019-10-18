@@ -28,7 +28,7 @@
   "homepage": "https://github.com/jurca/klondike#readme",
   "devDependencies": {
     "@jurca/-x-ignore": "^0.1.1",
-    "@jurca/-x-ignore-tpl": "^0.1.4",
+    "@jurca/-x-ignore-tpl": "^0.1.5",
     "serve": "^11.2.0",
     "tslint": "^5.20.0",
     "typescript": "^3.6.3"
