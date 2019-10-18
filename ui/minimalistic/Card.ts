@@ -61,8 +61,10 @@ function asString(card: ICard): string {
     return String.fromCharCode(CHAR_CODE_PREFIX, CHAR_CODE_BASE)
   }
 
+  const rankIndex = RANK_SEQUENCE.indexOf(card.rank)
+  const charCodeIndex = rankIndex <= 10 ? rankIndex + 1 : rankIndex + 2
   return String.fromCharCode(
     CHAR_CODE_PREFIX,
-    CHAR_CODE_BASE + (16 * COLORS_ORDER.indexOf(card.color)) + RANK_SEQUENCE.indexOf(card.rank) + 1,
+    CHAR_CODE_BASE + (16 * COLORS_ORDER.indexOf(card.color)) + charCodeIndex,
   )
 }
