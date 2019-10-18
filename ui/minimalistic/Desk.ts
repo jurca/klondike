@@ -1,6 +1,6 @@
 import {Color, ICard} from '../../game/Card.js'
-import {IPile} from '../../game/Pile.js'
 import {IDesk} from '../../game/Desk.js'
+import {IPile} from '../../game/Pile.js'
 import {Component, define, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './Card.js'
 import './Foundation.js'
