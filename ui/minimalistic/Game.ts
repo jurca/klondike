@@ -1,4 +1,4 @@
-import {ICard} from '../../game/Card.js'
+import {Color, ICard} from '../../game/Card.js'
 import {IGame, Move, MoveType} from '../../game/Game.js'
 import {IPile} from '../../game/Pile.js'
 import {Component, define, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
@@ -36,6 +36,7 @@ define(
           .ondraw="${this.onDraw}"
           .onredeal="${this.onRedeal}"
           .oncardselected="${this.onCardSelected}"
+          .onfoundationselected="${this.onFoundationSelected}"
         >
         </klondike-desk>
       `
@@ -59,7 +60,7 @@ define(
     private onCardSelected = (card: ICard, pile: IPile): void => {
       if (this.selectedcard) {
         if (card !== this.selectedcard[0]) {
-          this.executeMove(this.selectedcard[0], this.selectedcard[1], pile)
+          this.executeTableauMove(this.selectedcard[0], this.selectedcard[1], pile)
         }
 
         this.selectedcard = null
@@ -68,7 +69,38 @@ define(
       }
     }
 
-    private executeMove(sourceCard: ICard, sourcePile: IPile, targetPile: IPile): void {
+    private onFoundationSelected = (color: Color): void => {
+      if (!this.selectedcard) {
+        return
+      }
+
+      const [selectedCard, selectedPile] = this.selectedcard
+      if (color !== selectedCard.color) {
+        this.selectedcard = null
+        return
+      }
+
+      const {tableau, waste} = this.props.game.state
+      switch (true) {
+        case selectedPile === waste:
+          this.props.onmove({
+            move: MoveType.WASTE_TO_FOUNDATION,
+          })
+          break
+        case tableau.piles.includes(selectedPile) && selectedCard === selectedPile.cards[selectedPile.cards.length - 1]:
+          this.props.onmove({
+            move: MoveType.TABLEAU_TO_FOUNDATION,
+            pileIndex: tableau.piles.indexOf(selectedPile),
+          })
+          break
+        default:
+          break // nothing to do
+      }
+
+      this.selectedcard = null
+    }
+
+    private executeTableauMove(sourceCard: ICard, sourcePile: IPile, targetPile: IPile): void {
       const {tableau} = this.props.game.state
       switch (true) {
         case tableau.piles.includes(sourcePile) && tableau.piles.includes(targetPile):
@@ -80,7 +112,7 @@ define(
           })
           break
         default:
-          // nothing to do
+          break // nothing to do
       }
     }
   },

@@ -1,4 +1,4 @@
-import {ICard} from '../../game/Card.js'
+import {Color, ICard} from '../../game/Card.js'
 import {IPile} from '../../game/Pile.js'
 import {IDesk} from '../../game/Desk.js'
 import {Component, define, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
@@ -11,13 +11,14 @@ interface IProps {
   ondraw: () => void
   onredeal: () => void
   oncardselected: (card: ICard, pile: IPile) => void
+  onfoundationselected: (color: Color) => void
 }
 
 define(
   class Desk extends Component<IProps> {
     public static is = 'klondike-desk'
     public static useShadowDom = true
-    public static props = ['desk', 'ondraw', 'onredeal', 'oncardselected'] as Array<keyof IProps>
+    public static props = ['desk', 'ondraw', 'onredeal', 'oncardselected', 'onfoundationselected'] as Array<keyof IProps>
 
     public render(): any {
       const {stock, tableau, waste} = this.props.desk
@@ -53,7 +54,8 @@ define(
             tpl`<button></button>`
           }
 
-          <klondike-foundation .desk="${this.props.desk}"></klondike-foundation>
+          <klondike-foundation .desk="${this.props.desk}" .onfoundationselected="${this.props.onfoundationselected}">
+          </klondike-foundation>
         </div>
 
         <klondike-tableau .tableau="${tableau}" .oncardselected="${this.props.oncardselected}"></klondike-tableau>

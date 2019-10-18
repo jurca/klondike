@@ -5,6 +5,7 @@ import './Card.js'
 
 interface IProps {
   desk: IDesk
+  onfoundationselected: (color: Color) => void
 }
 
 const COLOR_ORDER = [
@@ -25,7 +26,7 @@ define(
   class Foundation extends Component<IProps> {
     public static is = 'klondike-foundation'
     public static useShadowDom = true
-    public static props = ['desk'] as Array<keyof IProps>
+    public static props = ['desk', 'onfoundationselected'] as Array<keyof IProps>
 
     public render(): any {
       const topCards = COLOR_ORDER.map(
@@ -52,9 +53,22 @@ define(
 
         ${COLOR_ORDER.map((color, colorIndex) => keyed(color)`
           ${topCards[colorIndex] ?
-            tpl`<klondike-card .card="${topCards[colorIndex]}"></klondike-card>`
+            tpl`
+              <klondike-card
+                .card="${topCards[colorIndex]}"
+                .onclick="${() => this.props.onfoundationselected(color)}"
+              >
+              </klondike-card>
+            `
           :
-            tpl`<button class="${RED_COLORS.includes(color) ? 'red' : ''}">${EMPTY_PILE_SYMBOL[color]}</button>`
+            tpl`
+              <button
+                class="${RED_COLORS.includes(color) ? 'red' : ''}"
+                .onclick="${() => this.props.onfoundationselected(color)}"
+              >
+                ${EMPTY_PILE_SYMBOL[color]}
+              </button>
+            `
           }
         `)}
       `
