@@ -69,6 +69,6 @@ export function movePilePart(tableau: ITableau, sourcePile: IPile, topCardToMove
   const [sourcePileRemainder, movedPart] = slicePile(sourcePile, topCardToMove)
   const patchedPiles = tableau.piles.slice()
   patchedPiles.splice(sourcePileIndex, 1, sourcePileRemainder)
-  patchedPiles.splice(sourcePileIndex, 1, placePileOnTop(targetPile, movedPart))
+  patchedPiles.splice(targetPileIndex, 1, placePileOnTop(targetPile, movedPart))
   return new Tableau(patchedPiles)
 }
