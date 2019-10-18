@@ -107,7 +107,7 @@ define(
     }
 
     private executeTableauMove(sourceCard: ICard, sourcePile: IPile, targetPile: IPile): void {
-      const {tableau} = this.props.game.state
+      const {tableau, waste} = this.props.game.state
       switch (true) {
         case tableau.piles.includes(sourcePile) && tableau.piles.includes(targetPile):
           this.props.onmove({
@@ -115,6 +115,12 @@ define(
             sourcePileIndex: tableau.piles.indexOf(sourcePile),
             targetPileIndex: tableau.piles.indexOf(targetPile),
             topMovedCardIndex: sourcePile.cards.indexOf(sourceCard),
+          })
+          break
+        case sourcePile === waste && tableau.piles.includes(targetPile):
+          this.props.onmove({
+            move: MoveType.WASTE_TO_TABLEAU,
+            pileIndex: tableau.piles.indexOf(targetPile),
           })
           break
         default:
