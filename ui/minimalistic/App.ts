@@ -5,13 +5,14 @@ import './Game.js'
 interface IProps {
   game: IGame
   onstartnewgame: () => void
+  onmove: () => void
 }
 
 define(
   class App extends Component<IProps> {
     public static is = 'klondike-app'
     public static useShadowDom = true
-    public static props = ['game', 'onstartnewgame'] as Array<keyof IProps>
+    public static props = ['game', 'onstartnewgame', 'onmove'] as Array<keyof IProps>
 
     public render(): any {
       return tpl`
@@ -22,7 +23,7 @@ define(
         </style>
 
         <button .onclick="${this.props.onstartnewgame}">New game</button>
-        <klondike-game .game="${this.props.game}"></klondike-game>
+        <klondike-game .game="${this.props.game}" .onmove="${this.props.onmove}"></klondike-game>
       `
     }
   },
