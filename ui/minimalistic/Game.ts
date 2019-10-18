@@ -1,4 +1,4 @@
-import {Color, ICard} from '../../game/Card.js'
+import {Color, ICard, Side} from '../../game/Card.js'
 import {IGame, Move, MoveType} from '../../game/Game.js'
 import {IPile} from '../../game/Pile.js'
 import {Component, define, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
@@ -64,6 +64,11 @@ define(
         }
 
         this.selectedcard = null
+      } else if (card.side === Side.BACK) {
+        this.props.onmove({
+          move: MoveType.REVEAL_TABLEAU_CARD,
+          pileIndex: this.props.game.state.tableau.piles.indexOf(pile),
+        })
       } else {
         this.selectedcard = [card, pile]
       }

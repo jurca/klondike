@@ -25,7 +25,12 @@ define(
         ${this.props.pile.cards.map((card) => keyed(card)`
           <klondike-card
             .card="${card}"
-            .onclick="${() => card.side === Side.FACE ? this.props.oncardselected(card) : null}"
+            .onclick="${
+              () => card.side === Side.FACE || isTopCard(card, this.props.pile) ?
+                  this.props.oncardselected(card)
+                :
+                  null
+            }"
           >
           </klondike-card>
         `)}
@@ -38,3 +43,7 @@ define(
     }
   },
 )
+
+function isTopCard(card: ICard, pile: IPile): boolean {
+  return card === pile.cards[pile.cards.length - 1]
+}
