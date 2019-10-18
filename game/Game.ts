@@ -86,7 +86,7 @@ interface ITableauToTableauMove extends IMove {
   targetPileIndex: number
 }
 
-type Move =
+export type Move =
   IDrawCardsMove |
   IRedealMove |
   IWasteToFoundationMove |
@@ -135,7 +135,7 @@ export function executeMove(game: IGame, move: Move): IGame {
   const {state} = game
   switch (move.move) {
     case MoveType.DRAW_CARDS:
-      return createGameState(drawCards(state, game.rules.drawnCards))
+      return createGameState(drawCards(state, move.drawnCards))
     case MoveType.REDEAL:
       return createGameState(redeal(state))
     case MoveType.WASTE_TO_FOUNDATION:
