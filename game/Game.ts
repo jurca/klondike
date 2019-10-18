@@ -165,7 +165,7 @@ export function executeMove(game: IGame, move: Move): IGame {
 function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
   return {
     ...game,
-    history: game.history.concat([nextState, appliedMove]),
+    history: game.history.concat([[nextState, appliedMove]]),
     state: nextState,
   }
 }
