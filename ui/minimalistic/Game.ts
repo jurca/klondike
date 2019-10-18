@@ -38,6 +38,7 @@ define(
           .onredeal="${this.onRedeal}"
           .oncardselected="${this.onCardSelected}"
           .onfoundationselected="${this.onFoundationSelected}"
+          .onemptypileselected="${this.onEmptyPileSelected}"
         >
         </klondike-desk>
       `
@@ -73,6 +74,34 @@ define(
       } else {
         this.selectedcard = [card, pile]
       }
+    }
+
+    private onEmptyPileSelected = (pile: IPile): void => {
+      if (!this.selectedcard) {
+        return
+      }
+
+      const {tableau, waste} = this.props.game.state
+      switch (true) {
+        case this.selectedcard[1] === waste:
+          this.props.onmove({
+            move: MoveType.WASTE_TO_TABLEAU,
+            pileIndex: tableau.piles.indexOf(pile),
+          })
+          break
+        case tableau.piles.includes(this.selectedcard[1]):
+          this.props.onmove({
+            move: MoveType.TABLEAU_TO_TABLEAU,
+            sourcePileIndex: tableau.piles.indexOf(this.selectedcard[1]),
+            targetPileIndex: tableau.piles.indexOf(pile),
+            topMovedCardIndex: this.selectedcard[1].cards.indexOf(this.selectedcard[0]),
+          })
+          break
+        default:
+          break // nothing to do
+      }
+
+      this.selectedcard = null
     }
 
     private onFoundationSelected = (color: Color): void => {

@@ -12,6 +12,7 @@ interface IProps {
   ondraw: () => void
   onredeal: () => void
   oncardselected: (card: ICard, pile: IPile) => void
+  onemptypileselected: (pile: IPile) => void
   onfoundationselected: (color: Color) => void
 }
 
@@ -26,6 +27,7 @@ define(
       'onredeal',
       'oncardselected',
       'onfoundationselected',
+      'onemptypileselected',
     ] as Array<keyof IProps>
 
     public render(): any {
@@ -76,6 +78,7 @@ define(
           .tableau="${tableau}"
           .selectedcard="${this.props.selectedcard}"
           .oncardselected="${this.props.oncardselected}"
+          .onemptypileselected="${this.props.onemptypileselected}"
         >
         </klondike-tableau>
       `

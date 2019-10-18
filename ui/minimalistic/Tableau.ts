@@ -8,13 +8,14 @@ interface IProps {
   tableau: ITableau
   selectedcard: null | ICard
   oncardselected: (card: ICard, pile: IPile) => void
+  onemptypileselected: (pile: IPile) => void
 }
 
 define(
   class Tableau extends Component<IProps> {
     public static is = 'klondike-tableau'
     public static useShadowDom = true
-    public static props = ['tableau', 'selectedcard', 'oncardselected'] as Array<keyof IProps>
+    public static props = ['tableau', 'selectedcard', 'oncardselected', 'onemptypileselected'] as Array<keyof IProps>
 
     public render(): any {
       const piles = this.props.tableau.piles
@@ -31,6 +32,7 @@ define(
             .pile="${pile}"
             .selectedcard="${this.props.selectedcard}"
             .oncardselected="${(card: ICard) => this.props.oncardselected(card, pile)}"
+            .onemptypileselected="${this.props.onemptypileselected}"
           >
           </klondike-pile>
         `)}

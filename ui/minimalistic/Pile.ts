@@ -7,13 +7,14 @@ interface IProps {
   pile: IPile
   selectedcard: null | ICard
   oncardselected: (card: ICard) => void
+  onemptypileselected: (pile: IPile) => void
 }
 
 define(
   class Pile extends Component<IProps> {
     public static is = 'klondike-pile'
     public static useShadowDom = true
-    public static props = ['pile', 'selectedcard', 'oncardselected'] as Array<keyof IProps>
+    public static props = ['pile', 'selectedcard', 'oncardselected', 'onemptypileselected'] as Array<keyof IProps>
 
     public render(): any {
       return tpl`
@@ -37,7 +38,7 @@ define(
           </klondike-card>
         `)}
         ${!this.props.pile.cards.length ?
-          tpl`<button></button>`
+          tpl`<button .onclick="${() => this.props.onemptypileselected(this.props.pile)}"></button>`
         :
           null
         }
