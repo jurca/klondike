@@ -6,7 +6,16 @@
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src="main.js"></script>
-    <script src="legacy-bundle.js" nomodule></script>
+    <script>
+      if (location.protocol === "file:") {
+        document.write(
+          '<script src="legacy-bundle.js"><\/script>'
+        )
+      } else {
+        document.write(
+          '<script type="module" src="main.js"><\/script><script src="legacy-bundle.js" nomodule><\/script>'
+        )
+      }
+    </script>
   </body>
 </html>
