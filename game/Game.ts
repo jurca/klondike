@@ -108,6 +108,17 @@ export type Move =
   ITableauToTableauMove
 
 export function createNewGame(gameRules: INewGameRules, cardDeck: null | ReadonlyArray<ICard> = null): IGame {
+  if (!Number.isSafeInteger(gameRules.drawnCards) || gameRules.drawnCards <= 0) {
+    throw new TypeError(
+      `The drawnCards game rule must be a positive safe integer, ${gameRules.drawnCards} was provided`,
+    )
+  }
+  if (!Number.isSafeInteger(gameRules.tableauPiles) || gameRules.tableauPiles <= 0) {
+    throw new TypeError(
+      `The tableauPiles game rule must be a positive safe integer, ${gameRules.tableauPiles} was provided`,
+    )
+  }
+
   let cardsToDeal = cardDeck ? new Pile(cardDeck) : shuffle(new Pile(DECK))
   for (const card of cardsToDeal.cards) {
     if (card.side === Side.FACE) {
