@@ -15,9 +15,13 @@ import {draw, IPile, Pile, shuffle, turnCard} from './Pile.js'
 import {Tableau} from './Tableau.js'
 
 export interface IGame {
-  readonly history: ReadonlyArray<[IDesk, Move]>
+  readonly history: ReadonlyArray<[IDesk, Move & IRecordTimestamp]>
   readonly state: IDesk
   readonly rules: IGameRules
+  readonly startTime: {
+    readonly absoluteTimestamp: number,
+    readonly logicalTimestamp: number,
+  }
 }
 
 interface IGameRules {
@@ -43,6 +47,10 @@ export enum MoveType {
 
 interface IMove {
   move: MoveType
+}
+
+interface IRecordTimestamp extends IMove {
+  logicalTimestamp: number
 }
 
 interface IDrawCardsMove extends IMove {
@@ -117,6 +125,10 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
     rules: {
       drawnCards: gameRules.drawnCards,
     },
+    startTime: {
+      absoluteTimestamp: Date.now(),
+      logicalTimestamp: performance.now(),
+    },
     state: new Desk(
       cardsToDeal,
       new Pile([]),
@@ -165,7 +177,13 @@ export function executeMove(game: IGame, move: Move): IGame {
 function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
   return {
     ...game,
-    history: game.history.concat([[game.state, appliedMove]]),
+    history: game.history.concat([[
+      game.state,
+      {
+        ...appliedMove,
+        logicalTimestamp: performance.now(),
+      },
+    ]]),
     state: nextState,
   }
 }
