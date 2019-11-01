@@ -1,4 +1,4 @@
-import {createNewGame, executeMove, Move, resetGame} from '../../game/Game.js'
+import {createNewGame, executeMove, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './App.js'
 
@@ -26,6 +26,16 @@ addEventListener('DOMContentLoaded', () => {
     renderUI()
   }
 
+  function onUndo() {
+    currentGame = undoLastMove(currentGame)
+    renderUI()
+  }
+
+  function onRedo() {
+    currentGame = redoNextMove(currentGame)
+    renderUI()
+  }
+
   function renderUI() {
     render(
       document.getElementById('app')!,
@@ -35,6 +45,8 @@ addEventListener('DOMContentLoaded', () => {
           .onstartnewgame="${onStartNewGame}"
           .onmove="${onMove}"
           .onreset="${onReset}"
+          .onundo="${onUndo}"
+          .onredo="${onRedo}"
         >
         </klondike-app>
       `,

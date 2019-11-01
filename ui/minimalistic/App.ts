@@ -8,6 +8,8 @@ interface IProps {
   onstartnewgame: () => void
   onmove: () => void
   onreset: () => void
+  onundo: () => void
+  onredo: () => void
 }
 
 interface IPrivateProps {
@@ -24,6 +26,8 @@ define(
       'onstartnewgame',
       'onmove',
       'onreset',
+      'onundo',
+      'onredo',
     ] as Array<keyof (IProps & IPrivateProps)>
 
     private allcardsvisible: boolean = false
@@ -48,6 +52,8 @@ define(
           Show all cards
         </label>
         <button .onclick="${this.props.onreset}">Reset game</button>
+        <button .onclick="${this.props.onundo}" .disabled="${!game.history.length}">Undo</button>
+        <button .onclick="${this.props.onredo}" .disabled="${!game.future.length}">Redo</button>
 
         <klondike-game .game="${game}" .onmove="${this.props.onmove}"></klondike-game>
 

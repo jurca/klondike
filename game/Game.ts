@@ -14,8 +14,11 @@ import {
 import {draw, IPile, Pile, shuffle, turnCard} from './Pile.js'
 import {Tableau} from './Tableau.js'
 
+type HistoryRecord = [IDesk, Move & IRecordTimestamp]
+
 export interface IGame {
-  readonly history: ReadonlyArray<[IDesk, Move & IRecordTimestamp]>
+  readonly history: ReadonlyArray<HistoryRecord>
+  readonly future: ReadonlyArray<HistoryRecord>
   readonly state: IDesk
   readonly rules: IGameRules
   readonly startTime: {
@@ -121,6 +124,7 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
   }
 
   return {
+    future: [],
     history: [],
     rules: {
       drawnCards: gameRules.drawnCards,
@@ -177,6 +181,7 @@ export function executeMove(game: IGame, move: Move): IGame {
 export function resetGame(game: IGame): IGame {
   return {
     ...game,
+    future: [],
     history: [],
     startTime: {
       absoluteTimestamp: Date.now(),
@@ -186,9 +191,45 @@ export function resetGame(game: IGame): IGame {
   }
 }
 
+export function undoLastMove(game: IGame): IGame {
+  if (!game.history.length) {
+    return game
+  }
+
+  const newHistory = game.history.slice()
+  const [moveToUndo] = newHistory.splice(-1)
+
+  return {
+    ...game,
+    future: [moveToUndo, ...game.future],
+    history: newHistory,
+    state: moveToUndo[0],
+  }
+}
+
+export function redoNextMove(game: IGame): IGame {
+  if (!game.future.length) {
+    return game
+  }
+
+  const [moveToRedo, ...newFuture] = game.future
+  const newState = newFuture.length ?
+    newFuture[0][0]
+  :
+    executeMove({...game, state: moveToRedo[0]}, moveToRedo[1]).state
+
+  return {
+    ...game,
+    future: newFuture,
+    history: game.history.concat([moveToRedo]),
+    state: newState,
+  }
+}
+
 function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
   return {
     ...game,
+    future: [],
     history: game.history.concat([[
       game.state,
       {
