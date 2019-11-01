@@ -2,17 +2,20 @@ import {createNewGame, executeMove, Move, redoNextMove, resetGame, undoLastMove}
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './App.js'
 
-const RULES = {
+const DEFAULT_RULES = {
   drawnCards: 3,
   tableauPiles: 7,
 }
 
 addEventListener('DOMContentLoaded', () => {
-  let currentGame = createNewGame(RULES)
+  let currentGame = createNewGame(DEFAULT_RULES)
   renderUI()
 
-  function onStartNewGame() {
-    currentGame = createNewGame(RULES)
+  function onStartNewGame(drawnCards: number, tableauPiles: number) {
+    currentGame = createNewGame({
+      drawnCards,
+      tableauPiles,
+    })
     renderUI()
   }
 

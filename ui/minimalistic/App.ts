@@ -5,7 +5,7 @@ import './Game.js'
 
 interface IProps {
   game: IGame
-  onstartnewgame: () => void
+  onstartnewgame: (drawnCards: number, tableauPiles: number) => void
   onmove: () => void
   onreset: () => void
   onundo: () => void
@@ -14,26 +14,29 @@ interface IProps {
 
 interface IPrivateProps {
   allcardsvisible: boolean
+  newgametableaupilescount: number
 }
 
 define(
-  class App extends Component<IProps & IPrivateProps> {
+  class App extends Component<IProps & IPrivateProps, {}, {drawCards3: HTMLInputElement}> {
     public static is = 'klondike-app'
     public static useShadowDom = true
     public static props = [
       'game',
-      'allcardsvisible',
       'onstartnewgame',
       'onmove',
       'onreset',
       'onundo',
       'onredo',
+      'allcardsvisible',
+      'newgametableaupilescount',
     ] as Array<keyof (IProps & IPrivateProps)>
 
     private allcardsvisible: boolean = false
+    private newgametableaupilescount: number = 7
 
     public render(): any {
-      const {allcardsvisible, currentGameView: game} = this
+      const {allcardsvisible, currentGameView: game, newgametableaupilescount} = this
 
       return tpl`
         <style>
@@ -46,7 +49,7 @@ define(
           }
         </style>
 
-        <button .onclick="${this.props.onstartnewgame}">New game</button>
+        <button .onclick="${this.onNewGame}">New game</button>
         <label>
           <input type="checkbox" .checked="${allcardsvisible}" .onchange="${this.onToggleAllCardsVisible}">
           Show all cards
@@ -54,6 +57,33 @@ define(
         <button .onclick="${this.props.onreset}">Reset game</button>
         <button .onclick="${this.props.onundo}" .disabled="${!game.history.length}">Undo</button>
         <button .onclick="${this.props.onredo}" .disabled="${!game.future.length}">Redo</button>
+
+        <p>
+          New game options:
+        </p>
+        <p>
+          Draw:
+          <label>
+            <input type="radio" name="drawnCards" value="3" checked ref="drawCards3">
+            3 cards
+          </label>
+          <label>
+            <input type="radio" name="drawnCards" value="1">
+            1 card
+          </label>
+        </p>
+        <p>
+          Tableau piles count:
+          <input
+            type="range"
+            min="4"
+            max="52"
+            step="1"
+            .value="${newgametableaupilescount}"
+            .onchange="${this.onNewGameTableauPilesCountChange}"
+          >
+          ${newgametableaupilescount}
+        </p>
 
         <klondike-game .game="${game}" .onmove="${this.props.onmove}"></klondike-game>
 
@@ -82,8 +112,20 @@ define(
       `
     }
 
+    private onNewGame = () => {
+      const {drawCards3: drawCards3Option} = this.refs
+      this.props.onstartnewgame(drawCards3Option && drawCards3Option.checked ? 3 : 1, this.newgametableaupilescount)
+    }
+
     private onToggleAllCardsVisible = () => {
       this.allcardsvisible = !this.allcardsvisible
+    }
+
+    private onNewGameTableauPilesCountChange = (event: Event) => {
+      const input = event.target
+      if (input && input) {
+        this.newgametableaupilescount = parseInt((input as any).value, 10) || this.newgametableaupilescount
+      }
     }
 
     private get currentGameView(): IGame {
