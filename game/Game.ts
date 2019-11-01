@@ -52,7 +52,7 @@ interface IMove {
   move: MoveType
 }
 
-interface IRecordTimestamp extends IMove {
+export interface IRecordTimestamp extends IMove {
   logicalTimestamp: number
 }
 
