@@ -1,4 +1,4 @@
-import {createNewGame, executeMove, Move} from '../../game/Game.js'
+import {createNewGame, executeMove, Move, resetGame} from '../../game/Game.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './App.js'
 
@@ -21,10 +21,23 @@ addEventListener('DOMContentLoaded', () => {
     renderUI()
   }
 
+  function onReset() {
+    currentGame = resetGame(currentGame)
+    renderUI()
+  }
+
   function renderUI() {
     render(
       document.getElementById('app')!,
-      tpl`<klondike-app .game="${currentGame}" .onstartnewgame="${onStartNewGame}" .onmove="${onMove}"></klondike-app>`,
+      tpl`
+        <klondike-app
+          .game="${currentGame}"
+          .onstartnewgame="${onStartNewGame}"
+          .onmove="${onMove}"
+          .onreset="${onReset}"
+        >
+        </klondike-app>
+      `,
     )
   }
 })

@@ -7,6 +7,7 @@ interface IProps {
   game: IGame
   onstartnewgame: () => void
   onmove: () => void
+  onreset: () => void
 }
 
 interface IPrivateProps {
@@ -22,6 +23,7 @@ define(
       'allcardsvisible',
       'onstartnewgame',
       'onmove',
+      'onreset',
     ] as Array<keyof (IProps & IPrivateProps)>
 
     private allcardsvisible: boolean = false
@@ -45,6 +47,7 @@ define(
           <input type="checkbox" .checked="${allcardsvisible}" .onchange="${this.onToggleAllCardsVisible}">
           Show all cards
         </label>
+        <button .onclick="${this.props.onreset}">Reset game</button>
 
         <klondike-game .game="${game}" .onmove="${this.props.onmove}"></klondike-game>
 

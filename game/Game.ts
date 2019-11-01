@@ -174,6 +174,18 @@ export function executeMove(game: IGame, move: Move): IGame {
   }
 }
 
+export function resetGame(game: IGame): IGame {
+  return {
+    ...game,
+    history: [],
+    startTime: {
+      absoluteTimestamp: Date.now(),
+      logicalTimestamp: performance.now(),
+    },
+    state: game.history.length ? game.history[0][0] : game.state,
+  }
+}
+
 function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
   return {
     ...game,
