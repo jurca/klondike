@@ -119,7 +119,11 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
   for (let i = 0; i < gameRules.tableauPiles; i++) {
     const [remainingCards, cardsForPile] = draw(cardsToDeal, i + 1)
     const currentPile = new Pile(cardsForPile)
-    piles.push(turnCard(currentPile, currentPile.cards[currentPile.cards.length - 1]))
+    if (currentPile.cards.length) {
+      piles.push(turnCard(currentPile, currentPile.cards[currentPile.cards.length - 1]))
+    } else {
+      piles.push(currentPile)
+    }
     cardsToDeal = remainingCards
   }
 
