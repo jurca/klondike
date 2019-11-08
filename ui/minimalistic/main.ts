@@ -41,7 +41,7 @@ addEventListener('DOMContentLoaded', () => {
   }
 
   function onSave() {
-    console.log(serialize(currentGame))
+    console.log(serialize(currentGame)) // tslint:disable-line:no-console
   }
 
   function onLoad() {
