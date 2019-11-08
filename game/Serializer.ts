@@ -1,4 +1,4 @@
-import {Color, DECK, ICard, turnOver} from './Card.js'
+import {Color, DECK, ICard} from './Card.js'
 import {IGame, IRecordTimestamp, Move, MoveType} from './Game.js'
 
 const SERIALIZER_VERSION = 1
@@ -28,7 +28,7 @@ export function serialize(game: IGame): string {
     SERIALIZER_VERSION,
     game.rules.drawnCards.toString(NUM_RADIX),
     game.state.tableau.piles.length.toString(NUM_RADIX).padStart(2, '0'),
-    cardsDeck.map(serializeCard).join(''),
+    cardsDeck.slice(0, -1).map(serializeCard).join(''),
     Math.floor((game.startTime.absoluteTimestamp - EPOCH_START) / 1000).toString(NUM_RADIX),
     Math.floor(game.startTime.logicalTimestamp).toString(NUM_RADIX),
     game.history.length.toString(NUM_RADIX),
@@ -80,7 +80,7 @@ function serializeMove(move: Move & IRecordTimestamp, previousMoveTimestamp: num
 }
 
 function serializeCard(card: ICard): string {
-  const keys = Object.keys(card) as Array<keyof ICard>
+  const keys = (Object.keys(card) as Array<keyof ICard>).filter((key) => key !== 'side')
   const cardIndex = UNSERIALIZED_CARDS.findIndex(
     (otherCard) => keys.every((key) => card[key] === otherCard[key]),
   )
@@ -93,17 +93,11 @@ function serializeCard(card: ICard): string {
 
 const MOVE_TYPES = Object.values(MoveType).sort()
 const COLORS = Object.values(Color).sort()
-const UNSERIALIZED_CARDS = [...DECK, ...DECK.map((card) => turnOver(card))] // 104 elements in total
+const UNSERIALIZED_CARDS = DECK
 const SERIALIZED_CARDS = (() => {
-  // we want to use only the characters that are each a single-byte in UTF-8
-
   const alphabet = Array.from({length: 26}).map((_, index) => String.fromCharCode(97 + index))
-  const digits = [...Array.from({length: 10}).keys()].map((digit) => `${digit}`)
-  const extra = ',.-="\'`~;*+_()[]{}&^%$#@!?/\\<>| :£§©®°«»¯¬'.split('')
-  return ([] as string[]).concat(
-    digits,
-    alphabet,
-    alphabet.map((character) => character.toUpperCase()),
-    extra,
-  )
+  return [
+    ...alphabet,
+    ...alphabet.map((character) => character.toUpperCase()),
+  ]
 })()
