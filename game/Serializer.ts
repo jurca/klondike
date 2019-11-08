@@ -35,8 +35,7 @@ export function serialize(game: IGame): string {
     ';',
     game.history.length.toString(NUM_RADIX),
     ':',
-    serializeHistory(game.history, game.startTime.logicalTimestamp),
-    serializeHistory(game.future, game.startTime.logicalTimestamp),
+    serializeHistory(game.history.concat(game.future), game.startTime.logicalTimestamp),
   ]
 
   return serializedData.join('')
