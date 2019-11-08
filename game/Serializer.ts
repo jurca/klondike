@@ -21,8 +21,8 @@ export function serialize(game: IGame): string {
 
   const initialState = game.history.length ? game.history[0][0] : game.state
   const cardsDeck = [
-    ...initialState.tableau.piles.map((pile) => pile.cards.slice().reverse()).flat(),
     ...initialState.stock.cards,
+    ...initialState.tableau.piles.map((pile) => pile.cards.slice().reverse()).reverse().flat(),
   ]
   const serializedData = [
     SERIALIZER_VERSION,
