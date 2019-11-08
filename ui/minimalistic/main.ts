@@ -1,4 +1,5 @@
 import {createNewGame, executeMove, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
+import {deserialize, serialize} from '../../game/Serializer.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './App.js'
 
@@ -39,6 +40,15 @@ addEventListener('DOMContentLoaded', () => {
     renderUI()
   }
 
+  function onSave() {
+    console.log(serialize(currentGame))
+  }
+
+  function onLoad() {
+    currentGame = deserialize(prompt()!)
+    renderUI()
+  }
+
   function renderUI() {
     render(
       document.getElementById('app')!,
@@ -50,6 +60,8 @@ addEventListener('DOMContentLoaded', () => {
           .onreset="${onReset}"
           .onundo="${onUndo}"
           .onredo="${onRedo}"
+          .onsave="${onSave}"
+          .onload="${onLoad}"
         >
         </klondike-app>
       `,

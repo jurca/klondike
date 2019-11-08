@@ -10,6 +10,8 @@ interface IProps {
   onreset: () => void
   onundo: () => void
   onredo: () => void
+  onsave: () => void
+  onload: () => void
 }
 
 interface IPrivateProps {
@@ -28,6 +30,8 @@ define(
       'onreset',
       'onundo',
       'onredo',
+      'onsave',
+      'onload',
       'allcardsvisible',
       'newgametableaupilescount',
     ] as Array<keyof (IProps & IPrivateProps)>
@@ -57,6 +61,8 @@ define(
         <button .onclick="${this.props.onreset}">Reset game</button>
         <button .onclick="${this.props.onundo}" .disabled="${!game.history.length}">Undo</button>
         <button .onclick="${this.props.onredo}" .disabled="${!game.future.length}">Redo</button>
+        <button .onclick="${this.props.onsave}">Save</button>
+        <button .onclick="${this.props.onload}">Load</button>
 
         <p>
           New game options:
