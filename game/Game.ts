@@ -33,7 +33,7 @@ interface IGameRules {
   // immutable.
 }
 
-interface INewGameRules extends IGameRules {
+export interface INewGameRules extends IGameRules {
   readonly tableauPiles: number
 }
 
