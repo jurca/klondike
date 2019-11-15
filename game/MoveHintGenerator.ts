@@ -1,4 +1,4 @@
-import {Color, compareRank, ICard, Rank, Side} from './Card.js'
+import {Color, compareRank, ICard, isSameColorInFrenchDeck, Rank, Side} from './Card.js'
 import {executeMove, IGame, Move, MoveType} from './Game.js'
 import {draw} from './Pile.js'
 import {ITableau} from './Tableau.js'
@@ -10,6 +10,7 @@ export enum HintGeneratorMode {
 
 export enum MoveConfidence {
   ABSOLUTE = 'MoveConfidence.ABSOLUTE',
+  VERY_HIGH = 'MoveConfidence.VERY_HIGH',
 }
 
 export function getMoveHints(game: IGame, mode: HintGeneratorMode): Array<[Move, ICard, MoveConfidence]> {
@@ -26,6 +27,7 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): Array<[Move,
   const moves: Array<[Move, ICard, MoveConfidence]> = []
 
   moves.push(...getMovesWithAbsoluteConfidence(game, stockPlayableCards, topTableauCards, topFoundationCards))
+  moves.push(...getMovesWithVeryHighConfidence(game))
 
   return moves
 }
@@ -127,6 +129,48 @@ function getMovesWithAbsoluteConfidence(
   return moves
 }
 
+function getMovesWithVeryHighConfidence(
+  game: IGame,
+): Array<[Move, ICard, MoveConfidence]> {
+  const {tableau} = game.state
+  const moves: Array<[Move, ICard, MoveConfidence]> = []
+
+  // Tableau to tableau transfer that allows revealing a card, source is not 5, 6, 7 or 8 and target pile is not empty
+  const pilesFromLargestToSmallest = tableau.piles.slice().sort(
+    (pile1, pile2) => pile2.cards.length - pile1.cards.length,
+  )
+  for (const pile of pilesFromLargestToSmallest) {
+    const mostBottomRevealedCardIndex = pile.cards.findIndex((card) => card.side === Side.FACE)
+    const sourceCard = pile.cards[mostBottomRevealedCardIndex]
+    if (
+      mostBottomRevealedCardIndex < 1 ||
+      [Rank.FIVE, Rank.SIX, Rank.SEVEN, Rank.EIGHT].includes(sourceCard.rank)
+    ) {
+      continue
+    }
+    const targetPileIndex = tableau.piles.findIndex((targetPile) => (
+      targetPile.cards.length &&
+      lastItem(targetPile.cards).side === Side.FACE &&
+      !isSameColorInFrenchDeck(lastItem(targetPile.cards), sourceCard) &&
+      compareRank(lastItem(targetPile.cards), sourceCard) === 1
+    ))
+    if (targetPileIndex > -1) {
+      moves.push([
+        {
+          move: MoveType.TABLEAU_TO_TABLEAU,
+          sourcePileIndex: getPileIndex(tableau, sourceCard),
+          targetPileIndex,
+          topMovedCardIndex: mostBottomRevealedCardIndex,
+        },
+        sourceCard,
+        MoveConfidence.VERY_HIGH,
+      ])
+    }
+  }
+
+  return moves
+}
+
 function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {
   return (
     !stock.cards.length &&
@@ -171,7 +215,7 @@ function getStockPlayableCards(game: IGame, mode: HintGeneratorMode): ICard[] {
 }
 
 function getPileIndex(tableau: ITableau, card: ICard): number {
-  return tableau.piles.findIndex((pile) => lastItemOrNull(pile.cards) === card)
+  return tableau.piles.findIndex((pile) => pile.cards.includes(card))
 }
 
 function lastItemOrNull<T>(array: readonly T[]): null | T {
