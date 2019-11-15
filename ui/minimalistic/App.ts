@@ -120,7 +120,7 @@ define(
 
     private onNewGame = () => {
       const {drawCards3: drawCards3Option} = this.refs
-      this.props.onstartnewgame(drawCards3Option && drawCards3Option.checked ? 3 : 1, this.newgametableaupilescount)
+      this.props.onstartnewgame(drawCards3Option?.checked ? 3 : 1, this.newgametableaupilescount)
     }
 
     private onToggleAllCardsVisible = () => {
