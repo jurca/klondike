@@ -25,7 +25,24 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): Array<[Move,
   }
   const moves: Array<[Move, ICard, MoveConfidence]> = []
 
-  // The safe moves
+  moves.push(...getMovesWithAbsoluteConfidence(game, stockPlayableCards, topTableauCards, topFoundationCards))
+
+  return moves
+}
+
+function getMovesWithAbsoluteConfidence(
+  game: IGame,
+  stockPlayableCards: ICard[],
+  topTableauCards: ICard[],
+  topFoundationCards: {
+    [Color.DIAMONDS]: null | ICard,
+    [Color.HEARTHS]: null | ICard,
+    [Color.CLUBS]: null | ICard,
+    [Color.SPADES]: null | ICard,
+  },
+): Array<[Move, ICard, MoveConfidence]> {
+  const {tableau} = game.state
+  const moves: Array<[Move, ICard, MoveConfidence]> = []
 
   // Revealing a card
   const cardToReveal = topTableauCards.find((card) => card.side === Side.BACK)
