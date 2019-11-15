@@ -129,7 +129,7 @@ define(
 
     private onNewGameTableauPilesCountChange = (event: Event) => {
       const input = event.target
-      if (input && input) {
+      if (input && 'value' in input) {
         this.newgametableaupilescount = parseInt((input as any).value, 10) || this.newgametableaupilescount
       }
     }
