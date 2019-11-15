@@ -1,4 +1,4 @@
-import {Color, ICard, Rank, Side} from './Card.js'
+import {Color, compareRank, ICard, Rank, Side} from './Card.js'
 import {executeMove, IGame, Move, MoveType} from './Game.js'
 import {draw} from './Pile.js'
 import {ITableau} from './Tableau.js'
@@ -90,7 +90,32 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): Array<[Move,
     }
   }
 
+  // Finishing the game
+  if (isVictoryGuaranteed(game)) {
+    for (const card of topTableauCards) {
+      const topFoundationCard = topFoundationCards[card.color]
+      if (topFoundationCard && compareRank(card, topFoundationCard) === 1) {
+        moves.push([
+          {
+            move: MoveType.TABLEAU_TO_FOUNDATION,
+            pileIndex: getPileIndex(tableau, card),
+          },
+          card,
+          MoveConfidence.ABSOLUTE,
+        ])
+      }
+    }
+  }
+
   return moves
+}
+
+function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {
+  return (
+    !stock.cards.length &&
+    !waste.cards.length &&
+    tableauPiles.every((pile) => pile.cards.every((card) => card.side === Side.FACE))
+  )
 }
 
 function getStockPlayableCards(game: IGame, mode: HintGeneratorMode): ICard[] {
