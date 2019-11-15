@@ -233,6 +233,10 @@ export function redoNextMove(game: IGame): IGame {
   }
 }
 
+export function isVictory({state: {stock, tableau, waste}}: IGame): boolean {
+  return !stock.cards.length && !waste.cards.length && tableau.piles.every((pile) => !pile.cards.length)
+}
+
 function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
   return {
     ...game,
