@@ -1,5 +1,6 @@
 import {Side} from '../../game/Card.js'
 import {IGame} from '../../game/Game.js'
+import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator.js'
 import {Component, define, keyed, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './Game.js'
 
@@ -17,6 +18,7 @@ interface IProps {
 interface IPrivateProps {
   allcardsvisible: boolean
   newgametableaupilescount: number
+  showhints: boolean
 }
 
 define(
@@ -34,13 +36,16 @@ define(
       'onload',
       'allcardsvisible',
       'newgametableaupilescount',
+      'showhints',
     ] as Array<keyof (IProps & IPrivateProps)>
 
     private allcardsvisible: boolean = false
     private newgametableaupilescount: number = 7
+    private showhints: boolean = false
 
     public render(): any {
-      const {allcardsvisible, currentGameView: game, newgametableaupilescount} = this
+      const {allcardsvisible, currentGameView: game, newgametableaupilescount, showhints} = this
+      const hints = showhints && getMoveHints(this.props.game, HintGeneratorMode.WITH_FULL_STOCK)
 
       return tpl`
         <style>
@@ -57,6 +62,10 @@ define(
         <label>
           <input type="checkbox" .checked="${allcardsvisible}" .onchange="${this.onToggleAllCardsVisible}">
           Show all cards
+        </label>
+        <label>
+          <input type="checkbox" .checked="${showhints}" .onchange="${this.onToggleHints}">
+          Show hints
         </label>
         <button .onclick="${this.props.onreset}">Reset game</button>
         <button .onclick="${this.props.onundo}" .disabled="${!game.history.length}">Undo</button>
@@ -115,6 +124,21 @@ define(
         :
           null
         }
+
+        ${hints ?
+          tpl`
+            <div>
+              Hints:
+              <ul>
+                ${hints.map((hint) => keyed(hint)`
+                  <li><code>${JSON.stringify(hint)}</code></li>
+                `)}
+              </ul>
+            </div>
+          `
+        :
+          null
+        }
       `
     }
 
@@ -125,6 +149,10 @@ define(
 
     private onToggleAllCardsVisible = () => {
       this.allcardsvisible = !this.allcardsvisible
+    }
+
+    private onToggleHints = () => {
+      this.showhints = !this.showhints
     }
 
     private onNewGameTableauPilesCountChange = (event: Event) => {
