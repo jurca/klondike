@@ -48,50 +48,42 @@ export enum MoveType {
   TABLEAU_TO_TABLEAU = 'MoveType.TABLEAU_TO_TABLEAU',
 }
 
-interface IMove {
-  move: MoveType
+interface IMove<M extends MoveType> {
+  move: M
 }
 
-export interface IRecordTimestamp extends IMove {
+export interface IRecordTimestamp {
   logicalTimestamp: number
 }
 
-interface IDrawCardsMove extends IMove {
-  move: MoveType.DRAW_CARDS
+interface IDrawCardsMove extends IMove<MoveType.DRAW_CARDS> {
   drawnCards: number
 }
 
-interface IRedealMove extends IMove {
-  move: MoveType.REDEAL
+interface IRedealMove extends IMove<MoveType.REDEAL> {
 }
 
-interface IWasteToFoundationMove extends IMove {
-  move: MoveType.WASTE_TO_FOUNDATION
+interface IWasteToFoundationMove extends IMove<MoveType.WASTE_TO_FOUNDATION> {
 }
 
-interface IWasteToTableauMove extends IMove {
-  move: MoveType.WASTE_TO_TABLEAU
+interface IWasteToTableauMove extends IMove<MoveType.WASTE_TO_TABLEAU> {
   pileIndex: number
 }
 
-interface ITableauToFoundationMove extends IMove {
-  move: MoveType.TABLEAU_TO_FOUNDATION
+interface ITableauToFoundationMove extends IMove<MoveType.TABLEAU_TO_FOUNDATION> {
   pileIndex: number
 }
 
-interface IRevealTableauCardMove extends IMove {
-  move: MoveType.REVEAL_TABLEAU_CARD
+interface IRevealTableauCardMove extends IMove<MoveType.REVEAL_TABLEAU_CARD> {
   pileIndex: number
 }
 
-interface IFoundationToTableauMove extends IMove {
-  move: MoveType.FOUNDATION_TO_TABLEAU
+interface IFoundationToTableauMove extends IMove<MoveType.FOUNDATION_TO_TABLEAU> {
   color: Color
   pileIndex: number
 }
 
-interface ITableauToTableauMove extends IMove {
-  move: MoveType.TABLEAU_TO_TABLEAU
+interface ITableauToTableauMove extends IMove<MoveType.TABLEAU_TO_TABLEAU> {
   sourcePileIndex: number
   topMovedCardIndex: number
   targetPileIndex: number
