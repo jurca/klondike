@@ -12,12 +12,14 @@ export enum MoveConfidence {
   ABSOLUTE = 'MoveConfidence.ABSOLUTE',
   VERY_HIGH = 'MoveConfidence.VERY_HIGH',
   HIGH = 'MoveConfidence.HIGH',
+  MEDIUM = 'MoveConfidence.MEDIUM',
 }
 
 export const MOVE_CONFIDENCES = [
   MoveConfidence.ABSOLUTE,
   MoveConfidence.VERY_HIGH,
   MoveConfidence.HIGH,
+  MoveConfidence.MEDIUM,
 ]
 
 type MoveHint = [Move, ICard, MoveConfidence]
@@ -38,6 +40,7 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   moves.push(...getMovesWithAbsoluteConfidence(game, stockPlayableCards, topTableauCards, topFoundationCards))
   moves.push(...getMovesWithVeryHighConfidence(game, stockPlayableCards))
   moves.push(...getMovesWithHighConfidence(game, stockPlayableCards))
+  moves.push(...getMovesWithMediumConfidence(game))
 
   return moves
 }
@@ -276,6 +279,42 @@ function getMovesWithHighConfidence(game: IGame, stockPlayableCards: ICard[]): M
           MoveConfidence.HIGH,
         ])
       }
+    }
+  }
+
+  return moves
+}
+
+function getMovesWithMediumConfidence(game: IGame): MoveHint[] {
+  const moves: MoveHint[] = []
+  const {state: {tableau}} = game
+
+  // Moving a 5, 6, 7 or 8 from a tableau pile that (probably) has not been touched yet and will reveal a card to
+  // another tableau pile
+  const candidateCards = tableau.piles
+    .filter((pile) => pile.cards.length > 1)
+    .filter((pile) => pile.cards.filter((card) => card.side === Side.FACE).length === 1)
+    .map((pile) => lastItem(pile.cards))
+    .filter((card) => [Rank.FIVE, Rank.SIX, Rank.SEVEN, Rank.EIGHT].includes(card.rank))
+  for (const candidateCard of candidateCards) {
+    const sourcePileIndex = getPileIndex(tableau, candidateCard)
+    const candidateTargets = tableau.piles.filter((pile) =>
+      pile.cards.length &&
+      lastItem(pile.cards).side === Side.FACE &&
+      !isSameColorInFrenchDeck(candidateCard, lastItem(pile.cards)) &&
+      compareRank(candidateCard, lastItem(pile.cards)) === -1,
+    )
+    for (const candidateTarget of candidateTargets) {
+      moves.push([
+        {
+          move: MoveType.TABLEAU_TO_TABLEAU,
+          sourcePileIndex,
+          targetPileIndex: tableau.piles.indexOf(candidateTarget),
+          topMovedCardIndex: tableau.piles[sourcePileIndex].cards.indexOf(candidateCard),
+        },
+        candidateCard,
+        MoveConfidence.MEDIUM,
+      ])
     }
   }
 
