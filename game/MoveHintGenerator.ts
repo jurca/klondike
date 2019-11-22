@@ -11,9 +11,18 @@ export enum HintGeneratorMode {
 export enum MoveConfidence {
   ABSOLUTE = 'MoveConfidence.ABSOLUTE',
   VERY_HIGH = 'MoveConfidence.VERY_HIGH',
+  HIGH = 'MoveConfidence.HIGH',
 }
 
-export function getMoveHints(game: IGame, mode: HintGeneratorMode): Array<[Move, ICard, MoveConfidence]> {
+export const MOVE_CONFIDENCES = [
+  MoveConfidence.ABSOLUTE,
+  MoveConfidence.VERY_HIGH,
+  MoveConfidence.HIGH,
+]
+
+type MoveHint = [Move, ICard, MoveConfidence]
+
+export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   const desk = game.state
   const stockPlayableCards: ICard[] = getStockPlayableCards(game, mode)
   const {foundation, tableau} = desk
@@ -24,10 +33,11 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): Array<[Move,
     [Color.CLUBS]: lastItemOrNull(foundation[Color.CLUBS].cards),
     [Color.SPADES]: lastItemOrNull(foundation[Color.SPADES].cards),
   }
-  const moves: Array<[Move, ICard, MoveConfidence]> = []
+  const moves: MoveHint[] = []
 
   moves.push(...getMovesWithAbsoluteConfidence(game, stockPlayableCards, topTableauCards, topFoundationCards))
   moves.push(...getMovesWithVeryHighConfidence(game, stockPlayableCards))
+  moves.push(...getMovesWithHighConfidence(game, stockPlayableCards))
 
   return moves
 }
@@ -42,9 +52,9 @@ function getMovesWithAbsoluteConfidence(
     [Color.CLUBS]: null | ICard,
     [Color.SPADES]: null | ICard,
   },
-): Array<[Move, ICard, MoveConfidence]> {
+): MoveHint[] {
   const {tableau} = game.state
-  const moves: Array<[Move, ICard, MoveConfidence]> = []
+  const moves: MoveHint[] = []
 
   // Revealing a card
   const cardToReveal = topTableauCards.find((card) => card.side === Side.BACK)
@@ -132,9 +142,9 @@ function getMovesWithAbsoluteConfidence(
 function getMovesWithVeryHighConfidence(
   game: IGame,
   stockPlayableCards: ICard[],
-): Array<[Move, ICard, MoveConfidence]> {
+): MoveHint[] {
   const {tableau} = game.state
-  const moves: Array<[Move, ICard, MoveConfidence]> = []
+  const moves: MoveHint[] = []
 
   // Tableau to tableau transfer that allows revealing a card, source is not 5, 6, 7 or 8 and target pile is not empty
   const pilesFromLargestToSmallest = tableau.piles.slice().sort(
@@ -210,6 +220,60 @@ function getMovesWithVeryHighConfidence(
             },
           king,
           MoveConfidence.VERY_HIGH,
+        ])
+      }
+    }
+  }
+
+  return moves
+}
+
+function getMovesWithHighConfidence(game: IGame, stockPlayableCards: ICard[]): MoveHint[] {
+  const moves: MoveHint[] = []
+  const {state: {tableau}} = game
+
+  // King to an empty tableau pile transfer that allows moving the largest built sequence to the king's pile
+  const availableKings = tableau.piles
+    // if the king is the only card in the pile, there is no point in making the transfer
+    .filter((pile) => pile.cards.length > 1)
+    .map((pile) => pile.cards.find((card) => card.rank === Rank.KING && card.side === Side.FACE))
+    .filter((cardOrUndefined) => !!cardOrUndefined).map((card) => card as ICard)
+    // tableau cards are preferred, so we'll put the stock cards at the end of the list
+    .concat(stockPlayableCards.filter((card) => card.rank === Rank.KING))
+  const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
+  if (availableKings.length && emptyPileIndex > -1) {
+    for (const king of availableKings) {
+      const kingSequenceEnd = stockPlayableCards.includes(king) ?
+        king
+      :
+        lastItem(tableau.piles[getPileIndex(tableau, king)].cards)
+      const largestSequences = tableau.piles
+        .map((pile) => pile.cards.filter((card) => card.side === Side.FACE))
+        .filter((pileCards) => pileCards.length)
+        .map((pileCards, _, piles) => [pileCards, Math.max(...piles.map((pile) => pile.length))] as [ICard[], number])
+        .filter(([pileCards, largestSequenceLength]) => pileCards.length === largestSequenceLength)
+        .map(([pileCards]) => pileCards)
+      const isBeneficialTransferToKingSequencePossible = largestSequences.find((cardSequence) =>
+        !isSameColorInFrenchDeck(kingSequenceEnd, cardSequence[0]) &&
+        compareRank(kingSequenceEnd, cardSequence[0]) === 1,
+      )
+      if (isBeneficialTransferToKingSequencePossible) {
+        const sourcePileIndex = getPileIndex(tableau, king)
+        moves.push([
+          stockPlayableCards.includes(king) ?
+            {
+              move: MoveType.WASTE_TO_TABLEAU,
+              pileIndex: emptyPileIndex,
+            }
+          :
+            {
+              move: MoveType.TABLEAU_TO_TABLEAU,
+              sourcePileIndex,
+              targetPileIndex: emptyPileIndex,
+              topMovedCardIndex: tableau.piles[sourcePileIndex].cards.indexOf(king),
+            },
+          king,
+          MoveConfidence.HIGH,
         ])
       }
     }
