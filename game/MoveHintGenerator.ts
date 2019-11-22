@@ -27,7 +27,7 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): Array<[Move,
   const moves: Array<[Move, ICard, MoveConfidence]> = []
 
   moves.push(...getMovesWithAbsoluteConfidence(game, stockPlayableCards, topTableauCards, topFoundationCards))
-  moves.push(...getMovesWithVeryHighConfidence(game))
+  moves.push(...getMovesWithVeryHighConfidence(game, stockPlayableCards))
 
   return moves
 }
@@ -131,6 +131,7 @@ function getMovesWithAbsoluteConfidence(
 
 function getMovesWithVeryHighConfidence(
   game: IGame,
+  stockPlayableCards: ICard[],
 ): Array<[Move, ICard, MoveConfidence]> {
   const {tableau} = game.state
   const moves: Array<[Move, ICard, MoveConfidence]> = []
@@ -165,6 +166,52 @@ function getMovesWithVeryHighConfidence(
         sourceCard,
         MoveConfidence.VERY_HIGH,
       ])
+    }
+  }
+
+  // King to empty tableau pile transfer that allows transfer to the king's new pile that will reveal a new card
+  const availableKings = tableau.piles
+      // if the king is the only card in the pile, there is no point in making the transfer
+      .filter((pile) => pile.cards.length > 1)
+      .map((pile) => pile.cards.find((card) => card.rank === Rank.KING && card.side === Side.FACE))
+      .filter((cardOrUndefined) => !!cardOrUndefined).map((card) => card as ICard)
+      // tableau cards are preferred, so we'll put the stock cards at the end of the list
+      .concat(stockPlayableCards.filter((card) => card.rank === Rank.KING))
+  const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
+  if (availableKings.length && emptyPileIndex > -1) {
+    for (const king of availableKings) {
+      const kingSequenceEnd = stockPlayableCards.includes(king) ?
+        king
+      :
+        lastItem(tableau.piles[getPileIndex(tableau, king)].cards)
+      const isBeneficialTransferToKingSequencePossible = tableau.piles.find((pile) => {
+        const visibleCards = pile.cards.filter((card) => card.side === Side.FACE)
+        return (
+          pile.cards.length > visibleCards.length &&
+          visibleCards.length &&
+          !isSameColorInFrenchDeck(kingSequenceEnd, visibleCards[0]) &&
+          compareRank(kingSequenceEnd, visibleCards[0]) === 1
+        )
+      })
+      if (isBeneficialTransferToKingSequencePossible) {
+        const sourcePileIndex = getPileIndex(tableau, king)
+        moves.push([
+          stockPlayableCards.includes(king) ?
+            {
+              move: MoveType.WASTE_TO_TABLEAU,
+              pileIndex: emptyPileIndex,
+            }
+          :
+            {
+              move: MoveType.TABLEAU_TO_TABLEAU,
+              sourcePileIndex,
+              targetPileIndex: emptyPileIndex,
+              topMovedCardIndex: tableau.piles[sourcePileIndex].cards.indexOf(king),
+            },
+          king,
+          MoveConfidence.VERY_HIGH,
+        ])
+      }
     }
   }
 
