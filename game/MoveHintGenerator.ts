@@ -181,12 +181,12 @@ function getMovesWithVeryHighConfidence(
 
   // King to empty tableau pile transfer that allows transfer to the king's new pile that will reveal a new card
   const availableKings = tableau.piles
-      // if the king is the only card in the pile, there is no point in making the transfer
-      .filter((pile) => pile.cards.length > 1)
-      .map((pile) => pile.cards.find((card) => card.rank === Rank.KING && card.side === Side.FACE))
-      .filter((cardOrUndefined) => !!cardOrUndefined).map((card) => card as ICard)
-      // tableau cards are preferred, so we'll put the stock cards at the end of the list
-      .concat(stockPlayableCards.filter((card) => card.rank === Rank.KING))
+    // if the king is the top card in the pile, there is no point in making the transfer
+    .filter((pile) => pile.cards.length > 1 && (pile.cards[0].side === Side.BACK || pile.cards[0].rank !== Rank.KING))
+    .map((pile) => pile.cards.find((card) => card.rank === Rank.KING && card.side === Side.FACE))
+    .filter((cardOrUndefined) => !!cardOrUndefined).map((card) => card as ICard)
+    // tableau cards are preferred, so we'll put the stock cards at the end of the list
+    .concat(stockPlayableCards.filter((card) => card.rank === Rank.KING))
   const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
   if (availableKings.length && emptyPileIndex > -1) {
     for (const king of availableKings) {
@@ -234,8 +234,8 @@ function getMovesWithHighConfidence(game: IGame, stockPlayableCards: ICard[]): M
 
   // King to an empty tableau pile transfer that allows moving the largest built sequence to the king's pile
   const availableKings = tableau.piles
-    // if the king is the only card in the pile, there is no point in making the transfer
-    .filter((pile) => pile.cards.length > 1)
+    // if the king is the top card in the pile, there is no point in making the transfer
+    .filter((pile) => pile.cards.length > 1 && (pile.cards[0].side === Side.BACK || pile.cards[0].rank !== Rank.KING))
     .map((pile) => pile.cards.find((card) => card.rank === Rank.KING && card.side === Side.FACE))
     .filter((cardOrUndefined) => !!cardOrUndefined).map((card) => card as ICard)
     // tableau cards are preferred, so we'll put the stock cards at the end of the list
