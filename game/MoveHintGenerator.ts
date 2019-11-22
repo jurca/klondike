@@ -13,6 +13,7 @@ export enum MoveConfidence {
   VERY_HIGH = 'MoveConfidence.VERY_HIGH',
   HIGH = 'MoveConfidence.HIGH',
   MEDIUM = 'MoveConfidence.MEDIUM',
+  LOW = 'MoveConfidence.LOW',
 }
 
 export const MOVE_CONFIDENCES = [
@@ -20,6 +21,7 @@ export const MOVE_CONFIDENCES = [
   MoveConfidence.VERY_HIGH,
   MoveConfidence.HIGH,
   MoveConfidence.MEDIUM,
+  MoveConfidence.LOW,
 ]
 
 type MoveHint = [Move, ICard, MoveConfidence]
@@ -41,6 +43,7 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   moves.push(...getMovesWithVeryHighConfidence(game, stockPlayableCards))
   moves.push(...getMovesWithHighConfidence(game, stockPlayableCards))
   moves.push(...getMovesWithMediumConfidence(game))
+  moves.push(...getMovesWithLowConfidence(game))
 
   return moves
 }
@@ -315,6 +318,45 @@ function getMovesWithMediumConfidence(game: IGame): MoveHint[] {
         candidateCard,
         MoveConfidence.MEDIUM,
       ])
+    }
+  }
+
+  return moves
+}
+
+function getMovesWithLowConfidence(game: IGame): MoveHint[] {
+  const moves: MoveHint[] = []
+  const {state: {tableau}} = game
+
+  // Making a transfer from tableau pile to a non-empty tableau pile that will reveal a card
+  const pilesOfVisibleCards = tableau.piles.map(
+    (pile) => pile.cards.filter((card) => card.side === Side.FACE),
+  ).filter(
+    (pile) => pile.length,
+  )
+  const candidateSourcePiles = pilesOfVisibleCards.filter(
+    (pile) => tableau.piles[getPileIndex(tableau, pile[0])].cards[0].side === Side.BACK,
+  )
+  for (const pile of candidateSourcePiles) {
+    const topSourceCard = pile[0]
+    for (const otherPile of pilesOfVisibleCards) {
+      const bottomTargetCard = lastItem(otherPile)
+      if (
+        !isSameColorInFrenchDeck(topSourceCard, bottomTargetCard) &&
+        compareRank(topSourceCard, bottomTargetCard) === -1
+      ) {
+        const sourcePileIndex = getPileIndex(tableau, topSourceCard)
+        moves.push([
+          {
+            move: MoveType.TABLEAU_TO_TABLEAU,
+            sourcePileIndex,
+            targetPileIndex: getPileIndex(tableau, bottomTargetCard),
+            topMovedCardIndex: tableau.piles[sourcePileIndex].cards.indexOf(topSourceCard),
+          },
+          topSourceCard,
+          MoveConfidence.LOW,
+        ])
+      }
     }
   }
 
