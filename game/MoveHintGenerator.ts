@@ -360,6 +360,38 @@ function getMovesWithLowConfidence(game: IGame): MoveHint[] {
     }
   }
 
+  // Tableau to tableau transfers that leaves the source pile empty, but there is a king that can be transferred there
+  const pilesOfOnlyVisibleCards = tableau.piles.filter(
+    (pile) => pile.cards.length && pile.cards.every((card) => card.side === Side.FACE),
+  )
+  const pilesWithKing = tableau.piles.filter(
+    (pile) => pile.cards.some((card) => card.side === Side.FACE && card.rank === Rank.KING),
+  )
+  if (pilesWithKing.length) {
+    for (const sourcePile of pilesOfOnlyVisibleCards) {
+      const topSourceCard = sourcePile.cards[0]
+      for (const otherPile of pilesOfVisibleCards) {
+        const bottomTargetCard = lastItem(otherPile)
+        if (
+          !isSameColorInFrenchDeck(topSourceCard, bottomTargetCard) &&
+          compareRank(topSourceCard, bottomTargetCard) === -1
+        ) {
+          const sourcePileIndex = getPileIndex(tableau, topSourceCard)
+          moves.push([
+            {
+              move: MoveType.TABLEAU_TO_TABLEAU,
+              sourcePileIndex,
+              targetPileIndex: getPileIndex(tableau, bottomTargetCard),
+              topMovedCardIndex: tableau.piles[sourcePileIndex].cards.indexOf(topSourceCard),
+            },
+            topSourceCard,
+            MoveConfidence.LOW,
+          ])
+        }
+      }
+    }
+  }
+
   return moves
 }
 
