@@ -60,17 +60,6 @@ function getMovesWithAbsoluteConfidence(
   }
 
   // Ace to foundation
-  for (const card of stockPlayableCards) {
-    if (card.rank === Rank.ACE) {
-      moves.push([
-        {
-          move: MoveType.WASTE_TO_FOUNDATION,
-        },
-        card,
-        MoveConfidence.ABSOLUTE,
-      ])
-    }
-  }
   for (const card of topTableauCards) {
     if (card.side === Side.FACE && card.rank === Rank.ACE) {
       moves.push([
@@ -83,10 +72,8 @@ function getMovesWithAbsoluteConfidence(
       ])
     }
   }
-
-  // Two to foundation
   for (const card of stockPlayableCards) {
-    if (card.rank === Rank.TWO && topFoundationCards[card.color]?.rank === Rank.ACE) {
+    if (card.rank === Rank.ACE) {
       moves.push([
         {
           move: MoveType.WASTE_TO_FOUNDATION,
@@ -96,12 +83,25 @@ function getMovesWithAbsoluteConfidence(
       ])
     }
   }
+
+  // Two to foundation
   for (const card of topTableauCards) {
     if (card.side === Side.FACE && card.rank === Rank.TWO && topFoundationCards[card.color]?.rank === Rank.ACE) {
       moves.push([
         {
           move: MoveType.TABLEAU_TO_FOUNDATION,
           pileIndex: getPileIndex(tableau, card),
+        },
+        card,
+        MoveConfidence.ABSOLUTE,
+      ])
+    }
+  }
+  for (const card of stockPlayableCards) {
+    if (card.rank === Rank.TWO && topFoundationCards[card.color]?.rank === Rank.ACE) {
+      moves.push([
+        {
+          move: MoveType.WASTE_TO_FOUNDATION,
         },
         card,
         MoveConfidence.ABSOLUTE,
