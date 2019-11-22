@@ -14,6 +14,7 @@ export enum MoveConfidence {
   HIGH = 'MoveConfidence.HIGH',
   MEDIUM = 'MoveConfidence.MEDIUM',
   LOW = 'MoveConfidence.LOW',
+  VERY_LOW = 'MoveConfidence.VERY_LOW',
 }
 
 export const MOVE_CONFIDENCES = [
@@ -22,6 +23,7 @@ export const MOVE_CONFIDENCES = [
   MoveConfidence.HIGH,
   MoveConfidence.MEDIUM,
   MoveConfidence.LOW,
+  MoveConfidence.VERY_LOW,
 ]
 
 type MoveHint = [Move, ICard, MoveConfidence]
@@ -44,6 +46,7 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   moves.push(...getMovesWithHighConfidence(game, stockPlayableCards))
   moves.push(...getMovesWithMediumConfidence(game))
   moves.push(...getMovesWithLowConfidence(game))
+  moves.push(...getMovesWithVeryLowConfidence(game))
 
   return moves
 }
@@ -394,6 +397,63 @@ function getMovesWithLowConfidence(game: IGame): MoveHint[] {
 
   return moves
 }
+
+function getMovesWithVeryLowConfidence(game: IGame): MoveHint[] {
+  const moves: MoveHint[] = []
+  const {state: {tableau}} = game
+
+  // Stock to tableau
+  // TODO
+
+  // Stock to foundation
+  // TODO
+
+  // Foundation to tableau transfer that allows revealing a card by tableau to tableau transfer
+  // TODO
+
+  // Foundation to tableau transfer that allows a stock to tableau transfer
+  // TODO
+
+  // King to empty pile transfer that reveals a new card, or allows a transfer that will reveal a card
+  // TODO
+
+  // Tableau to tableau transfers that leaves the source pile empty
+  const pilesOfOnlyVisibleCards = tableau.piles.filter(
+    (pile) => pile.cards.length && pile.cards.every((card) => card.side === Side.FACE),
+  )
+  const pilesWithVisibleCards = tableau.piles.filter(
+    (pile) => pile.cards.some((card) => card.side === Side.FACE),
+  )
+  for (const sourcePile of pilesOfOnlyVisibleCards) {
+    const topSourceCard = sourcePile.cards[0]
+    for (const otherPile of pilesWithVisibleCards) {
+      const bottomTargetCard = lastItem(otherPile.cards)
+      if (
+        !isSameColorInFrenchDeck(topSourceCard, bottomTargetCard) &&
+        compareRank(topSourceCard, bottomTargetCard) === -1
+      ) {
+        const sourcePileIndex = getPileIndex(tableau, topSourceCard)
+        moves.push([
+          {
+            move: MoveType.TABLEAU_TO_TABLEAU,
+            sourcePileIndex,
+            targetPileIndex: getPileIndex(tableau, bottomTargetCard),
+            topMovedCardIndex: tableau.piles[sourcePileIndex].cards.indexOf(topSourceCard),
+          },
+          topSourceCard,
+          MoveConfidence.VERY_LOW,
+        ])
+      }
+    }
+  }
+
+  return moves
+}
+
+// TODO: miniscule confidence moves:
+// Tableau to foundation transfer that allows a transfer revealing card or reveal a card
+// Tableau to foundation transfer that that allows a waste to tableau or foundation transfer
+// Stock to empty pile transfer, prefer higher-ranking cards
 
 function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {
   return (
