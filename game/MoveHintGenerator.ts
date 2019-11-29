@@ -27,6 +27,12 @@ export const MOVE_CONFIDENCES = [
 ]
 
 type MoveHint = [Move, ICard, MoveConfidence]
+interface IFoundationTop {
+  [Color.DIAMONDS]: null | ICard
+  [Color.HEARTHS]: null | ICard
+  [Color.CLUBS]: null | ICard
+  [Color.SPADES]: null | ICard
+}
 
 export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   const desk = game.state
@@ -46,7 +52,7 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   moves.push(...getMovesWithHighConfidence(game, stockPlayableCards))
   moves.push(...getMovesWithMediumConfidence(game))
   moves.push(...getMovesWithLowConfidence(game))
-  moves.push(...getMovesWithVeryLowConfidence(game))
+  moves.push(...getMovesWithVeryLowConfidence(game, stockPlayableCards, topFoundationCards))
 
   return moves
 }
@@ -398,24 +404,102 @@ function getMovesWithLowConfidence(game: IGame): MoveHint[] {
   return moves
 }
 
-function getMovesWithVeryLowConfidence(game: IGame): MoveHint[] {
+function getMovesWithVeryLowConfidence(
+  game: IGame,
+  stockPlayableCards: ICard[],
+  topFoundationCards: IFoundationTop,
+): MoveHint[] {
   const moves: MoveHint[] = []
   const {state: {tableau}} = game
-
-  // Stock to tableau
-  // TODO
-
-  // Stock to foundation
-  // TODO
+  const filteredTopFoundationCards: ICard[] = Object.values(topFoundationCards).filter((card) => card)
 
   // Foundation to tableau transfer that allows revealing a card by tableau to tableau transfer
-  // TODO
+  for (const foundationCard of filteredTopFoundationCards) {
+    const isTherePileTransferableToCard = tableau.piles.some((pile) => {
+      const highestVisibleCard = pile.cards.find((card) => card.side === Side.FACE)
+      return (
+        highestVisibleCard &&
+        pile.cards[0] !== highestVisibleCard &&
+        !isSameColorInFrenchDeck(foundationCard, highestVisibleCard) &&
+        compareRank(foundationCard, highestVisibleCard) === 1
+      )
+    })
+    if (!isTherePileTransferableToCard) {
+      continue
+    }
+
+    const targetPileIndex = tableau.piles.findIndex((pile) => {
+      const lastCard = lastItemOrNull(pile.cards)
+      return (
+        lastCard &&
+        lastCard.side === Side.FACE &&
+        !isSameColorInFrenchDeck(foundationCard, lastCard) &&
+        compareRank(foundationCard, lastCard) === -1
+      )
+    })
+    if (targetPileIndex > -1) {
+      moves.push([
+        {
+          color: foundationCard.color,
+          move: MoveType.FOUNDATION_TO_TABLEAU,
+          pileIndex: targetPileIndex,
+        },
+        foundationCard,
+        MoveConfidence.VERY_LOW,
+      ])
+    }
+  }
 
   // Foundation to tableau transfer that allows a stock to tableau transfer
-  // TODO
+  for (const foundationCard of filteredTopFoundationCards) {
+    const isThereMatchingStockCard = stockPlayableCards.some((card) =>
+      !isSameColorInFrenchDeck(foundationCard, card) &&
+      compareRank(foundationCard, card) === 1,
+    )
+    if (!isThereMatchingStockCard) {
+      continue
+    }
 
-  // King to empty pile transfer that reveals a new card, or allows a transfer that will reveal a card
-  // TODO
+    const targetPileIndex = tableau.piles.findIndex((pile) => {
+      const lastCard = lastItemOrNull(pile.cards)
+      return (
+        lastCard &&
+        lastCard.side === Side.FACE &&
+        !isSameColorInFrenchDeck(foundationCard, lastCard) &&
+        compareRank(foundationCard, lastCard) === -1
+      )
+    })
+    if (targetPileIndex > -1) {
+      moves.push([
+        {
+          color: foundationCard.color,
+          move: MoveType.FOUNDATION_TO_TABLEAU,
+          pileIndex: targetPileIndex,
+        },
+        foundationCard,
+        MoveConfidence.VERY_LOW,
+      ])
+    }
+  }
+
+  // King to empty pile transfer that reveals a new card
+  for (const pile of tableau.piles) {
+    const kingIndex = pile.cards.findIndex((card) => card.side === Side.FACE && card.rank === Rank.KING)
+    const emptyPileIndex = tableau.piles.findIndex((candidatePile) => !candidatePile.cards.length)
+    const king = pile.cards[kingIndex]
+    if (king && kingIndex > 0 && pile.cards[kingIndex - 1].side === Side.BACK && emptyPileIndex > -1) {
+      moves.push([
+        {
+          move: MoveType.TABLEAU_TO_TABLEAU,
+          sourcePileIndex: getPileIndex(tableau, king),
+          targetPileIndex: emptyPileIndex,
+          topMovedCardIndex: kingIndex,
+        },
+        king,
+        MoveConfidence.VERY_LOW,
+      ])
+    }
+  }
 
   // Tableau to tableau transfers that leaves the source pile empty
   const pilesOfOnlyVisibleCards = tableau.piles.filter(
@@ -441,6 +525,43 @@ function getMovesWithVeryLowConfidence(game: IGame): MoveHint[] {
             topMovedCardIndex: tableau.piles[sourcePileIndex].cards.indexOf(topSourceCard),
           },
           topSourceCard,
+          MoveConfidence.VERY_LOW,
+        ])
+      }
+    }
+  }
+
+  // Stock to tableau
+  for (const card of stockPlayableCards) {
+    for (const pile of tableau.piles) {
+      const lastCard = lastItemOrNull(pile.cards)
+      if (
+        lastCard &&
+        lastCard.side === Side.FACE &&
+        !isSameColorInFrenchDeck(card, lastCard) &&
+        compareRank(card, lastCard) === -1
+      ) {
+        moves.push([
+          {
+            move: MoveType.WASTE_TO_TABLEAU,
+            pileIndex: getPileIndex(tableau, lastCard),
+          },
+          card,
+          MoveConfidence.VERY_LOW,
+        ])
+      }
+    }
+  }
+
+  // Stock to foundation
+  for (const stockCard of stockPlayableCards) {
+    for (const foundationCard of filteredTopFoundationCards) {
+      if (stockCard.color === foundationCard.color && compareRank(stockCard, foundationCard) === 1) {
+        moves.push([
+          {
+            move: MoveType.WASTE_TO_FOUNDATION,
+          },
+          stockCard,
           MoveConfidence.VERY_LOW,
         ])
       }
