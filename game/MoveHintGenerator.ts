@@ -25,7 +25,7 @@ export enum MoveConfidence {
   VERY_LOW = 'MoveConfidence.VERY_LOW',
 }
 
-export const MOVE_CONFIDENCES = [
+export const MOVE_CONFIDENCES: ReadonlyArray<MoveConfidence> = [
   MoveConfidence.ABSOLUTE,
   MoveConfidence.VERY_HIGH,
   MoveConfidence.HIGH,
