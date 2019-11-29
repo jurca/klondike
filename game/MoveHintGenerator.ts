@@ -646,6 +646,11 @@ function getMovesWithMinisculeConfidence(
       continue
     }
 
+    const foundationCard = topFoundationCards[lastCard.color]
+    if (!foundationCard || compareRank(lastCard, foundationCard) !== 1) {
+      continue
+    }
+
     // Will the transfer allow a waste to foundation transfer?
     for (const stockCard of stockPlayableCards) {
       if (stockCard.color === lastCard.color && compareRank(lastCard, stockCard) === -1) {
@@ -665,16 +670,18 @@ function getMovesWithMinisculeConfidence(
       continue
     }
     const nextToLastCard = pile.cards.slice(-2)[0]
-    for (const stockCard of stockPlayableCards) {
-      if (!isSameColorInFrenchDeck(stockCard, nextToLastCard) && compareRank(nextToLastCard, stockCard) === 1) {
-        moves.push([
-          {
-            move: MoveType.TABLEAU_TO_FOUNDATION,
-            pileIndex: getPileIndex(tableau, lastCard),
-          },
-          lastCard,
-          MoveConfidence.MINISCULE,
-        ])
+    if (nextToLastCard.side === Side.FACE) {
+      for (const stockCard of stockPlayableCards) {
+        if (!isSameColorInFrenchDeck(stockCard, nextToLastCard) && compareRank(nextToLastCard, stockCard) === 1) {
+          moves.push([
+            {
+              move: MoveType.TABLEAU_TO_FOUNDATION,
+              pileIndex: getPileIndex(tableau, lastCard),
+            },
+            lastCard,
+            MoveConfidence.MINISCULE,
+          ])
+        }
       }
     }
   }
