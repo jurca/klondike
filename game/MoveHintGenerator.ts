@@ -66,7 +66,33 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   moves.push(...getMovesWithVeryLowConfidence(game, stockPlayableCards, topFoundationCards))
   moves.push(...getMovesWithMinisculeConfidence(game, stockPlayableCards, topFoundationCards))
 
-  return moves
+  return filterDuplicateHints(moves)
+}
+
+function filterDuplicateHints(hints: MoveHint[]): MoveHint[] {
+  const filteredHints: MoveHint[] = []
+
+  for (const hint of hints) {
+    const isHintAlreadyPresent = filteredHints.some((otherHint) =>
+      areObjectsShallowlyEqual(hint[0], otherHint[0]) &&
+      hint[1] === otherHint[1],
+    )
+    if (!isHintAlreadyPresent) {
+      filteredHints.push(hint)
+    }
+  }
+
+  return filteredHints
+
+  function areObjectsShallowlyEqual<T>(object1: T, object2: T): boolean {
+    const keys1 = Object.keys(object1) as Array<keyof T>
+    const keys2 = Object.keys(object2)
+    if (keys1.length !== keys2.length) {
+      return false
+    }
+
+    return keys1.every((key) => object1[key] === object2[key])
+  }
 }
 
 function getMovesWithAbsoluteConfidence(
