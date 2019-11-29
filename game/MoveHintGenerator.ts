@@ -23,6 +23,7 @@ export enum MoveConfidence {
   MEDIUM = 'MoveConfidence.MEDIUM',
   LOW = 'MoveConfidence.LOW',
   VERY_LOW = 'MoveConfidence.VERY_LOW',
+  MINISCULE = 'MoveConfidence.MINISCULE',
 }
 
 export const MOVE_CONFIDENCES: ReadonlyArray<MoveConfidence> = [
@@ -32,9 +33,11 @@ export const MOVE_CONFIDENCES: ReadonlyArray<MoveConfidence> = [
   MoveConfidence.MEDIUM,
   MoveConfidence.LOW,
   MoveConfidence.VERY_LOW,
+  MoveConfidence.MINISCULE,
 ]
 
 type MoveHint = [Move, ICard, MoveConfidence]
+
 interface IFoundationTop {
   [Color.DIAMONDS]: null | ICard
   [Color.HEARTHS]: null | ICard
@@ -61,6 +64,7 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   moves.push(...getMovesWithMediumConfidence(game))
   moves.push(...getMovesWithLowConfidence(game))
   moves.push(...getMovesWithVeryLowConfidence(game, stockPlayableCards, topFoundationCards))
+  moves.push(...getMovesWithMinisculeConfidence(game, stockPlayableCards, topFoundationCards))
 
   return moves
 }
@@ -579,10 +583,119 @@ function getMovesWithVeryLowConfidence(
   return moves
 }
 
-// TODO: miniscule confidence moves:
-// Tableau to foundation transfer that allows a transfer revealing card or reveal a card
-// Tableau to foundation transfer that that allows a waste to tableau or foundation transfer
-// Stock to empty pile transfer, prefer higher-ranking cards
+function getMovesWithMinisculeConfidence(
+  game: IGame,
+  stockPlayableCards: ICard[],
+  topFoundationCards: IFoundationTop,
+): MoveHint[] {
+  const moves: MoveHint[] = []
+  const {state: {tableau}} = game
+
+  // Tableau to foundation transfer that allows a transfer revealing card or reveal a card
+  for (const pile of tableau.piles) {
+    const lastCard = lastItemOrNull(pile.cards)
+    if (!lastCard || lastCard.side === Side.BACK) {
+      continue
+    }
+
+    const foundationCard = topFoundationCards[lastCard.color]
+    if (!foundationCard || compareRank(lastCard, foundationCard) !== 1) {
+      continue
+    }
+
+    const nextToLastCard = pile.cards.slice(-2)[0]
+
+    // Will the transfer reveal a card?
+    if (pile.cards.length > 1 && nextToLastCard.side === Side.BACK) {
+      moves.push([
+        {
+          move: MoveType.TABLEAU_TO_FOUNDATION,
+          pileIndex: getPileIndex(tableau, lastCard),
+        },
+        lastCard,
+        MoveConfidence.MINISCULE,
+      ])
+      continue
+    }
+
+    // Will the transfer allow a transfer that will reveal a card?
+    for (const otherPile of tableau.piles) {
+      const highestVisibleCard = otherPile.cards.find((card) => card.side === Side.FACE)
+      if (
+        highestVisibleCard &&
+        otherPile.cards[0] !== highestVisibleCard &&
+        !isSameColorInFrenchDeck(nextToLastCard, highestVisibleCard) &&
+        compareRank(nextToLastCard, highestVisibleCard) === 1
+      ) {
+        moves.push([
+          {
+            move: MoveType.TABLEAU_TO_FOUNDATION,
+            pileIndex: getPileIndex(tableau, lastCard),
+          },
+          lastCard,
+          MoveConfidence.MINISCULE,
+        ])
+      }
+    }
+  }
+
+  // Tableau to foundation transfer that that allows a waste to tableau or foundation transfer
+  for (const pile of tableau.piles) {
+    const lastCard = lastItemOrNull(pile.cards)
+    if (!lastCard || lastCard.side === Side.BACK) {
+      continue
+    }
+
+    // Will the transfer allow a waste to foundation transfer?
+    for (const stockCard of stockPlayableCards) {
+      if (stockCard.color === lastCard.color && compareRank(lastCard, stockCard) === -1) {
+        moves.push([
+          {
+            move: MoveType.TABLEAU_TO_FOUNDATION,
+            pileIndex: getPileIndex(tableau, lastCard),
+          },
+          lastCard,
+          MoveConfidence.MINISCULE,
+        ])
+      }
+    }
+
+    // Will the transfer allow a waste to tableau transfer?
+    if (pile.cards.length <= 1) {
+      continue
+    }
+    const nextToLastCard = pile.cards.slice(-2)[0]
+    for (const stockCard of stockPlayableCards) {
+      if (!isSameColorInFrenchDeck(stockCard, nextToLastCard) && compareRank(nextToLastCard, stockCard) === 1) {
+        moves.push([
+          {
+            move: MoveType.TABLEAU_TO_FOUNDATION,
+            pileIndex: getPileIndex(tableau, lastCard),
+          },
+          lastCard,
+          MoveConfidence.MINISCULE,
+        ])
+      }
+    }
+  }
+
+  // Stock to empty pile transfer, prefer higher-ranking cards
+  const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
+  if (emptyPileIndex > -1) {
+    for (const card of stockPlayableCards.slice().sort((card1, card2) => compareRank(card2, card1))) {
+      moves.push([
+        {
+          move: MoveType.WASTE_TO_TABLEAU,
+          pileIndex: emptyPileIndex,
+        },
+        card,
+        MoveConfidence.MINISCULE,
+      ])
+    }
+  }
+
+  return moves
+}
 
 function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {
   return (
