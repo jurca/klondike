@@ -7,7 +7,7 @@ export enum Color {
   CLUBS = 'Color.CLUBS', // or "clovers"
 }
 
-export const RED_COLORS = [
+export const RED_COLORS: ReadonlyArray<Color> = [
   Color.HEARTHS,
   Color.DIAMONDS,
 ]
@@ -28,7 +28,7 @@ export enum Rank {
   KING = 'Rank.KING',
 }
 
-export const RANK_SEQUENCE = [
+export const RANK_SEQUENCE: ReadonlyArray<Rank> = [
   Rank.ACE,
   Rank.TWO,
   Rank.THREE,
