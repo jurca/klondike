@@ -727,6 +727,32 @@ function getMovesWithMinisculeConfidence(
     }
   }
 
+  // Tableau to empty pile transfer that allows revealing a card
+  if (emptyPileIndex > -1) {
+    const sourcePiles = tableau.piles.filter(
+      (pile) => pile.cards.length && pile.cards[0].side === Side.BACK && lastItem(pile.cards).side === Side.FACE,
+    ).sort(
+      (pile1, pile2) => (
+        pile2.cards.filter((card) => card.side === Side.FACE).length -
+        pile1.cards.filter((card) => card.side === Side.FACE).length
+      ),
+    )
+
+    for (const pile of sourcePiles) {
+      const topCardIndex = pile.cards.findIndex((card) => card.side === Side.FACE)
+      moves.push([
+        {
+          move: MoveType.TABLEAU_TO_TABLEAU,
+          sourcePileIndex: getPileIndex(tableau, pile.cards[topCardIndex]),
+          targetPileIndex: emptyPileIndex,
+          topMovedCardIndex: topCardIndex,
+        },
+        pile.cards[topCardIndex],
+        MoveConfidence.MINISCULE,
+      ])
+    }
+  }
+
   return moves
 }
 
