@@ -19,7 +19,7 @@ const BOT_OPTIONS = {
 
 const FINISHING_MOVES_INTERVAL = 200 // milliseconds
 const BOT_GAMEPLAY_INTERVAL = 50 // milliseconds
-const MAX_NEW_GAME_CREATION_ATTEMPTS = 2
+const MAX_NEW_GAME_CREATION_ATTEMPTS = 100
 
 addEventListener('DOMContentLoaded', () => {
   let currentGame = createNewGame(DEFAULT_RULES)
