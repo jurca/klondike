@@ -13,6 +13,7 @@ interface IProps {
   onredo: () => void
   onsave: () => void
   onload: () => void
+  onbotmove: () => void
 }
 
 interface IPrivateProps {
@@ -34,6 +35,7 @@ define(
       'onredo',
       'onsave',
       'onload',
+      'onbotmove',
       'allcardsvisible',
       'newgametableaupilescount',
       'showhints',
@@ -72,6 +74,7 @@ define(
         <button .onclick="${this.props.onredo}" .disabled="${!game.future.length}">Redo</button>
         <button .onclick="${this.props.onsave}">Save</button>
         <button .onclick="${this.props.onload}">Load</button>
+        <button .onclick="${this.props.onbotmove}">Automatic move</button>
 
         <p>
           New game options:

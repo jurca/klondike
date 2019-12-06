@@ -36,7 +36,7 @@ export const MOVE_CONFIDENCES: ReadonlyArray<MoveConfidence> = [
   MoveConfidence.MINISCULE,
 ]
 
-type MoveHint = [Move, ICard, MoveConfidence]
+export type MoveHint = [Move, ICard, MoveConfidence]
 
 interface IFoundationTop {
   [Color.DIAMONDS]: null | ICard

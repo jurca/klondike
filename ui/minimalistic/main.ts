@@ -1,4 +1,6 @@
+import {makeMove, defaultStateRankingHeuristic} from '../../game/Bot.js'
 import {createNewGame, executeMove, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
+import {MoveConfidence} from '../../game/MoveHintGenerator.js'
 import {deserialize, serialize} from '../../game/Serializer.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './App.js'
@@ -6,6 +8,13 @@ import './App.js'
 const DEFAULT_RULES = {
   drawnCards: 3,
   tableauPiles: 7,
+}
+
+const BOT_OPTIONS = {
+  lookAheadMoves: 3,
+  maxConsideredConfidenceLevels: 4,
+  minAutoAcceptConfidence: MoveConfidence.VERY_HIGH,
+  stateRankingHeuristic: defaultStateRankingHeuristic,
 }
 
 addEventListener('DOMContentLoaded', () => {
@@ -49,6 +58,11 @@ addEventListener('DOMContentLoaded', () => {
     renderUI()
   }
 
+  function onBotMove() {
+    currentGame = makeMove(currentGame, BOT_OPTIONS)
+    renderUI()
+  }
+
   function renderUI() {
     render(
       document.getElementById('app')!,
@@ -62,6 +76,7 @@ addEventListener('DOMContentLoaded', () => {
           .onredo="${onRedo}"
           .onsave="${onSave}"
           .onload="${onLoad}"
+          .onbotmove="${onBotMove}"
         >
         </klondike-app>
       `,
