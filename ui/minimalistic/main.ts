@@ -1,9 +1,9 @@
-import {defaultStateRankingHeuristic, makeMove} from '../../game/Bot.js'
-import {createNewGame, executeMove, isVictory, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
+import {defaultStateRankingHeuristic, IBotOptions, makeMove} from '../../game/Bot.js'
+import {createNewGame, executeMove, IGame, INewGameRules, isVictory, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
 import {MoveConfidence} from '../../game/MoveHintGenerator.js'
 import {deserialize, serialize} from '../../game/Serializer.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
-import './App.js'
+import {GameWinnability} from './App.js'
 
 const DEFAULT_RULES = {
   drawnCards: 3,
@@ -19,16 +19,38 @@ const BOT_OPTIONS = {
 
 const FINISHING_MOVES_INTERVAL = 200 // milliseconds
 const BOT_GAMEPLAY_INTERVAL = 50 // milliseconds
+const MAX_NEW_GAME_CREATION_ATTEMPTS = 2
 
 addEventListener('DOMContentLoaded', () => {
   let currentGame = createNewGame(DEFAULT_RULES)
   renderUI()
 
-  function onStartNewGame(drawnCards: number, tableauPiles: number) {
-    currentGame = createNewGame({
+  function onStartNewGame(drawnCards: number, tableauPiles: number, winnability: GameWinnability) {
+    const gameRules = {
       drawnCards,
       tableauPiles,
-    })
+    }
+    switch (winnability) {
+      case GameWinnability.WINNABLE:
+        currentGame = createNewGameWithEndStatePredicate(
+          gameRules,
+          BOT_OPTIONS,
+          isVictory,
+          MAX_NEW_GAME_CREATION_ATTEMPTS,
+        )
+        break
+      case GameWinnability.UNWINNABLE:
+        currentGame = createNewGameWithEndStatePredicate(
+          gameRules,
+          BOT_OPTIONS,
+          (game) => !isVictory(game),
+          MAX_NEW_GAME_CREATION_ATTEMPTS,
+        )
+        break
+      default:
+        currentGame = createNewGame(gameRules)
+        break
+    }
     renderUI()
   }
 
@@ -112,3 +134,34 @@ addEventListener('DOMContentLoaded', () => {
     )
   }
 })
+
+function createNewGameWithEndStatePredicate(
+  gameRules: INewGameRules,
+  botOptions: IBotOptions,
+  endStatePredicate: (game: IGame) => boolean,
+  maxAttempts: number,
+): IGame {
+  if (!Number.isSafeInteger(maxAttempts) || maxAttempts <= 0) {
+    throw new TypeError(`The maxAttempts parameter must be a positive safe integer, ${maxAttempts} was provided`)
+  }
+
+  let attemptsLeft = maxAttempts
+  while (attemptsLeft) {
+    const game = createNewGame(gameRules)
+    let endGameState = game
+    let nextEndGameState = endGameState
+    do {
+      endGameState = nextEndGameState
+      nextEndGameState = makeMove(endGameState, botOptions)
+    } while (nextEndGameState !== endGameState)
+    if (endStatePredicate(endGameState)) {
+      return game
+    }
+
+    attemptsLeft--
+  }
+
+  throw new Error(
+    `Failed to find a suitable game matching the provided predicate and bot options within ${maxAttempts} attempts`,
+  )
+}

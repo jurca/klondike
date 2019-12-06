@@ -2,7 +2,7 @@ import {Side} from './Card.js'
 import {executeMove, IGame, isVictory, isVictoryGuaranteed, Move, MoveType} from './Game.js'
 import {getMoveHints, HintGeneratorMode, MOVE_CONFIDENCES, MoveConfidence, MoveHint} from './MoveHintGenerator.js'
 
-interface IBotOptions {
+export interface IBotOptions {
   minAutoAcceptConfidence: null | MoveConfidence
   maxConsideredConfidenceLevels: number
   lookAheadMoves: number

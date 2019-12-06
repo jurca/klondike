@@ -6,7 +6,7 @@ import './Game.js'
 
 interface IProps {
   game: IGame
-  onstartnewgame: (drawnCards: number, tableauPiles: number) => void
+  onstartnewgame: (drawnCards: number, tableauPiles: number, winnability: GameWinnability) => void
   onmove: () => void
   onreset: () => void
   onundo: () => void
@@ -24,8 +24,19 @@ interface IPrivateProps {
   showhints: boolean
 }
 
+interface IRefs {
+  drawCards3: HTMLInputElement
+  winnabilityOption: HTMLElement
+}
+
+export enum GameWinnability {
+  WINNABLE = 'GameWinnability.WINNABLE',
+  UNWINNABLE = 'GameWinnability.UNWINNABLE',
+  UNKNOWN = 'GameWinnability.UNKNOWN',
+}
+
 define(
-  class App extends Component<IProps & IPrivateProps, {}, {drawCards3: HTMLInputElement}> {
+  class App extends Component<IProps & IPrivateProps, {}, IRefs> {
     public static is = 'klondike-app'
     public static useShadowDom = true
     public static props = [
@@ -110,6 +121,21 @@ define(
           >
           ${newgametableaupilescount}
         </p>
+        <p ref="winnabilityOption">
+          Winnability:
+          <label>
+            <input type="radio" name="winnability" value="${GameWinnability.WINNABLE}">
+            Only winnable games
+          </label>
+          <label>
+            <input type="radio" name="winnability" value="${GameWinnability.UNWINNABLE}">
+            Only unwinnable games
+          </label>
+          <label>
+            <input type="radio" name="winnability" value="${GameWinnability.UNKNOWN}" checked>
+            Any game
+          </label>
+        </p>
 
         <klondike-game .game="${game}" .onmove="${this.props.onmove}"></klondike-game>
 
@@ -154,8 +180,14 @@ define(
     }
 
     private onNewGame = () => {
-      const {drawCards3: drawCards3Option} = this.refs
-      this.props.onstartnewgame(drawCards3Option?.checked ? 3 : 1, this.newgametableaupilescount)
+      const {drawCards3: drawCards3Option, winnabilityOption} = this.refs
+      const chosenWinnabilityElement = winnabilityOption?.querySelector(':checked')
+      const chosenWinnability = chosenWinnabilityElement && (chosenWinnabilityElement as HTMLInputElement).value
+      this.props.onstartnewgame(
+        drawCards3Option?.checked ? 3 : 1,
+        this.newgametableaupilescount,
+        chosenWinnability ? chosenWinnability as GameWinnability : GameWinnability.UNKNOWN,
+      )
     }
 
     private onToggleAllCardsVisible = () => {
