@@ -1,5 +1,5 @@
 import {Side} from '../../game/Card.js'
-import {IGame} from '../../game/Game.js'
+import {IGame, isVictory, isVictoryGuaranteed} from '../../game/Game.js'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator.js'
 import {Component, define, keyed, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './Game.js'
@@ -14,6 +14,7 @@ interface IProps {
   onsave: () => void
   onload: () => void
   onbotmove: () => void
+  onfinishgame: () => void
 }
 
 interface IPrivateProps {
@@ -36,6 +37,7 @@ define(
       'onsave',
       'onload',
       'onbotmove',
+      'onfinishgame',
       'allcardsvisible',
       'newgametableaupilescount',
       'showhints',
@@ -75,6 +77,9 @@ define(
         <button .onclick="${this.props.onsave}">Save</button>
         <button .onclick="${this.props.onload}">Load</button>
         <button .onclick="${this.props.onbotmove}">Automatic move</button>
+        <button .onclick="${this.props.onfinishgame}" .disabled="${isVictory(this.props.game) || !isVictoryGuaranteed(this.props.game)}">
+          Finish game
+        </button>
 
         <p>
           New game options:

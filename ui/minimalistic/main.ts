@@ -1,5 +1,5 @@
-import {makeMove, defaultStateRankingHeuristic} from '../../game/Bot.js'
-import {createNewGame, executeMove, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
+import {defaultStateRankingHeuristic, makeMove} from '../../game/Bot.js'
+import {createNewGame, executeMove, isVictory, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
 import {MoveConfidence} from '../../game/MoveHintGenerator.js'
 import {deserialize, serialize} from '../../game/Serializer.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
@@ -16,6 +16,8 @@ const BOT_OPTIONS = {
   minAutoAcceptConfidence: MoveConfidence.VERY_HIGH,
   stateRankingHeuristic: defaultStateRankingHeuristic,
 }
+
+const FINISHING_MOVES_INTERVAL = 200 // milliseconds
 
 addEventListener('DOMContentLoaded', () => {
   let currentGame = createNewGame(DEFAULT_RULES)
@@ -63,6 +65,17 @@ addEventListener('DOMContentLoaded', () => {
     renderUI()
   }
 
+  function onFinishGame() {
+    const playIntervalId = setInterval(() => {
+      currentGame = makeMove(currentGame, BOT_OPTIONS)
+      renderUI()
+
+      if (isVictory(currentGame)) {
+        clearInterval(playIntervalId)
+      }
+    }, FINISHING_MOVES_INTERVAL)
+  }
+
   function renderUI() {
     render(
       document.getElementById('app')!,
@@ -77,6 +90,7 @@ addEventListener('DOMContentLoaded', () => {
           .onsave="${onSave}"
           .onload="${onLoad}"
           .onbotmove="${onBotMove}"
+          .onfinishgame="${onFinishGame}"
         >
         </klondike-app>
       `,
