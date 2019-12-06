@@ -7,7 +7,7 @@
 // - ...and others
 
 import {Color, compareRank, ICard, isSameColorInFrenchDeck, Rank, Side} from './Card.js'
-import {executeMove, IGame, Move, MoveType} from './Game.js'
+import {executeMove, IGame, isVictoryGuaranteed, Move, MoveType} from './Game.js'
 import {draw} from './Pile.js'
 import {ITableau} from './Tableau.js'
 
@@ -728,14 +728,6 @@ function getMovesWithMinisculeConfidence(
   }
 
   return moves
-}
-
-function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {
-  return (
-    !stock.cards.length &&
-    !waste.cards.length &&
-    tableauPiles.every((pile) => pile.cards.every((card) => card.side === Side.FACE))
-  )
 }
 
 function getStockPlayableCards(game: IGame, mode: HintGeneratorMode): ICard[] {

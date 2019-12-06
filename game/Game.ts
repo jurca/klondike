@@ -237,6 +237,14 @@ export function isVictory({state: {stock, tableau, waste}}: IGame): boolean {
   return !stock.cards.length && !waste.cards.length && tableau.piles.every((pile) => !pile.cards.length)
 }
 
+export function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {
+  return (
+    !stock.cards.length &&
+    !waste.cards.length &&
+    tableauPiles.every((pile) => pile.cards.every((card) => card.side === Side.FACE))
+  )
+}
+
 function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
   return {
     ...game,
