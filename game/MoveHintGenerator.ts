@@ -765,24 +765,29 @@ function getStockPlayableCards(game: IGame, mode: HintGeneratorMode): ICard[] {
           return []
         }
         let inspectedGame = game
+        const cards: ICard[] = []
         if (inspectedGame.state.waste.cards.length) {
+          cards.push(lastItem(inspectedGame.state.waste.cards))
           while (inspectedGame.state.stock.cards.length) {
             inspectedGame = executeMove(inspectedGame, {
               drawnCards: inspectedGame.rules.drawnCards,
               move: MoveType.DRAW_CARDS,
             })
+            cards.push(lastItem(inspectedGame.state.waste.cards))
           }
           inspectedGame = executeMove(inspectedGame, {
             move: MoveType.REDEAL,
           })
         }
-        const cards: ICard[] = []
         while (inspectedGame.state.stock.cards.length) {
           inspectedGame = executeMove(inspectedGame, {
             drawnCards: inspectedGame.rules.drawnCards,
             move: MoveType.DRAW_CARDS,
           })
-          cards.push(draw(inspectedGame.state.waste, 1)[1][0])
+          const card = draw(inspectedGame.state.waste, 1)[1][0]
+          if (!cards.includes(card)) {
+            cards.push(card)
+          }
         }
         return cards
       }
