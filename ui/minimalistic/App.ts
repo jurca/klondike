@@ -14,6 +14,7 @@ interface IProps {
   onsave: () => void
   onload: () => void
   onbotmove: () => void
+  onbotplay: () => void
   onfinishgame: () => void
 }
 
@@ -37,6 +38,7 @@ define(
       'onsave',
       'onload',
       'onbotmove',
+      'onbotplay',
       'onfinishgame',
       'allcardsvisible',
       'newgametableaupilescount',
@@ -77,6 +79,7 @@ define(
         <button .onclick="${this.props.onsave}">Save</button>
         <button .onclick="${this.props.onload}">Load</button>
         <button .onclick="${this.props.onbotmove}">Automatic move</button>
+        <button .onclick="${this.props.onbotplay}">Automatic gameplay</button>
         <button .onclick="${this.props.onfinishgame}" .disabled="${isVictory(this.props.game) || !isVictoryGuaranteed(this.props.game)}">
           Finish game
         </button>

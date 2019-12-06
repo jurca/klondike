@@ -18,6 +18,7 @@ const BOT_OPTIONS = {
 }
 
 const FINISHING_MOVES_INTERVAL = 200 // milliseconds
+const BOT_GAMEPLAY_INTERVAL = 50 // milliseconds
 
 addEventListener('DOMContentLoaded', () => {
   let currentGame = createNewGame(DEFAULT_RULES)
@@ -65,6 +66,19 @@ addEventListener('DOMContentLoaded', () => {
     renderUI()
   }
 
+  function onBotPlay() {
+    const playIntervalId = setInterval(() => {
+      const nextGameState = makeMove(currentGame, BOT_OPTIONS)
+      if (nextGameState === currentGame) {
+        clearInterval(playIntervalId)
+        return
+      }
+
+      currentGame = nextGameState
+      renderUI()
+    }, BOT_GAMEPLAY_INTERVAL)
+  }
+
   function onFinishGame() {
     const playIntervalId = setInterval(() => {
       currentGame = makeMove(currentGame, BOT_OPTIONS)
@@ -90,6 +104,7 @@ addEventListener('DOMContentLoaded', () => {
           .onsave="${onSave}"
           .onload="${onLoad}"
           .onbotmove="${onBotMove}"
+          .onbotplay="${onBotPlay}"
           .onfinishgame="${onFinishGame}"
         >
         </klondike-app>
