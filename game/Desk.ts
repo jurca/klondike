@@ -1,7 +1,6 @@
 import {
   Color,
   ICard,
-  isSameColorInFrenchDeck,
   isValidFoundationSequence,
   isValidTableauSequence,
   Rank,
@@ -78,20 +77,12 @@ export function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDes
   const [newWaste, [cardToPlace]] = draw(desk.waste, 1)
   if (
     tableauPile.cards.length &&
-    isSameColorInFrenchDeck(tableauPile.cards[tableauPile.cards.length - 1], cardToPlace)
-  ) {
-    throw new Error(
-      'The top waste card cannot be placed on top of the target tableau pile because it is of the same french deck ' +
-      'color (red/black) as the top card of the target pile',
-    )
-  }
-  if (
-    tableauPile.cards.length &&
     !isValidTableauSequence(tableauPile.cards[tableauPile.cards.length - 1], cardToPlace)
   ) {
     throw new Error(
       'The top waste card cannot be placed on top of the target tableau pile because it is not in rank sequence with ' +
-      'the current top card of the target pile',
+      'the current top card of the target pile or it is of the same french deck color (red/black) as the current top ' +
+      'card of the target pile',
     )
   }
   const newTableau = addCardToPile(desk.tableau, tableauPile, cardToPlace)
@@ -133,20 +124,12 @@ export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, table
   const [newFoundationPile, [cardToPlace]] = draw(desk.foundation[color], 1)
   if (
     tableauPile.cards.length &&
-    isSameColorInFrenchDeck(tableauPile.cards[tableauPile.cards.length - 1], cardToPlace)
-  ) {
-    throw new Error(
-      'The top foundation card cannot be placed on top of the target tableau pile because it is of the same french ' +
-      'deck color (red/black) as the top card of the target pile',
-    )
-  }
-  if (
-    tableauPile.cards.length &&
     !isValidTableauSequence(tableauPile.cards[tableauPile.cards.length - 1], cardToPlace)
   ) {
     throw new Error(
       'The top foundation card cannot be placed on top of the target tableau pile because it is not in rank sequence ' +
-      'with the current top card of the target pile',
+      'with the current top card of the target pile or it is of the same french deck color (red/black) as the top ' +
+      'card of the target pile',
     )
   }
   const newTableau = addCardToPile(desk.tableau, tableauPile, cardToPlace)
@@ -164,20 +147,12 @@ export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, table
 export function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMove: ICard, targetPile: IPile): IDesk {
   if (
     targetPile.cards.length &&
-    isSameColorInFrenchDeck(targetPile.cards[targetPile.cards.length - 1], topCardToMove)
-  ) {
-    throw new Error(
-      'The top moved card cannot be placed on top of the target tableau pile because it is of the same french deck ' +
-      'color (red/black) as the top card of the target pile',
-    )
-  }
-  if (
-    targetPile.cards.length &&
     !isValidTableauSequence(targetPile.cards[targetPile.cards.length - 1], topCardToMove)
   ) {
     throw new Error(
       'The top moved card cannot be placed on top of the target tableau pile because it is not in rank sequence with ' +
-      'the current top card of the target pile',
+      'the current top card of the target pile or it is of the same french deck color (red/black) as the current top ' +
+      'card of the target pile',
     )
   }
   const newTableau = movePilePart(desk.tableau, sourcePile, topCardToMove, targetPile)

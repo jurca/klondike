@@ -68,19 +68,12 @@ export const DECK: ReadonlyArray<ICard> = ([] as ICard[]).concat(...Object.value
   (color: Color) => RANK_SEQUENCE.map((rank: Rank) => new Card(color, rank, Side.BACK)),
 ))
 
-// https://en.wikipedia.org/wiki/French_playing_cards
-export function isSameColorInFrenchDeck(card1: ICard, card2: ICard): boolean {
-  const isCard1Red = RED_COLORS.includes(card1.color)
-  const isCard2Red = RED_COLORS.includes(card2.color)
-  return isCard1Red === isCard2Red
-}
-
 export function isValidTableauSequence(cardOnPile: ICard, cardToAdd: ICard): boolean {
-  return compareRank(cardOnPile, cardToAdd) === 1
+  return compareRank(cardOnPile, cardToAdd) === 1 && !isSameColorInFrenchDeck(cardOnPile, cardToAdd)
 }
 
 export function isValidFoundationSequence(cardOnFoundation: ICard, cardToAdd: ICard): boolean {
-  return compareRank(cardOnFoundation, cardToAdd) === -1
+  return compareRank(cardOnFoundation, cardToAdd) === -1 && cardOnFoundation.color === cardToAdd.color
 }
 
 export function compareRank(card1: ICard, card2: ICard): number {
@@ -91,4 +84,11 @@ export function compareRank(card1: ICard, card2: ICard): number {
 
 export function turnOver(card: Card): ICard {
   return new Card(card.color, card.rank, card.side === Side.FACE ? Side.BACK : Side.FACE)
+}
+
+// https://en.wikipedia.org/wiki/French_playing_cards
+function isSameColorInFrenchDeck(card1: ICard, card2: ICard): boolean {
+  const isCard1Red = RED_COLORS.includes(card1.color)
+  const isCard2Red = RED_COLORS.includes(card2.color)
+  return isCard1Red === isCard2Red
 }
