@@ -6,7 +6,16 @@
 // - getPlayablePiles(game: IGame): IPile[] // only piles where each pile contains at least one revealed card
 // - ...and others
 
-import {Color, compareRank, ICard, isSameColorInFrenchDeck, Rank, Side} from './Card.js'
+import {
+  Color,
+  compareRank,
+  ICard,
+  isSameColorInFrenchDeck,
+  isValidFoundationSequence,
+  isValidTableauSequence,
+  Rank,
+  Side,
+} from './Card.js'
 import {executeMove, IGame, isVictoryGuaranteed, Move, MoveType} from './Game.js'
 import {draw} from './Pile.js'
 import {ITableau} from './Tableau.js'
@@ -176,7 +185,7 @@ function getMovesWithAbsoluteConfidence(
   if (isVictoryGuaranteed(game)) {
     for (const card of topTableauCards) {
       const topFoundationCard = topFoundationCards[card.color]
-      if (topFoundationCard && compareRank(card, topFoundationCard) === 1) {
+      if (topFoundationCard && isValidFoundationSequence(topFoundationCard, card)) {
         moves.push([
           {
             move: MoveType.TABLEAU_TO_FOUNDATION,
@@ -216,7 +225,7 @@ function getMovesWithVeryHighConfidence(
       targetPile.cards.length &&
       lastItem(targetPile.cards).side === Side.FACE &&
       !isSameColorInFrenchDeck(lastItem(targetPile.cards), sourceCard) &&
-      compareRank(lastItem(targetPile.cards), sourceCard) === 1
+      isValidTableauSequence(lastItem(targetPile.cards), sourceCard)
     ))
     if (targetPileIndex > -1) {
       moves.push([
@@ -253,7 +262,7 @@ function getMovesWithVeryHighConfidence(
           pile.cards.length > visibleCards.length &&
           visibleCards.length &&
           !isSameColorInFrenchDeck(kingSequenceEnd, visibleCards[0]) &&
-          compareRank(kingSequenceEnd, visibleCards[0]) === 1
+          isValidTableauSequence(kingSequenceEnd, visibleCards[0])
         )
       })
       if (isBeneficialTransferToKingSequencePossible) {
@@ -308,7 +317,7 @@ function getMovesWithHighConfidence(game: IGame, stockPlayableCards: ICard[]): M
         .map(([pileCards]) => pileCards)
       const isBeneficialTransferToKingSequencePossible = largestSequences.find((cardSequence) =>
         !isSameColorInFrenchDeck(kingSequenceEnd, cardSequence[0]) &&
-        compareRank(kingSequenceEnd, cardSequence[0]) === 1,
+        isValidTableauSequence(kingSequenceEnd, cardSequence[0]),
       )
       if (isBeneficialTransferToKingSequencePossible) {
         const sourcePileIndex = getPileIndex(tableau, king)
@@ -352,7 +361,7 @@ function getMovesWithMediumConfidence(game: IGame): MoveHint[] {
       pile.cards.length &&
       lastItem(pile.cards).side === Side.FACE &&
       !isSameColorInFrenchDeck(candidateCard, lastItem(pile.cards)) &&
-      compareRank(candidateCard, lastItem(pile.cards)) === -1,
+      isValidTableauSequence(lastItem(pile.cards), candidateCard),
     )
     for (const candidateTarget of candidateTargets) {
       moves.push([
@@ -390,7 +399,7 @@ function getMovesWithLowConfidence(game: IGame): MoveHint[] {
       const bottomTargetCard = lastItem(otherPile)
       if (
         !isSameColorInFrenchDeck(topSourceCard, bottomTargetCard) &&
-        compareRank(topSourceCard, bottomTargetCard) === -1
+        isValidTableauSequence(bottomTargetCard, topSourceCard)
       ) {
         const sourcePileIndex = getPileIndex(tableau, topSourceCard)
         moves.push([
@@ -421,7 +430,7 @@ function getMovesWithLowConfidence(game: IGame): MoveHint[] {
         const bottomTargetCard = lastItem(otherPile)
         if (
           !isSameColorInFrenchDeck(topSourceCard, bottomTargetCard) &&
-          compareRank(topSourceCard, bottomTargetCard) === -1
+          isValidTableauSequence(bottomTargetCard, topSourceCard)
         ) {
           const sourcePileIndex = getPileIndex(tableau, topSourceCard)
           moves.push([
@@ -459,7 +468,7 @@ function getMovesWithVeryLowConfidence(
         highestVisibleCard &&
         pile.cards[0] !== highestVisibleCard &&
         !isSameColorInFrenchDeck(foundationCard, highestVisibleCard) &&
-        compareRank(foundationCard, highestVisibleCard) === 1
+        isValidTableauSequence(foundationCard, highestVisibleCard)
       )
     })
     if (!isTherePileTransferableToCard) {
@@ -472,7 +481,7 @@ function getMovesWithVeryLowConfidence(
         lastCard &&
         lastCard.side === Side.FACE &&
         !isSameColorInFrenchDeck(foundationCard, lastCard) &&
-        compareRank(foundationCard, lastCard) === -1
+        isValidTableauSequence(lastCard, foundationCard)
       )
     })
     if (targetPileIndex > -1) {
@@ -492,7 +501,7 @@ function getMovesWithVeryLowConfidence(
   for (const foundationCard of filteredTopFoundationCards) {
     const isThereMatchingStockCard = stockPlayableCards.some((card) =>
       !isSameColorInFrenchDeck(foundationCard, card) &&
-      compareRank(foundationCard, card) === 1,
+      isValidTableauSequence(foundationCard, card),
     )
     if (!isThereMatchingStockCard) {
       continue
@@ -504,7 +513,7 @@ function getMovesWithVeryLowConfidence(
         lastCard &&
         lastCard.side === Side.FACE &&
         !isSameColorInFrenchDeck(foundationCard, lastCard) &&
-        compareRank(foundationCard, lastCard) === -1
+        isValidTableauSequence(lastCard, foundationCard)
       )
     })
     if (targetPileIndex > -1) {
@@ -551,8 +560,8 @@ function getMovesWithVeryLowConfidence(
     for (const otherPile of pilesWithVisibleCards) {
       const bottomTargetCard = lastItem(otherPile.cards)
       if (
-        !isSameColorInFrenchDeck(topSourceCard, bottomTargetCard) &&
-        compareRank(topSourceCard, bottomTargetCard) === -1
+        !isSameColorInFrenchDeck(bottomTargetCard, topSourceCard) &&
+        isValidTableauSequence(bottomTargetCard, topSourceCard)
       ) {
         const sourcePileIndex = getPileIndex(tableau, topSourceCard)
         moves.push([
@@ -577,7 +586,7 @@ function getMovesWithVeryLowConfidence(
         lastCard &&
         lastCard.side === Side.FACE &&
         !isSameColorInFrenchDeck(card, lastCard) &&
-        compareRank(card, lastCard) === -1
+        isValidTableauSequence(lastCard, card)
       ) {
         moves.push([
           {
@@ -594,7 +603,7 @@ function getMovesWithVeryLowConfidence(
   // Stock to foundation
   for (const stockCard of stockPlayableCards) {
     for (const foundationCard of filteredTopFoundationCards) {
-      if (stockCard.color === foundationCard.color && compareRank(stockCard, foundationCard) === 1) {
+      if (stockCard.color === foundationCard.color && isValidFoundationSequence(foundationCard, stockCard)) {
         moves.push([
           {
             move: MoveType.WASTE_TO_FOUNDATION,
@@ -625,7 +634,7 @@ function getMovesWithMinisculeConfidence(
     }
 
     const foundationCard = topFoundationCards[lastCard.color]
-    if (!foundationCard || compareRank(lastCard, foundationCard) !== 1) {
+    if (!foundationCard || !isValidFoundationSequence(foundationCard, lastCard)) {
       continue
     }
 
@@ -651,7 +660,7 @@ function getMovesWithMinisculeConfidence(
         highestVisibleCard &&
         otherPile.cards[0] !== highestVisibleCard &&
         !isSameColorInFrenchDeck(nextToLastCard, highestVisibleCard) &&
-        compareRank(nextToLastCard, highestVisibleCard) === 1
+        isValidTableauSequence(nextToLastCard, highestVisibleCard)
       ) {
         moves.push([
           {
@@ -673,13 +682,13 @@ function getMovesWithMinisculeConfidence(
     }
 
     const foundationCard = topFoundationCards[lastCard.color]
-    if (!foundationCard || compareRank(lastCard, foundationCard) !== 1) {
+    if (!foundationCard || !isValidFoundationSequence(foundationCard, lastCard)) {
       continue
     }
 
     // Will the transfer allow a waste to foundation transfer?
     for (const stockCard of stockPlayableCards) {
-      if (stockCard.color === lastCard.color && compareRank(lastCard, stockCard) === -1) {
+      if (stockCard.color === lastCard.color && isValidFoundationSequence(lastCard, stockCard)) {
         moves.push([
           {
             move: MoveType.TABLEAU_TO_FOUNDATION,
@@ -698,7 +707,7 @@ function getMovesWithMinisculeConfidence(
     const nextToLastCard = pile.cards.slice(-2)[0]
     if (nextToLastCard.side === Side.FACE) {
       for (const stockCard of stockPlayableCards) {
-        if (!isSameColorInFrenchDeck(stockCard, nextToLastCard) && compareRank(nextToLastCard, stockCard) === 1) {
+        if (!isSameColorInFrenchDeck(stockCard, nextToLastCard) && isValidTableauSequence(nextToLastCard, stockCard)) {
           moves.push([
             {
               move: MoveType.TABLEAU_TO_FOUNDATION,

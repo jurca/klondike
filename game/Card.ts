@@ -75,6 +75,14 @@ export function isSameColorInFrenchDeck(card1: ICard, card2: ICard): boolean {
   return isCard1Red === isCard2Red
 }
 
+export function isValidTableauSequence(cardOnPile: ICard, cardToAdd: ICard): boolean {
+  return compareRank(cardOnPile, cardToAdd) === 1
+}
+
+export function isValidFoundationSequence(cardOnFoundation: ICard, cardToAdd: ICard): boolean {
+  return compareRank(cardOnFoundation, cardToAdd) === -1
+}
+
 export function compareRank(card1: ICard, card2: ICard): number {
   const card1NumericRank = RANK_SEQUENCE.indexOf(card1.rank)
   const card2NumericRank = RANK_SEQUENCE.indexOf(card2.rank)
