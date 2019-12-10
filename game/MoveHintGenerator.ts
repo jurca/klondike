@@ -1,9 +1,8 @@
 // This file is a prime candidate for refactoring. Some suggested helper functions to create and use:
-// - isValidTableauSequence(card1: ICard, card2: ICard, ...cards: ICard[]): boolean
-// - isValidFoundationSequence(card1: ICard, card2: ICard, ...cards: ICard[]): boolean
 // - getFoundationTop(game: IGame): IFoundationTop
 // - getFoundationTopCards(game: IGame): ICard[]
 // - getPlayablePiles(game: IGame): IPile[] // only piles where each pile contains at least one revealed card
+// - lastItem && lastItemOrNull
 // - ...and others
 
 import {
