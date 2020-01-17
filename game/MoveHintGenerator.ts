@@ -2,7 +2,6 @@
 // - getFoundationTop(game: IGame): IFoundationTop
 // - getFoundationTopCards(game: IGame): ICard[]
 // - getPlayablePiles(game: IGame): IPile[] // only piles where each pile contains at least one revealed card
-// - lastItem && lastItemOrNull
 // - ...and others
 
 import {
@@ -17,6 +16,7 @@ import {
 import {executeMove, IGame, isVictoryGuaranteed, Move, MoveType} from './Game.js'
 import {draw} from './Pile.js'
 import {ITableau} from './Tableau.js'
+import {lastItem, lastItemOrNull} from './util.js'
 
 export enum HintGeneratorMode {
   CURRENT_STATE = 'HintGeneratorMode.CURRENT_STATE',
@@ -772,16 +772,4 @@ function getStockPlayableCards(game: IGame, mode: HintGeneratorMode): ICard[] {
 
 function getPileIndex(tableau: ITableau, card: ICard): number {
   return tableau.piles.findIndex((pile) => pile.cards.includes(card))
-}
-
-function lastItemOrNull<T>(array: readonly T[]): null | T {
-  return array.length ? lastItem(array) : null
-}
-
-function lastItem<T>(array: readonly T[]): T {
-  if (array.length) {
-    return array[array.length - 1]
-  }
-
-  throw new Error('The provided array is empty')
 }

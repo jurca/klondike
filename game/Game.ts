@@ -13,6 +13,7 @@ import {
 } from './Desk.js'
 import {draw, IPile, Pile, shuffle, turnCard} from './Pile.js'
 import {Tableau} from './Tableau.js'
+import {lastItem} from './util.js'
 
 type HistoryRecord = [IDesk, Move & IRecordTimestamp]
 
@@ -123,7 +124,7 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
     const [remainingCards, cardsForPile] = draw(cardsToDeal, i + 1)
     const currentPile = new Pile(cardsForPile)
     if (currentPile.cards.length) {
-      piles.push(turnCard(currentPile, currentPile.cards[currentPile.cards.length - 1]))
+      piles.push(turnCard(currentPile, lastItem(currentPile.cards)))
     } else {
       piles.push(currentPile)
     }

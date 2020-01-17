@@ -9,6 +9,7 @@ import {
 } from './Card.js'
 import {draw, IPile, Pile, placeCardOnTop, placePileOnTop} from './Pile.js'
 import {addCardToPile, ITableau, movePilePart, removeTopCardFromPile, revealTopCard} from './Tableau.js'
+import {lastItem} from './util.js'
 
 export interface IDesk {
   readonly stock: IPile
@@ -77,7 +78,7 @@ export function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDes
   const [newWaste, [cardToPlace]] = draw(desk.waste, 1)
   if (
     tableauPile.cards.length &&
-    !isValidTableauSequence(tableauPile.cards[tableauPile.cards.length - 1], cardToPlace)
+    !isValidTableauSequence(lastItem(tableauPile.cards), cardToPlace)
   ) {
     throw new Error(
       'The top waste card cannot be placed on top of the target tableau pile because it is not in rank sequence with ' +
@@ -124,7 +125,7 @@ export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, table
   const [newFoundationPile, [cardToPlace]] = draw(desk.foundation[color], 1)
   if (
     tableauPile.cards.length &&
-    !isValidTableauSequence(tableauPile.cards[tableauPile.cards.length - 1], cardToPlace)
+    !isValidTableauSequence(lastItem(tableauPile.cards), cardToPlace)
   ) {
     throw new Error(
       'The top foundation card cannot be placed on top of the target tableau pile because it is not in rank sequence ' +
@@ -147,7 +148,7 @@ export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, table
 export function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMove: ICard, targetPile: IPile): IDesk {
   if (
     targetPile.cards.length &&
-    !isValidTableauSequence(targetPile.cards[targetPile.cards.length - 1], topCardToMove)
+    !isValidTableauSequence(lastItem(targetPile.cards), topCardToMove)
   ) {
     throw new Error(
       'The top moved card cannot be placed on top of the target tableau pile because it is not in rank sequence with ' +
@@ -166,7 +167,7 @@ export function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMov
 
 function addCardToFoundation(foundation: IFoundation, cardToPlace: ICard): IFoundation {
   const targetFoundationPile = foundation[cardToPlace.color]
-  const foundationTopCard = targetFoundationPile.cards[targetFoundationPile.cards.length - 1]
+  const foundationTopCard = lastItem(targetFoundationPile.cards)
   if (!targetFoundationPile.cards.length && cardToPlace.rank !== Rank.ACE) {
     throw new Error('Only the Ace can be placed at the bottom of a foundation')
   }

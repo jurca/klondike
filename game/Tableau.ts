@@ -1,5 +1,6 @@
 import {ICard, Side} from './Card.js'
 import {draw, IPile, placeCardOnTop, placePileOnTop, slicePile, turnCard} from './Pile.js'
+import {lastItem} from './util.js'
 
 export interface ITableau {
   readonly piles: ReadonlyArray<IPile>
@@ -41,7 +42,7 @@ export function revealTopCard(tableau: ITableau, pile: IPile): ITableau {
   if (!pile.cards.length) {
     throw new Error('The specified pile is empty')
   }
-  if (pile.cards[pile.cards.length - 1].side === Side.FACE) {
+  if (lastItem(pile.cards).side === Side.FACE) {
     throw new Error('The top card is already face-up')
   }
 
@@ -50,7 +51,7 @@ export function revealTopCard(tableau: ITableau, pile: IPile): ITableau {
     throw new Error('The specified pile is not present in the specified tableau')
   }
 
-  const patchedPile = turnCard(pile, pile.cards[pile.cards.length - 1])
+  const patchedPile = turnCard(pile, lastItem(pile.cards))
   const patchedPiles = tableau.piles.slice()
   patchedPiles.splice(pileIndex, 1, patchedPile)
   return new Tableau(patchedPiles)
