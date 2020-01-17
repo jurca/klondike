@@ -727,6 +727,26 @@ function getMovesWithMinisculeConfidence(
     }
   }
 
+  // Tableau to a non-empty foundation pile (Ace to empty foundation is already covered with absolute confidence)
+  for (const pile of tableau.piles) {
+    if (!pile.cards.length) {
+      continue
+    }
+
+    const lastCard = lastItem(pile.cards)
+    const foundationCard = topFoundationCards[lastCard.color]
+    if (foundationCard && isValidFoundationSequence(foundationCard, lastCard)) {
+      moves.push([
+        {
+          move: MoveType.TABLEAU_TO_FOUNDATION,
+          pileIndex: getPileIndex(tableau, lastCard),
+        },
+        lastCard,
+        MoveConfidence.MINISCULE,
+      ])
+    }
+  }
+
   return moves
 }
 
