@@ -167,11 +167,14 @@ export function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMov
 
 function addCardToFoundation(foundation: IFoundation, cardToPlace: ICard): IFoundation {
   const targetFoundationPile = foundation[cardToPlace.color]
-  const foundationTopCard = lastItem(targetFoundationPile.cards)
   if (!targetFoundationPile.cards.length && cardToPlace.rank !== Rank.ACE) {
     throw new Error('Only the Ace can be placed at the bottom of a foundation')
   }
-  if (targetFoundationPile.cards.length && !isValidFoundationSequence(foundationTopCard, cardToPlace)) {
+  if (
+    targetFoundationPile.cards.length &&
+    !isValidFoundationSequence(lastItem(targetFoundationPile.cards), cardToPlace)
+  ) {
+    const foundationTopCard = lastItem(targetFoundationPile.cards)
     throw new Error(
       `The provided card ${cardToPlace.rank} cannot be placed on top of ${foundationTopCard.rank}, expected a ` +
       `${RANK_SEQUENCE[RANK_SEQUENCE.indexOf(foundationTopCard.rank) + 1]} card.`,
