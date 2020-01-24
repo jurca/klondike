@@ -7,8 +7,8 @@
   "scripts": {
     "compile": "tsc --project .",
     "watch": "npm run compile -- --watch --incremental",
-    "bundle": "browserify -g [ babelify --plugins [ @babel/plugin-transform-modules-commonjs ] ] dist/ui/minimalistic/main.js -o dist/ui/minimalistic/legacy-bundle.js",
-    "build": "rm -rf dist && npm test && npm run compile && mkdir dist/node_modules/ && cp -r node_modules/@jurca dist/node_modules && npm run bundle && cp ui/minimalistic/index.html dist/ui/minimalistic/",
+    "bundle:minimalistic": "browserify -g [ babelify --plugins [ @babel/plugin-transform-modules-commonjs ] ] dist/ui/minimalistic/main.js -o dist/ui/minimalistic/legacy-bundle.js",
+    "build": "rm -rf dist && npm test && npm run compile && mkdir dist/node_modules/ && cp -r node_modules/@jurca dist/node_modules && npm run bundle:minimalistic && cp ui/minimalistic/index.html dist/ui/minimalistic/",
     "test": "tslint --project ."
   },
   "repository": {
