@@ -1,11 +1,7 @@
 import {html} from 'lighterhtml'
 import style from './card.css'
 
-interface IProps {
-  rotation?: number
-}
-
-export default function Card({rotation}: IProps) {
+export default function Card(rotation?: number) {
   return html`
     <klondike-card class=${style.card} style="--rotation: ${rotation || 0};">
       <div class=${style.body}>
