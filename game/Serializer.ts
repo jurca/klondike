@@ -38,7 +38,7 @@ export function serialize(game: IGame): string {
     SERIALIZER_VERSION,
     game.rules.drawnCards.toString(NUM_RADIX),
     game.state.tableau.piles.length.toString(NUM_RADIX).padStart(2, '0'),
-    cardsDeck.slice(0, -1).map(serializeCard).join(''),
+    serializeDeck(cardsDeck),
     Math.floor((game.startTime.absoluteTimestamp - EPOCH_START) / 1000).toString(NUM_RADIX),
     ',',
     Math.floor(game.startTime.logicalTimestamp).toString(NUM_RADIX),
@@ -78,6 +78,20 @@ export function deserialize(serializedState: string): IGame {
     deserializedGame = redoNextMove(deserializedGame)
   }
   return deserializedGame
+}
+
+export function serializeDeck(cardsDeck: ICard[]): string {
+  return cardsDeck.slice(0, -1).map(serializeCard).join('')
+}
+
+export function deserializeDeck(serializedDeck: string): ICard[] {
+  const remainingCards = new Set(UNSERIALIZED_CARDS)
+  return serializedDeck.split('').map((serializedCard) => {
+    const cardIndex = SERIALIZED_CARDS.indexOf(serializedCard)
+    const card = UNSERIALIZED_CARDS[cardIndex]
+    remainingCards.delete(card)
+    return card
+  }).concat([...remainingCards])
 }
 
 function serializeHistory(
@@ -233,16 +247,6 @@ function deserializeStartTime(timestamp: string): {absoluteTimestamp: number, lo
     absoluteTimestamp: absoluteTimestamp * 1000 + EPOCH_START,
     logicalTimestamp,
   }
-}
-
-function deserializeDeck(serializedDeck: string): ICard[] {
-  const remainingCards = new Set(UNSERIALIZED_CARDS)
-  return serializedDeck.split('').map((serializedCard) => {
-    const cardIndex = SERIALIZED_CARDS.indexOf(serializedCard)
-    const card = UNSERIALIZED_CARDS[cardIndex]
-    remainingCards.delete(card)
-    return card
-  }).concat([...remainingCards])
 }
 
 const MOVE_TYPES = Object.values(MoveType).sort()
