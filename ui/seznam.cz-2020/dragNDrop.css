@@ -1,0 +1,9 @@
+:local(.container) {
+  position: relative;
+}
+
+:local(.ghost) {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
