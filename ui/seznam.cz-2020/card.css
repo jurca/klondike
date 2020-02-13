@@ -1,5 +1,5 @@
 :local(.card) {
-  --aspect-ratio: 0.7351351351351352; /* 17272:23495 */
+  --aspect-ratio: 1.5; /* 40:60, inverted */
   --rotation: 0;
 
   display: block;
@@ -7,7 +7,7 @@
   position: relative;
 
   width: 1em;
-  height: calc(1em / var(--aspect-ratio));
+  height: calc(1em * var(--aspect-ratio));
 
   perspective: 4em;
   perspective-origin: center;
@@ -26,6 +26,7 @@
   height: 100%;
 
   transform-style: preserve-3d;
+  backface-visibility: hidden;
 }
 
 :local(.body) {
@@ -34,11 +35,5 @@
 }
 
 :local(.back) {
-  background: red;
-
   transform: rotateY(180deg) translateZ(0.1px);
-}
-
-:local(.front) {
-  background: green;
 }
