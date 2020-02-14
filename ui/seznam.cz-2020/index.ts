@@ -3,6 +3,7 @@ import {Color, Rank, Side} from '../../game/Card'
 import Card from './Card'
 import CardBackface from './CardBackface'
 import CardBackfaceStyle from './CardBackfaceStyle'
+import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
 
 const uiRoot = document.getElementById('app')!
@@ -22,6 +23,9 @@ render(uiRoot, html`
       ${Object.values(Color).map((color) =>
         html`<div style="margin: 0 10px">${FoundationPile(color, {cards: []})}</div>`,
       )}
+      <div style="margin: 0 10px">
+        ${EmptyPilePlaceholder()}
+      </div>
     </li>
   </ul>
 `)

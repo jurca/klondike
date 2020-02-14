@@ -1,0 +1,8 @@
+:local(.placeholder) {
+  display: block;
+
+  position: relative;
+
+  width: 1em;
+  height: calc(1em * 1.5 /* 40:60 aspect ratio */);
+}
