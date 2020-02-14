@@ -11,8 +11,8 @@ export default augmentor(function Card(card: ICard, overrideRotation?: number) {
   const rotation = typeof overrideRotation === 'number' ? overrideRotation : (card.side === Side.FACE ? 0 : 180)
 
   return html`
-    <klondike-card class=${style.card} style="--rotation: ${rotation};">
-      <div class=${style.body}>
+    <klondike-card class=${style.card}>
+      <div class=${style.body} style="transform: rotateY(${rotation}deg)">
         <div class=${style.back}>${CardBackface(settings.cardBackFace)}</div>
         <div class=${style.front}>${CardFrontFace(card.color, card.rank)}</div>
       </div>
