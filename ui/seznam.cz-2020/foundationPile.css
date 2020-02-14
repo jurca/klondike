@@ -1,0 +1,16 @@
+:local(.pile) {
+  display: block;
+
+  position: relative;
+
+  width: 1em;
+  height: calc(1em * 1.5 /* 40:60 aspect ratio */);
+}
+
+:local(.card) {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
