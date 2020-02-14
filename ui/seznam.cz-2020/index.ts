@@ -3,6 +3,7 @@ import {Color, Rank, Side} from '../../game/Card'
 import Card from './Card'
 import CardBackface from './CardBackface'
 import CardBackfaceStyle from './CardBackfaceStyle'
+import Desk from './Desk'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
 
@@ -28,4 +29,8 @@ render(uiRoot, html`
       </div>
     </li>
   </ul>
+
+  <div style="width: 90vw; height: 90vh">
+    ${Desk()}
+  </div>
 `)

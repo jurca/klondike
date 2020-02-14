@@ -1,0 +1,89 @@
+:local(.desk) {
+  display: flex;
+
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  flex-direction: column;
+
+  font-size: 10vh; /* default for portrait orientation */
+}
+
+@media (min-aspect-ratio: 1/1) { /* landscape orientation */
+  :local(.desk) {
+    font-size: 10vh;
+  }
+}
+
+:local(.topBar) {
+  display: flex;
+
+  padding: 1vh; /* default for portrait orientation */
+  width: 100%;
+  height: 50vw;
+  max-height: 20vh;
+  box-sizing: border-box;
+
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  box-shadow: 0 0 12px #000;
+}
+
+@media (min-aspect-ratio: 1/1) { /* landscape orientation */
+  :local(.topBar) {
+    padding: 1vw;
+  }
+}
+
+:local(.stock) {
+  margin-right: 3vh; /* default for portrait orientation */
+}
+
+@media (min-aspect-ratio: 1/1) { /* landscape orientation */
+  :local(.stock) {
+    margin-right: 3vw;
+  }
+}
+
+:local(.greenS) {
+  display: flex;
+
+  width: 100%;
+  overflow: hidden;
+
+  flex-grow: 1;
+
+  justify-content: center;
+  align-content: stretch;
+}
+
+:local(.greenSImageWrapper) {
+  display: flex;
+
+  width: 100%;
+  max-width: 80vh;
+
+  flex-grow: 1;
+}
+
+:local(.greenSInnerImageWrapper) {
+  display: flex;
+
+  padding: 10%;
+  width: 100%;
+
+  flex-grow: 1;
+}
+
+:local(.greenSImage) {
+  display: flex;
+
+  flex-grow: 1;
+
+  background: center center no-repeat transparent;
+  background-size: cover;
+}
