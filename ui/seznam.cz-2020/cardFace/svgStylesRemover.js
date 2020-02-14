@@ -39,3 +39,6 @@ function replaceStyles(cardRoot) {
 ;[...document.querySelectorAll(['[id]'])].filter(node => node.tagName !== 'linearGradient').map(
   node => (node.removeAttribute('id'), node.closest('svg'))
 )
+
+// Note: Linear gradients can be inlined (removing the id attributes) using this trick:
+// http://dahlström.net/svg/paint/datauri-gradient.svg
