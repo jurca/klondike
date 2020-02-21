@@ -1,4 +1,4 @@
-import {ICard, turnOver} from './Card.js'
+import {ICard, turnOver} from './Card'
 
 export interface IPile {
   /**

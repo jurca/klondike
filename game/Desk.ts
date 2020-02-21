@@ -6,10 +6,10 @@ import {
   Rank,
   RANK_SEQUENCE,
   turnOver,
-} from './Card.js'
-import {draw, IPile, Pile, placeCardOnTop, placePileOnTop} from './Pile.js'
-import {addCardToPile, ITableau, movePilePart, removeTopCardFromPile, revealTopCard} from './Tableau.js'
-import {lastItem} from './util.js'
+} from './Card'
+import {draw, IPile, Pile, placeCardOnTop, placePileOnTop} from './Pile'
+import {addCardToPile, ITableau, movePilePart, removeTopCardFromPile, revealTopCard} from './Tableau'
+import {lastItem} from './util'
 
 export interface IDesk {
   readonly stock: IPile

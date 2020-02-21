@@ -1,5 +1,5 @@
-import {Color, DECK, ICard} from './Card.js'
-import {IDesk} from './Desk.js'
+import {Color, DECK, ICard} from './Card'
+import {IDesk} from './Desk'
 import {
   createNewGame,
   executeMove,
@@ -9,7 +9,7 @@ import {
   Move,
   MoveType,
   redoNextMove,
-} from './Game.js'
+} from './Game'
 
 const SERIALIZER_VERSION = 1
 const NUM_RADIX = 36

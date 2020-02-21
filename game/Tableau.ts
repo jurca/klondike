@@ -1,6 +1,6 @@
-import {ICard, Side} from './Card.js'
-import {draw, IPile, placeCardOnTop, placePileOnTop, slicePile, turnCard} from './Pile.js'
-import {lastItem} from './util.js'
+import {ICard, Side} from './Card'
+import {draw, IPile, placeCardOnTop, placePileOnTop, slicePile, turnCard} from './Pile'
+import {lastItem} from './util'
 
 export interface ITableau {
   readonly piles: ReadonlyArray<IPile>

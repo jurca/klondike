@@ -1,4 +1,4 @@
-import {Color, DECK, ICard, Side} from './Card.js'
+import {Color, DECK, ICard, Side} from './Card'
 import {
   Desk,
   drawCards,
@@ -10,10 +10,10 @@ import {
   moveTopWasteCardToTableau,
   redeal,
   revealTopTableauPileCard,
-} from './Desk.js'
-import {draw, IPile, Pile, shuffle, turnCard} from './Pile.js'
-import {Tableau} from './Tableau.js'
-import {lastItem} from './util.js'
+} from './Desk'
+import {draw, IPile, Pile, shuffle, turnCard} from './Pile'
+import {Tableau} from './Tableau'
+import {lastItem} from './util'
 
 type HistoryRecord = [IDesk, Move & IRecordTimestamp]
 

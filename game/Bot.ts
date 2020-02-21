@@ -1,6 +1,6 @@
-import {Side} from './Card.js'
-import {executeMove, IGame, isVictory, isVictoryGuaranteed, Move, MoveType} from './Game.js'
-import {getMoveHints, HintGeneratorMode, MOVE_CONFIDENCES, MoveConfidence, MoveHint} from './MoveHintGenerator.js'
+import {Side} from './Card'
+import {executeMove, IGame, isVictory, isVictoryGuaranteed, Move, MoveType} from './Game'
+import {getMoveHints, HintGeneratorMode, MOVE_CONFIDENCES, MoveConfidence, MoveHint} from './MoveHintGenerator'
 
 export interface IBotOptions {
   minAutoAcceptConfidence: null | MoveConfidence

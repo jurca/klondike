@@ -12,11 +12,11 @@ import {
   isValidTableauSequence,
   Rank,
   Side,
-} from './Card.js'
-import {executeMove, IGame, isVictoryGuaranteed, Move, MoveType} from './Game.js'
-import {draw} from './Pile.js'
-import {ITableau} from './Tableau.js'
-import {lastItem, lastItemOrNull} from './util.js'
+} from './Card'
+import {executeMove, IGame, isVictoryGuaranteed, Move, MoveType} from './Game'
+import {draw} from './Pile'
+import {ITableau} from './Tableau'
+import {lastItem, lastItemOrNull} from './util'
 
 export enum HintGeneratorMode {
   CURRENT_STATE = 'HintGeneratorMode.CURRENT_STATE',
