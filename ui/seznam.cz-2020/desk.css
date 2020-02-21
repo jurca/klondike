@@ -9,19 +9,13 @@
 
   flex-direction: column;
 
-  font-size: 10vw; /* default for portrait orientation */
-}
-
-@media (min-aspect-ratio: 1/1) { /* landscape orientation */
-  :local(.desk) {
-    font-size: 10vh;
-  }
+  font-size: 10vmin;
 }
 
 :local(.topBar) {
   display: flex;
 
-  padding: 1vw; /* default for portrait orientation */
+  padding: 1vmin;
   width: 100%;
   height: 50vw;
   max-height: 20vh;
@@ -31,12 +25,6 @@
   flex-shrink: 0;
 
   box-shadow: 0 0 12px #000;
-}
-
-@media (min-aspect-ratio: 1/1) { /* landscape orientation */
-  :local(.topBar) {
-    padding: 1vh;
-  }
 }
 
 :local(.topBarItem) {
@@ -59,13 +47,7 @@
 }
 
 :local(.stock) {
-  margin-right: 3vw; /* default for portrait orientation */
-}
-
-@media (min-aspect-ratio: 1/1) { /* landscape orientation */
-  :local(.stock) {
-    margin-right: 3vh;
-  }
+  margin-right: 3vmin;
 }
 
 :local(.waste) :local(.stackedCard):nth-last-child(2) ~ :local(.stackedCard):nth-last-child(1) {
@@ -85,13 +67,7 @@
 }
 
 :local(.foundationPile) {
-  margin-left: 3vw; /* default for portrait orientation */
-}
-
-@media (min-aspect-ratio: 1/1) { /* landscape orientation */
-  :local(.foundationPile) {
-    margin-left: 3vh;
-  }
+  margin-left: 3vmin;
 }
 
 :local(.main) {
@@ -112,14 +88,8 @@
   top: 0;
   bottom: 0;
 
-  padding: 2vw; /* default for portrait orientation */
+  padding: 2vmin;
   box-sizing: border-box;
-}
-
-@media (min-aspect-ratio: 1/1) { /* landscape orientation */
-  :local(.tableau) {
-    padding: 2vh;
-  }
 }
 
 /* Backgrounds */
