@@ -22,8 +22,10 @@ export default augmentor(function Desk(deskState: IDesk) {
         <div class="${style.stock} ${style.topBarItem}">
           <div class=${style.cardHolder}>
             ${EmptyPilePlaceholder()}
-            ${deskState.stock.cards.map((card) =>
-              html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+            ${deskState.stock.cards.map((card, cardIndex, {length}) =>
+              html.for(card)`<div class=${style.stackedCard}>
+                ${Card(card, length - cardIndex < Math.min(3, length))}
+              </div>`,
             )}
           </div>
         </div>
