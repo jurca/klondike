@@ -1,5 +1,6 @@
 import {Color, ICard, Side} from '../../game/Card.js'
-import {IGame, Move, MoveType} from '../../game/Game.js'
+import {IGame} from '../../game/Game.js'
+import {Move, MoveType} from '../../game/Move.js'
 import {IPile} from '../../game/Pile.js'
 import {Component, define, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import './Desk.js'

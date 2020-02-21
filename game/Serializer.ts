@@ -6,10 +6,9 @@ import {
   IGame,
   INewGameRules,
   IRecordTimestamp,
-  Move,
-  MoveType,
   redoNextMove,
 } from './Game'
+import {Move, MoveType} from './Move'
 
 const SERIALIZER_VERSION = 1
 const NUM_RADIX = 36

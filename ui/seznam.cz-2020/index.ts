@@ -1,5 +1,6 @@
 import {html, render} from 'lighterhtml'
-import {createNewGame, executeMove, MoveType} from '../../game/Game'
+import {createNewGame, executeMove} from '../../game/Game'
+import {MoveType} from '../../game/Move'
 import Desk from './Desk'
 
 const uiRoot = document.getElementById('app')!

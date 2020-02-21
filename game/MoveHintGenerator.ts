@@ -13,7 +13,8 @@ import {
   Rank,
   Side,
 } from './Card'
-import {executeMove, IGame, isVictoryGuaranteed, Move, MoveType} from './Game'
+import {executeMove, IGame, isVictoryGuaranteed} from './Game'
+import {Move, MoveType} from './Move'
 import {draw} from './Pile'
 import {ITableau} from './Tableau'
 import {lastItem, lastItemOrNull} from './util'

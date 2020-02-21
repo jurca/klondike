@@ -1,5 +1,6 @@
 import {defaultStateRankingHeuristic, IBotOptions, makeMove} from '../../game/Bot.js'
-import {createNewGame, executeMove, IGame, INewGameRules, isVictory, Move, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
+import {createNewGame, executeMove, IGame, INewGameRules, isVictory, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
+import {Move} from '../../game/Move.js'
 import {MoveConfidence} from '../../game/MoveHintGenerator.js'
 import {deserialize, serialize} from '../../game/Serializer.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'

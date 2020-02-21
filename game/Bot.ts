@@ -1,5 +1,6 @@
 import {Side} from './Card'
-import {executeMove, IGame, isVictory, isVictoryGuaranteed, Move, MoveType} from './Game'
+import {executeMove, IGame, isVictory, isVictoryGuaranteed} from './Game'
+import {Move, MoveType} from './Move'
 import {getMoveHints, HintGeneratorMode, MOVE_CONFIDENCES, MoveConfidence, MoveHint} from './MoveHintGenerator'
 
 export interface IBotOptions {
