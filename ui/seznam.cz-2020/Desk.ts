@@ -10,6 +10,7 @@ import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
 import InlineSvg from './InlineSvg'
 import settingsContext from './settingsContext'
+import Tableau from './Tableau'
 
 export default augmentor(function Desk(deskState: IDesk) {
   const settings = useContext(settingsContext)
@@ -80,7 +81,9 @@ export default augmentor(function Desk(deskState: IDesk) {
           null
         }
 
-        <div class=${style.tableau}></div>
+        <div class=${style.tableau}>
+          ${Tableau(deskState.tableau)}
+        </div>
       </div>
     </klondike-desk>
   `

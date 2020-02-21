@@ -100,13 +100,13 @@
   top: 0;
   bottom: 0;
 
-  padding: 1vh; /* default for portrait orientation */
+  padding: 2vh; /* default for portrait orientation */
   box-sizing: border-box;
 }
 
 @media (min-aspect-ratio: 1/1) { /* landscape orientation */
   :local(.tableau) {
-    padding: 1vw;
+    padding: 2vw;
   }
 }
 

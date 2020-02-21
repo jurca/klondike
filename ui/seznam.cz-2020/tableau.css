@@ -1,0 +1,48 @@
+:local(.tableau) {
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+
+  justify-content: center;
+}
+
+:local(.tableauContent) {
+  display: flex;
+
+  width: 100%;
+  max-width: calc(7 * (1em + 0.4em));
+  height: 100%;
+
+  justify-content: space-between;
+}
+
+:local(.pile) {
+  position: relative;
+
+  width: 1em;
+  border-bottom: solid 0.8em transparent;
+  box-sizing: border-box;
+
+  flex-shrink: 0;
+}
+
+:local(.pileCards) {
+  display: flex;
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+
+  flex-direction: column;
+}
+
+:local(.pileCardHolder) {
+  flex-basis: calc(0.2em);
+}
+
+:local(.pileCardWrapper) {
+  height: 0;
+}
