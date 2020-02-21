@@ -7,8 +7,10 @@ interface CssExports {
   'greenSImage': string;
   'greenSImageWrapper': string;
   'greenSInnerImageWrapper': string;
+  'main': string;
   'separator': string;
   'stock': string;
+  'tableau': string;
   'topBar': string;
   'topBarItem': string;
 }

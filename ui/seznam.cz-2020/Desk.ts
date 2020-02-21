@@ -36,21 +36,25 @@ export default augmentor(function Desk() {
           ${FoundationPile(Color.DIAMONDS, {cards: []})}
         </div>
       </div>
-      ${deskStyle === DeskStyle.GREEN_S ?
-        html`
-          <div class=${style.greenS}>
-            <div class=${style.greenSImageWrapper}>
-              <div class=${style.greenSInnerImageWrapper}>
-                <div class=${style.greenSImage}>
-                  ${InlineSvg(GREEN_S)}
+      <div class=${style.main}>
+        ${deskStyle === DeskStyle.GREEN_S ?
+          html`
+            <div class=${style.greenS}>
+              <div class=${style.greenSImageWrapper}>
+                <div class=${style.greenSInnerImageWrapper}>
+                  <div class=${style.greenSImage}>
+                    ${InlineSvg(GREEN_S)}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        `
-      :
-        null
-      }
+          `
+        :
+          null
+        }
+
+        <div class=${style.tableau}></div>
+      </div>
     </klondike-desk>
   `
 })
