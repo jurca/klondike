@@ -1,5 +1,6 @@
 import {html, render} from 'lighterhtml'
 import {Color, Rank, Side} from '../../game/Card'
+import {createNewGame} from '../../game/Game'
 import Card from './Card'
 import CardBackface from './CardBackface'
 import CardBackfaceStyle from './CardBackfaceStyle'
@@ -8,6 +9,10 @@ import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
 
 const uiRoot = document.getElementById('app')!
+const defaultGame = createNewGame({
+  drawnCards: 3,
+  tableauPiles: 7,
+})
 render(uiRoot, html`
   <ul style="padding: 10px 20px; font-size: 72px; background: wheat">
     ${Object.values(Color).map((color) =>
@@ -31,6 +36,6 @@ render(uiRoot, html`
   </ul>
 
   <div style="width: 90vw; height: 90vh">
-    ${Desk()}
+    ${Desk(defaultGame.state)}
   </div>
 `)

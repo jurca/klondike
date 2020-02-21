@@ -1,6 +1,8 @@
 import {augmentor, useContext} from 'dom-augmentor'
 import {html} from 'lighterhtml'
 import {Color} from '../../game/Card'
+import {IDesk} from '../../game/Desk'
+import Card from './Card'
 import style from './desk.css'
 import GREEN_S from './deskBackground/s.svg'
 import DeskStyle from './DeskStyle'
@@ -9,7 +11,7 @@ import FoundationPile from './FoundationPile'
 import InlineSvg from './InlineSvg'
 import settingsContext from './settingsContext'
 
-export default augmentor(function Desk() {
+export default augmentor(function Desk(deskState: IDesk) {
   const settings = useContext(settingsContext)
   const {deskStyle} = settings
 
@@ -17,23 +19,48 @@ export default augmentor(function Desk() {
     <klondike-desk class=${style.desk} style="background: ${settings.deskColor.background}">
       <div class=${style.topBar} style="background: ${settings.deskColor.topBar}">
         <div class="${style.stock} ${style.topBarItem}">
-          ${EmptyPilePlaceholder()}
+          <div class=${style.cardHolder}>
+            ${EmptyPilePlaceholder()}
+            ${deskState.stock.cards.map((card) =>
+              html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+            )}
+          </div>
         </div>
         <div class=${style.topBarItem}>
           ${EmptyPilePlaceholder()}
         </div>
         <div class=${style.separator}></div>
         <div class="${style.foundationPile} ${style.topBarItem}">
-          ${FoundationPile(Color.SPADES, {cards: []})}
+          <div class=${style.cardHolder}>
+            ${FoundationPile(Color.SPADES, {cards: []})}
+            ${deskState.foundation[Color.SPADES].cards.map((card) =>
+              html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+            )}
+          </div>
         </div>
         <div class="${style.foundationPile} ${style.topBarItem}">
-          ${FoundationPile(Color.HEARTHS, {cards: []})}
+          <div class=${style.cardHolder}>
+            ${FoundationPile(Color.HEARTHS, {cards: []})}
+            ${deskState.foundation[Color.HEARTHS].cards.map((card) =>
+              html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+            )}
+          </div>
         </div>
         <div class="${style.foundationPile} ${style.topBarItem}">
-          ${FoundationPile(Color.CLUBS, {cards: []})}
+          <div class=${style.cardHolder}>
+            ${FoundationPile(Color.CLUBS, {cards: []})}
+            ${deskState.foundation[Color.CLUBS].cards.map((card) =>
+              html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+            )}
+          </div>
         </div>
         <div class="${style.foundationPile} ${style.topBarItem}">
-          ${FoundationPile(Color.DIAMONDS, {cards: []})}
+          <div class=${style.cardHolder}>
+            ${FoundationPile(Color.DIAMONDS, {cards: []})}
+            ${deskState.foundation[Color.DIAMONDS].cards.map((card) =>
+              html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+            )}
+          </div>
         </div>
       </div>
       <div class=${style.main}>

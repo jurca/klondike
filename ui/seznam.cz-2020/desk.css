@@ -45,6 +45,19 @@
   align-items: center;
 }
 
+:local(.cardHolder) {
+  position: relative;
+
+  width: 1em;
+  height: calc(1em * 1.5 /* 40:60 aspect ratio */);
+}
+
+:local(.stackedCard) {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
 :local(.stock) {
   margin-right: 3vh; /* default for portrait orientation */
 }
