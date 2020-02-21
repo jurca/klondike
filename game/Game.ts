@@ -1,17 +1,10 @@
 import {Color, DECK, ICard, Side} from './Card'
 import {
   Desk,
-  drawCards,
+  executeMove as executeMoveOnDesk,
   IDesk,
-  moveFoundationCardToTableauPile,
-  moveTableauPilePart,
-  moveTopTableauPileCardToFoundation,
-  moveTopWasteCardToFoundation,
-  moveTopWasteCardToTableau,
-  redeal,
-  revealTopTableauPileCard,
 } from './Desk'
-import {Move, MoveType} from './Move'
+import {Move} from './Move'
 import {draw, IPile, Pile, shuffle, turnCard} from './Pile'
 import {Tableau} from './Tableau'
 import {lastItem} from './util'
@@ -99,34 +92,8 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
 }
 
 export function executeMove(game: IGame, move: Move): IGame {
-  const {state} = game
-  switch (move.move) {
-    case MoveType.DRAW_CARDS:
-      return createGameState(drawCards(state, move.drawnCards))
-    case MoveType.REDEAL:
-      return createGameState(redeal(state))
-    case MoveType.WASTE_TO_FOUNDATION:
-      return createGameState(moveTopWasteCardToFoundation(state))
-    case MoveType.WASTE_TO_TABLEAU:
-      return createGameState(moveTopWasteCardToTableau(state, state.tableau.piles[move.pileIndex]))
-    case MoveType.TABLEAU_TO_FOUNDATION:
-      return createGameState(moveTopTableauPileCardToFoundation(state, state.tableau.piles[move.pileIndex]))
-    case MoveType.REVEAL_TABLEAU_CARD:
-      return createGameState(revealTopTableauPileCard(state, state.tableau.piles[move.pileIndex]))
-    case MoveType.FOUNDATION_TO_TABLEAU:
-      return createGameState(moveFoundationCardToTableauPile(state, move.color, state.tableau.piles[move.pileIndex]))
-    case MoveType.TABLEAU_TO_TABLEAU:
-      return createGameState(moveTableauPilePart(
-        state,
-        state.tableau.piles[move.sourcePileIndex],
-        state.tableau.piles[move.sourcePileIndex].cards[move.topMovedCardIndex],
-        state.tableau.piles[move.targetPileIndex],
-      ))
-  }
-
-  function createGameState(nextState: IDesk): IGame {
-    return createNextGameState(game, nextState, move)
-  }
+  const updatedDesk = executeMoveOnDesk(game.state, move)
+  return createNextGameState(game, updatedDesk, move)
 }
 
 export function resetGame(game: IGame): IGame {

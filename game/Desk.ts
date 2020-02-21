@@ -7,6 +7,7 @@ import {
   RANK_SEQUENCE,
   turnOver,
 } from './Card'
+import {Move, MoveType} from './Move'
 import {draw, IPile, Pile, placeCardOnTop, placePileOnTop} from './Pile'
 import {addCardToPile, ITableau, movePilePart, removeTopCardFromPile, revealTopCard} from './Tableau'
 import {lastItem} from './util'
@@ -35,13 +36,41 @@ export class Desk implements IDesk {
   }
 }
 
-export function drawCards(desk: IDesk, numberOfCards: number) {
+export function executeMove(desk: IDesk, move: Move): IDesk {
+  switch (move.move) {
+    case MoveType.DRAW_CARDS:
+      return drawCards(desk, move.drawnCards)
+    case MoveType.REDEAL:
+      return redeal(desk)
+    case MoveType.WASTE_TO_FOUNDATION:
+      return moveTopWasteCardToFoundation(desk)
+    case MoveType.WASTE_TO_TABLEAU:
+      return moveTopWasteCardToTableau(desk, desk.tableau.piles[move.pileIndex])
+    case MoveType.TABLEAU_TO_FOUNDATION:
+      return moveTopTableauPileCardToFoundation(desk, desk.tableau.piles[move.pileIndex])
+    case MoveType.REVEAL_TABLEAU_CARD:
+      return revealTopTableauPileCard(desk, desk.tableau.piles[move.pileIndex])
+    case MoveType.FOUNDATION_TO_TABLEAU:
+      return moveFoundationCardToTableauPile(desk, move.color, desk.tableau.piles[move.pileIndex])
+    case MoveType.TABLEAU_TO_TABLEAU:
+      return moveTableauPilePart(
+        desk,
+        desk.tableau.piles[move.sourcePileIndex],
+        desk.tableau.piles[move.sourcePileIndex].cards[move.topMovedCardIndex],
+        desk.tableau.piles[move.targetPileIndex],
+      )
+    default:
+      throw new Error(`Unknown move type: ${move && (move as any).move}`)
+  }
+}
+
+function drawCards(desk: IDesk, numberOfCards: number) {
   const [stockRemainder, drawnCards] = draw(desk.stock, numberOfCards)
   const newWaste = placePileOnTop(desk.waste, new Pile(drawnCards.map((card) => turnOver(card))))
   return new Desk(stockRemainder, newWaste, desk.foundation, desk.tableau)
 }
 
-export function redeal(desk: IDesk) {
+function redeal(desk: IDesk) {
   if (desk.stock.cards.length) {
     throw new Error('Cannot redeal if there are cards in the stock')
   }
@@ -54,7 +83,7 @@ export function redeal(desk: IDesk) {
   )
 }
 
-export function moveTopWasteCardToFoundation(desk: IDesk): IDesk {
+function moveTopWasteCardToFoundation(desk: IDesk): IDesk {
   if (!desk.waste.cards.length) {
     throw new Error('There is no card on the waste pile')
   }
@@ -70,7 +99,7 @@ export function moveTopWasteCardToFoundation(desk: IDesk): IDesk {
   )
 }
 
-export function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDesk {
+function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDesk {
   if (!desk.waste.cards.length) {
     throw new Error('There is no card on the waste pile')
   }
@@ -96,7 +125,7 @@ export function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDes
   )
 }
 
-export function moveTopTableauPileCardToFoundation(desk: IDesk, tableauPile: IPile): IDesk {
+function moveTopTableauPileCardToFoundation(desk: IDesk, tableauPile: IPile): IDesk {
   const [newTableau, cardToPlace] = removeTopCardFromPile(desk.tableau, tableauPile)
   const newFoundation = addCardToFoundation(desk.foundation, cardToPlace)
   return new Desk(
@@ -107,7 +136,7 @@ export function moveTopTableauPileCardToFoundation(desk: IDesk, tableauPile: IPi
   )
 }
 
-export function revealTopTableauPileCard(desk: IDesk, tableauPile: IPile): IDesk {
+function revealTopTableauPileCard(desk: IDesk, tableauPile: IPile): IDesk {
   const newTableau = revealTopCard(desk.tableau, tableauPile)
   return new Desk(
     desk.stock,
@@ -117,7 +146,7 @@ export function revealTopTableauPileCard(desk: IDesk, tableauPile: IPile): IDesk
   )
 }
 
-export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, tableauPile: IPile): IDesk {
+function moveFoundationCardToTableauPile(desk: IDesk, color: Color, tableauPile: IPile): IDesk {
   if (!desk.foundation[color].cards.length) {
     throw new Error(`The specified foundation (${color}) contains no cards`)
   }
@@ -145,7 +174,7 @@ export function moveFoundationCardToTableauPile(desk: IDesk, color: Color, table
   )
 }
 
-export function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMove: ICard, targetPile: IPile): IDesk {
+function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMove: ICard, targetPile: IPile): IDesk {
   if (
     targetPile.cards.length &&
     !isValidTableauSequence(lastItem(targetPile.cards), topCardToMove)
