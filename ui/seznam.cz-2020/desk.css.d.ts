@@ -2,12 +2,15 @@
 // Please do not change this file!
 interface CssExports {
   'desk': string;
+  'foundationPile': string;
   'greenS': string;
   'greenSImage': string;
   'greenSImageWrapper': string;
   'greenSInnerImageWrapper': string;
+  'separator': string;
   'stock': string;
   'topBar': string;
+  'topBarItem': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

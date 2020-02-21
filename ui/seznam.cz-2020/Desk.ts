@@ -16,23 +16,23 @@ export default augmentor(function Desk() {
   return html`
     <klondike-desk class=${style.desk} style="background: ${settings.deskColor.background}">
       <div class=${style.topBar} style="background: ${settings.deskColor.topBar}">
-        <div class=${style.stock}>
+        <div class="${style.stock} ${style.topBarItem}">
           ${EmptyPilePlaceholder()}
         </div>
-        <div>
+        <div class=${style.topBarItem}>
           ${EmptyPilePlaceholder()}
         </div>
-        <div></div>
-        <div>
+        <div class=${style.separator}></div>
+        <div class="${style.foundationPile} ${style.topBarItem}">
           ${FoundationPile(Color.SPADES, {cards: []})}
         </div>
-        <div>
+        <div class="${style.foundationPile} ${style.topBarItem}">
           ${FoundationPile(Color.HEARTHS, {cards: []})}
         </div>
-        <div>
+        <div class="${style.foundationPile} ${style.topBarItem}">
           ${FoundationPile(Color.CLUBS, {cards: []})}
         </div>
-        <div>
+        <div class="${style.foundationPile} ${style.topBarItem}">
           ${FoundationPile(Color.DIAMONDS, {cards: []})}
         </div>
       </div>

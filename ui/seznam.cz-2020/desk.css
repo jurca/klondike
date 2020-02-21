@@ -39,6 +39,12 @@
   }
 }
 
+:local(.topBarItem) {
+  display: flex;
+
+  align-items: center;
+}
+
 :local(.stock) {
   margin-right: 3vh; /* default for portrait orientation */
 }
@@ -46,6 +52,20 @@
 @media (min-aspect-ratio: 1/1) { /* landscape orientation */
   :local(.stock) {
     margin-right: 3vw;
+  }
+}
+
+:local(.separator) {
+  flex-grow: 1;
+}
+
+:local(.foundationPile) {
+  margin-left: 3vh; /* default for portrait orientation */
+}
+
+@media (min-aspect-ratio: 1/1) { /* landscape orientation */
+  :local(.foundationPile) {
+    margin-left: 3vw;
   }
 }
 
