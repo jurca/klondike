@@ -1,12 +1,18 @@
 import {html, render} from 'lighterhtml'
-import {createNewGame} from '../../game/Game'
+import {createNewGame, executeMove, MoveType} from '../../game/Game'
 import Desk from './Desk'
 
 const uiRoot = document.getElementById('app')!
-const defaultGame = createNewGame({
-  drawnCards: 3,
-  tableauPiles: 7,
-})
+const defaultGame = executeMove(
+  createNewGame({
+    drawnCards: 3,
+    tableauPiles: 7,
+  }),
+  {
+    drawnCards: 6,
+    move: MoveType.DRAW_CARDS,
+  },
+)
 render(uiRoot, html`
   <div style="width: 100%; height: 100%;">
     ${Desk(defaultGame.state)}

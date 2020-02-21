@@ -15,6 +15,7 @@ interface CssExports {
   'tableau': string;
   'topBar': string;
   'topBarItem': string;
+  'waste': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

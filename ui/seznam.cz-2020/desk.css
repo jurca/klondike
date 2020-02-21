@@ -68,6 +68,18 @@
   }
 }
 
+:local(.waste) :local(.stackedCard):nth-last-child(2) ~ :local(.stackedCard):nth-last-child(1) {
+  left: 0.45em;
+}
+
+:local(.waste) :local(.stackedCard):nth-last-child(3) ~ :local(.stackedCard):nth-last-child(2) {
+  left: 0.45em;
+}
+
+:local(.waste) :local(.stackedCard):nth-last-child(3) ~ :local(.stackedCard):nth-last-child(1) {
+  left: 0.9em;
+}
+
 :local(.separator) {
   flex-grow: 1;
 }
