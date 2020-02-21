@@ -48,6 +48,8 @@
 
 :local(.stock) {
   margin-right: 3vmin;
+
+  cursor: pointer;
 }
 
 :local(.waste) :local(.stackedCard):nth-last-child(2) ~ :local(.stackedCard):nth-last-child(1) {

@@ -2,6 +2,8 @@ import {augmentor, useContext} from 'dom-augmentor'
 import {html} from 'lighterhtml'
 import {Color} from '../../game/Card'
 import {IDesk} from '../../game/Desk'
+import {IGame} from '../../game/Game'
+import {Move, MoveType} from '../../game/Move'
 import Card from './Card'
 import style from './desk.css'
 import GREEN_S from './deskBackground/s.svg'
@@ -12,7 +14,7 @@ import InlineSvg from './InlineSvg'
 import settingsContext from './settingsContext'
 import Tableau from './Tableau'
 
-export default augmentor(function Desk(deskState: IDesk) {
+export default augmentor(function Desk(deskState: IDesk, gameRules: IGame['rules'], onMove: (move: Move) => void) {
   const settings = useContext(settingsContext)
   const {deskStyle} = settings
 
@@ -20,7 +22,7 @@ export default augmentor(function Desk(deskState: IDesk) {
     <klondike-desk class=${style.desk} style="background: ${settings.deskColor.background}">
       <div class=${style.topBar} style="background: ${settings.deskColor.topBar}">
         <div class="${style.stock} ${style.topBarItem}">
-          <div class=${style.cardHolder}>
+          <div class=${style.cardHolder} onclick=${deskState.stock.cards.length ? onDraw : onRedeal}>
             ${EmptyPilePlaceholder()}
             ${deskState.stock.cards.map((card, cardIndex, {length}) =>
               html.for(card)`<div class=${style.stackedCard}>
@@ -96,4 +98,17 @@ export default augmentor(function Desk(deskState: IDesk) {
       </div>
     </klondike-desk>
   `
+
+  function onDraw() {
+    onMove({
+      drawnCards: gameRules.drawnCards,
+      move: MoveType.DRAW_CARDS,
+    })
+  }
+
+  function onRedeal() {
+    onMove({
+      move: MoveType.REDEAL,
+    })
+  }
 })
