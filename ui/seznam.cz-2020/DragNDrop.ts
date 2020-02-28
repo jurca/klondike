@@ -1,4 +1,4 @@
-import {augmentor, createContext, useContext, useEffect, useRef} from 'dom-augmentor'
+import {augmentor, createContext, useContext, useEffect, useMemo, useRef} from 'dom-augmentor'
 import {Hole, html} from 'lighterhtml'
 import getRectanglesOverlap from 'rectangle-overlap'
 import style from './dragNDrop.css'
@@ -35,11 +35,11 @@ export const DRAG_N_DROP_CONTEXT = createContext<IDragNDropContext>({
 
 export default augmentor(function DragNDrop(content: Hole, onElementDragged: DragCallback) {
   const {draggable, draggedElementPosition, dropAreas, ghost} = useContext(DRAG_N_DROP_CONTEXT)
-  useEffect(() => {
-    const onClickListener = onClick.bind(null, onElementDragged)
-    const onMouseUpListener = onMouseUp.bind(null, onElementDragged)
-    const onTouchEndListener = onTouchEnd.bind(null, onElementDragged)
+  const onClickListener = useMemo(() => onClick.bind(null, onElementDragged), [onElementDragged])
+  const onMouseUpListener = useMemo(() => onMouseUp.bind(null, onElementDragged), [onElementDragged])
+  const onTouchEndListener = useMemo(() => onTouchEnd.bind(null, onElementDragged), [onElementDragged])
 
+  useEffect(() => {
     for (const draggableElement of draggable) {
       draggableElement.addEventListener('mousedown', onMouseDown)
       draggableElement.addEventListener('touchstart', onTouchStart)
