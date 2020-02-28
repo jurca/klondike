@@ -5,6 +5,7 @@ interface CssExports {
   'pileCardHolder': string;
   'pileCardWrapper': string;
   'pileCards': string;
+  'pileDropArea': string;
   'tableau': string;
   'tableauContent': string;
 }

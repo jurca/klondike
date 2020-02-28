@@ -3,6 +3,7 @@
 interface CssExports {
   'cardHolder': string;
   'desk': string;
+  'deskContent': string;
   'foundationPile': string;
   'greenS': string;
   'greenSImage': string;

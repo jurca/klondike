@@ -1,6 +1,7 @@
 import {html} from 'lighterhtml'
 import {ITableau} from '../../game/Tableau'
 import Card from './Card'
+import DropArea from './DropArea'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import style from './tableau.css'
 
@@ -11,18 +12,20 @@ export default function Tableau(tableau: ITableau) {
         ${tableau.piles.map((pile) =>
           html.for(pile)`
             <div class=${style.pile}>
-              ${EmptyPilePlaceholder()}
-              <div class=${style.pileCards}>
-                ${pile.cards.map((card, cardIndex) =>
-                  html.for(card)`
-                    <div class=${style.pileCardHolder}>
-                      <div class=${style.pileCardWrapper}>
-                        ${Card(card, !!cardIndex)}
+              ${DropArea(html`
+                ${EmptyPilePlaceholder()}
+                <div class=${style.pileCards}>
+                  ${pile.cards.map((card, cardIndex) =>
+                    html.for(card)`
+                      <div class=${style.pileCardHolder}>
+                        <div class=${style.pileCardWrapper}>
+                          ${Card(card, !!cardIndex)}
+                        </div>
                       </div>
-                    </div>
-                  `,
-                )}
-              </div>
+                    `,
+                  )}
+                </div>
+              `, style.pileDropArea)}
             </div>
           `,
         )}
