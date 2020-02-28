@@ -1,16 +1,14 @@
-import {augmentor, createContext, useContext, useEffect, useMemo, useRef} from 'dom-augmentor'
+import {augmentor, createContext, useEffect, useMemo, useRef} from 'dom-augmentor'
 import {Hole, html} from 'lighterhtml'
 import getRectanglesOverlap from 'rectangle-overlap'
 import style from './dragNDrop.css'
 
 interface IDragNDropContext {
-  draggable: Set<Element>
   dragged: null | Element
-  ghost: null | Element
   selected: null | Element
-  dropAreas: Set<Element>
   currentDropArea: null | Element
   draggedElementOffset: {x: number, y: number}
+  draggedElementOriginalPosition: {x: number, y: number}
   draggedElementPosition: {x: number, y: number}
 }
 
@@ -18,9 +16,12 @@ type DragCallback = (draggedElement: Element, dropArea: Element) => void
 
 export const DRAG_N_DROP_CONTEXT = createContext<IDragNDropContext>({
   currentDropArea: null,
-  draggable: new Set(),
   dragged: null,
   draggedElementOffset: {
+    x: 0,
+    y: 0,
+  },
+  draggedElementOriginalPosition: {
     x: 0,
     y: 0,
   },
@@ -28,58 +29,47 @@ export const DRAG_N_DROP_CONTEXT = createContext<IDragNDropContext>({
     x: 0,
     y: 0,
   },
-  dropAreas: new Set(),
-  ghost: null,
   selected: null,
 })
 
 export default augmentor(function DragNDrop(content: Hole, onElementDragged: DragCallback) {
-  const {draggable, draggedElementPosition, dropAreas, ghost} = useContext(DRAG_N_DROP_CONTEXT)
   const onClickListener = useMemo(() => onClick.bind(null, onElementDragged), [onElementDragged])
   const onMouseUpListener = useMemo(() => onMouseUp.bind(null, onElementDragged), [onElementDragged])
   const onTouchEndListener = useMemo(() => onTouchEnd.bind(null, onElementDragged), [onElementDragged])
 
+  const containerRef = useRef<HTMLElement>(null)
+
   useEffect(() => {
-    for (const draggableElement of draggable) {
-      draggableElement.addEventListener('mousedown', onMouseDown)
-      draggableElement.addEventListener('touchstart', onTouchStart)
-      draggableElement.addEventListener('click', onClickListener)
-    }
-    for (const dropArea of dropAreas) {
-      dropArea.addEventListener('click', onClickListener)
+    const {current: container} = containerRef
+    if (container) {
+      container.addEventListener('mousedown', onMouseDown)
+      container.addEventListener('touchstart', onTouchStart)
+      container.addEventListener('click', onClickListener)
     }
 
-    addEventListener('mousemove', onMouseMove)
-    addEventListener('touchmove', onTouchMove)
+    const onMouseMoveListener = onMouseMove.bind(null, container)
+    const onTouchMoveListener = onTouchMove.bind(null, container)
+    addEventListener('mousemove', onMouseMoveListener)
+    addEventListener('touchmove', onTouchMoveListener)
     addEventListener('mouseup', onMouseUpListener)
     addEventListener('touchend', onTouchEndListener)
 
     return () => {
-      removeEventListener('mousemove', onMouseMove)
-      removeEventListener('touchmove', onTouchMove)
+      removeEventListener('mousemove', onMouseMoveListener)
+      removeEventListener('touchmove', onTouchMoveListener)
       removeEventListener('mouseup', onMouseUpListener)
       removeEventListener('touchend', onTouchEndListener)
+      if (container) {
+        container.removeEventListener('mousedown', onMouseDown)
+        container.removeEventListener('touchstart', onTouchStart)
+        container.removeEventListener('click', onClickListener)
+      }
     }
   })
-  const containerRef = useRef<HTMLElement>()
-  const containerPosition = containerRef.current?.getBoundingClientRect()
-  const ghostPosition = ghost && containerPosition && {
-    x: draggedElementPosition.x - containerPosition.x,
-    y: draggedElementPosition.y - containerPosition.y,
-  }
 
   return html`
     <drag-n-drop class=${style.container} ref=${containerRef}>
       ${content}
-      ${ghostPosition ?
-        html`
-          <div class=${style.ghost} style="transform: translate(${ghostPosition.x}px ${ghostPosition.y}px)">
-            ${ghost}
-          </div>
-        `
-      :
-        null
-      }
     </drag-n-drop>
   `
 })
@@ -131,16 +121,19 @@ function onDragStart(draggedElement: Element, pointerOnPagePosition: {x: number,
       x: bounds.x - pointerOnPagePosition.x,
       y: bounds.y - pointerOnPagePosition.y,
     },
+    draggedElementOriginalPosition: {
+      x: bounds.x,
+      y: bounds.y,
+    },
     draggedElementPosition: {
       x: bounds.x,
       y: bounds.y,
     },
-    ghost: draggedElement.cloneNode(true) as Element,
   })
 }
 
-function onTouchMove(event: Event): void {
-  if (!(event instanceof TouchEvent)) {
+function onTouchMove(container: null | HTMLElement, event: Event): void {
+  if (!container || !(event instanceof TouchEvent)) {
     return
   }
 
@@ -149,25 +142,25 @@ function onTouchMove(event: Event): void {
     return
   }
 
-  onDrag({
+  onDrag(container, {
     x: currentTouch.pageX,
     y: currentTouch.pageY,
   })
 }
 
-function onMouseMove(event: Event): void {
-  if (!(event instanceof MouseEvent) || !DRAG_N_DROP_CONTEXT.value.dragged) {
+function onMouseMove(container: null | HTMLElement, event: Event): void {
+  if (!container || !(event instanceof MouseEvent) || !DRAG_N_DROP_CONTEXT.value.dragged) {
     return
   }
 
-  onDrag({
+  onDrag(container, {
     x: event.pageX,
     y: event.pageY,
   })
 }
 
-function onDrag(pointerOnPagePosition: {x: number, y: number}): void {
-  const currentDropArea = [...DRAG_N_DROP_CONTEXT.value.dropAreas].find((candidateArea) => {
+function onDrag(container: HTMLElement, pointerOnPagePosition: {x: number, y: number}): void {
+  const currentDropArea = [...container.querySelectorAll('drop-area')].find((candidateArea) => {
     const bounds = candidateArea.getBoundingClientRect()
     return getRectanglesOverlap(bounds, {...pointerOnPagePosition, width: 1, height: 1})
   })
@@ -209,7 +202,6 @@ function onDragEnd(dragCallback: DragCallback) {
     ...DRAG_N_DROP_CONTEXT.value,
     currentDropArea: null,
     dragged: null,
-    ghost: null,
   })
 }
 
@@ -218,8 +210,9 @@ function onClick(dragCallback: DragCallback, {target}: Event): void {
     return
   }
 
-  if (DRAG_N_DROP_CONTEXT.value.selected && DRAG_N_DROP_CONTEXT.value.dropAreas.has(target)) {
-    dragCallback(DRAG_N_DROP_CONTEXT.value.selected, target)
+  const dropArea = target.closest('drop-area')
+  if (DRAG_N_DROP_CONTEXT.value.selected && dropArea) {
+    dragCallback(DRAG_N_DROP_CONTEXT.value.selected, dropArea)
     DRAG_N_DROP_CONTEXT.provide({
       ...DRAG_N_DROP_CONTEXT.value,
       selected: null,
@@ -227,10 +220,11 @@ function onClick(dragCallback: DragCallback, {target}: Event): void {
     return
   }
 
-  if (DRAG_N_DROP_CONTEXT.value.draggable.has(target)) {
+  const draggable = target.closest('ui-draggable')
+  if (draggable) {
     DRAG_N_DROP_CONTEXT.provide({
       ...DRAG_N_DROP_CONTEXT.value,
-      selected: target === DRAG_N_DROP_CONTEXT.value.selected ? null : target,
+      selected: draggable === DRAG_N_DROP_CONTEXT.value.selected ? null : draggable,
     })
   }
 }

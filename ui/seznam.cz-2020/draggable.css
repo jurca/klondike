@@ -1,0 +1,7 @@
+:local(.draggable) {
+  display: block;
+}
+
+:local(.isDragged) {
+  z-index: 1;
+}
