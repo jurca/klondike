@@ -97,10 +97,13 @@ function onTouchStart(event: Event): void {
   }
 
   currentlyTrackedTouchId = currentTouch.identifier
-  onDragStart(currentTouch.target, {
-    x: currentTouch.screenX,
-    y: currentTouch.screenY,
-  })
+  const dragContainer = currentTouch.target.closest('ui-draggable')
+  if (dragContainer) {
+    onDragStart(dragContainer, {
+      x: currentTouch.pageX,
+      y: currentTouch.pageY,
+    })
+  }
 
   event.preventDefault()
 }
@@ -110,20 +113,23 @@ function onMouseDown(event: Event): void {
     return
   }
 
-  onDragStart(event.target, {
-    x: event.screenX,
-    y: event.screenY,
-  })
+  const dragContainer = event.target.closest('ui-draggable')
+  if (dragContainer) {
+    onDragStart(dragContainer, {
+      x: event.pageX,
+      y: event.pageY,
+    })
+  }
 }
 
-function onDragStart(draggedElement: Element, pointerOnScreenPosition: {x: number, y: number}): void {
+function onDragStart(draggedElement: Element, pointerOnPagePosition: {x: number, y: number}): void {
   const bounds = draggedElement.getBoundingClientRect()
   DRAG_N_DROP_CONTEXT.provide({
     ...DRAG_N_DROP_CONTEXT.value,
     dragged: draggedElement,
     draggedElementOffset: {
-      x: bounds.x - pointerOnScreenPosition.x,
-      y: bounds.y - pointerOnScreenPosition.y,
+      x: bounds.x - pointerOnPagePosition.x,
+      y: bounds.y - pointerOnPagePosition.y,
     },
     draggedElementPosition: {
       x: bounds.x,
@@ -144,8 +150,8 @@ function onTouchMove(event: Event): void {
   }
 
   onDrag({
-    x: currentTouch.screenX,
-    y: currentTouch.screenY,
+    x: currentTouch.pageX,
+    y: currentTouch.pageY,
   })
 }
 
@@ -155,23 +161,23 @@ function onMouseMove(event: Event): void {
   }
 
   onDrag({
-    x: event.screenX,
-    y: event.screenY,
+    x: event.pageX,
+    y: event.pageY,
   })
 }
 
-function onDrag(pointerOnScreenPosition: {x: number, y: number}): void {
+function onDrag(pointerOnPagePosition: {x: number, y: number}): void {
   const currentDropArea = [...DRAG_N_DROP_CONTEXT.value.dropAreas].find((candidateArea) => {
     const bounds = candidateArea.getBoundingClientRect()
-    return getRectanglesOverlap(bounds, {...pointerOnScreenPosition, width: 1, height: 1})
+    return getRectanglesOverlap(bounds, {...pointerOnPagePosition, width: 1, height: 1})
   })
 
   DRAG_N_DROP_CONTEXT.provide({
     ...DRAG_N_DROP_CONTEXT.value,
     currentDropArea: currentDropArea || null,
     draggedElementPosition: {
-      x: pointerOnScreenPosition.x + DRAG_N_DROP_CONTEXT.value.draggedElementOffset.x,
-      y: pointerOnScreenPosition.y + DRAG_N_DROP_CONTEXT.value.draggedElementOffset.y,
+      x: pointerOnPagePosition.x + DRAG_N_DROP_CONTEXT.value.draggedElementOffset.x,
+      y: pointerOnPagePosition.y + DRAG_N_DROP_CONTEXT.value.draggedElementOffset.y,
     },
   })
 }
