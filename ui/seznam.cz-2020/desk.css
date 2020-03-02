@@ -141,3 +141,7 @@
   background: center center no-repeat transparent;
   background-size: cover;
 }
+
+:local(.greenSImage) svg {
+  width: 100%;
+}
