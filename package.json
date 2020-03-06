@@ -54,7 +54,7 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "dom-augmentor": "^2.0.5",
-    "lighterhtml": "^2.0.9",
+    "lighterhtml": "^2.1.0",
     "rectangle-overlap": "^2.0.0"
   }
 }
