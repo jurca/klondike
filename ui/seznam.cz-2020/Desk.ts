@@ -1,8 +1,9 @@
 import {html, neverland, useContext} from 'neverland'
-import {Color} from '../../game/Card'
+import {Color, ICard} from '../../game/Card'
 import {IDesk} from '../../game/Desk'
 import {IGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
+import {lastItemOrNull} from '../../game/util'
 import Card from './Card'
 import style from './desk.css'
 import GREEN_S from './deskBackground/s.svg'
@@ -135,6 +136,24 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
   }
 
   function onElementDragged(draggedElement: Element, dropArea: Element): void {
-    console.log(draggedElement, dropArea)
+    const draggedCard = (draggedElement as Element & {entity: unknown}).entity as ICard
+    const dropAreaId = (dropArea as Element & {areaId: unknown}).areaId as (Color | {pileIndex: number})
+    console.log(draggedCard, dropAreaId)
+
+    if (Object.values(Color).includes(dropAreaId as Color)) {
+      if (draggedCard === lastItemOrNull(deskState.waste.cards)) {
+        if (draggedCard.color === dropAreaId) {
+          onMove({
+            move: MoveType.WASTE_TO_FOUNDATION,
+          })
+        }
+      } else {
+        const pileIndex = deskState.tableau.piles.findIndex((pile) => pile.cards.includes(draggedCard))
+        onMove({
+          move: MoveType.TABLEAU_TO_FOUNDATION,
+          pileIndex,
+        })
+      }
+    }
   }
 })

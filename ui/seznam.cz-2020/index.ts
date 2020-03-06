@@ -13,11 +13,13 @@ let game = createNewGame({
 rerenderUI()
 
 function rerenderUI() {
-  render(uiRoot, html`
-    <div style="width: 100%; height: 100%;">
-      ${Desk(game.state, game.rules, onMove)}
-    </div>
-  `)
+  requestAnimationFrame(() => {
+    render(uiRoot, html`
+      <div style="width: 100%; height: 100%;">
+        ${Desk(game.state, game.rules, onMove)}
+      </div>
+    `)
+  })
 }
 
 function onMove(move: Move): void {
