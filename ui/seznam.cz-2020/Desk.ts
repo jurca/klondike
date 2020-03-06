@@ -154,6 +154,24 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
           pileIndex,
         })
       }
+      return
+    }
+
+    const {pileIndex: dropPileIndex} = dropAreaId as {pileIndex: number}
+    if (draggedCard === lastItemOrNull(deskState.waste.cards)) {
+      onMove({
+        move: MoveType.WASTE_TO_TABLEAU,
+        pileIndex: dropPileIndex,
+      })
+    } else if (deskState.tableau.piles.some((pile) => pile.cards.includes(draggedCard))) {
+      const sourcePileIndex = deskState.tableau.piles.findIndex((pile) => pile.cards.includes(draggedCard))
+      const movedCardIndex = deskState.tableau.piles[sourcePileIndex].cards.indexOf(draggedCard)
+      onMove({
+        move: MoveType.TABLEAU_TO_TABLEAU,
+        sourcePileIndex,
+        targetPileIndex: dropPileIndex,
+        topMovedCardIndex: movedCardIndex,
+      })
     }
   }
 })
