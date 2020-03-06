@@ -3,5 +3,6 @@
 }
 
 :local(.isDragged) {
+  position: relative;
   z-index: 1;
 }
