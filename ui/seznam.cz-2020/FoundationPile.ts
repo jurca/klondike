@@ -1,11 +1,9 @@
 import {html, neverland, useContext} from 'neverland'
 import {Color} from '../../game/Card'
-import {IPile} from '../../game/Pile'
-import Card from './Card'
 import style from './foundationPile.css'
 import settingsContext from './settingsContext'
 
-export default neverland<any>(function FoundationPile(color: Color, pile: IPile) {
+export default neverland<any>(function FoundationPile(color: Color) {
   const settings = useContext(settingsContext)
   const {darK: darkColor, light: lightColor} = settings.foundationBackgroundColor
 
@@ -34,9 +32,6 @@ export default neverland<any>(function FoundationPile(color: Color, pile: IPile)
           null
         }
       </div>
-      ${pile.cards.map((card) =>
-        html`<div class=${style.card}>${Card(card)}</div>`,
-      )}
     </klondike-foundation-pile>
   `
 })

@@ -55,9 +55,11 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
                   ${DropArea(Color.SPADES, html`
-                    ${FoundationPile(Color.SPADES, {cards: []})}
-                    ${deskState.foundation[Color.SPADES].cards.map((card) =>
-                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                    ${FoundationPile(Color.SPADES)}
+                    ${deskState.foundation[Color.SPADES].cards.map((card, cardIndex, {length}) =>
+                      html`<div class=${style.stackedCard}>
+                        ${cardIndex === length - 1 ? draggable(card, Card(card)) : Card(card)}
+                      </div>`,
                     )}
                   `)}
                 </div>
@@ -65,9 +67,11 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
                   ${DropArea(Color.HEARTHS, html`
-                    ${FoundationPile(Color.HEARTHS, {cards: []})}
-                    ${deskState.foundation[Color.HEARTHS].cards.map((card) =>
-                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                    ${FoundationPile(Color.HEARTHS)}
+                    ${deskState.foundation[Color.HEARTHS].cards.map((card, cardIndex, {length}) =>
+                      html`<div class=${style.stackedCard}>
+                        ${cardIndex === length - 1 ? draggable(card, Card(card)) : Card(card)}
+                      </div>`,
                     )}
                   `)}
                 </div>
@@ -75,9 +79,11 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
                   ${DropArea(Color.CLUBS, html`
-                    ${FoundationPile(Color.CLUBS, {cards: []})}
-                    ${deskState.foundation[Color.CLUBS].cards.map((card) =>
-                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                    ${FoundationPile(Color.CLUBS)}
+                    ${deskState.foundation[Color.CLUBS].cards.map((card, cardIndex, {length}) =>
+                      html`<div class=${style.stackedCard}>
+                        ${cardIndex === length - 1 ? draggable(card, Card(card)) : Card(card)}
+                      </div>`,
                     )}
                   `)}
                 </div>
@@ -85,9 +91,11 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
                   ${DropArea(Color.DIAMONDS, html`
-                    ${FoundationPile(Color.DIAMONDS, {cards: []})}
-                    ${deskState.foundation[Color.DIAMONDS].cards.map((card) =>
-                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                    ${FoundationPile(Color.DIAMONDS)}
+                    ${deskState.foundation[Color.DIAMONDS].cards.map((card, cardIndex, {length}) =>
+                      html`<div class=${style.stackedCard}>
+                        ${cardIndex === length - 1 ? draggable(card, Card(card)) : Card(card)}
+                      </div>`,
                     )}
                   `)}
                 </div>
@@ -171,6 +179,12 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
         sourcePileIndex,
         targetPileIndex: dropPileIndex,
         topMovedCardIndex: movedCardIndex,
+      })
+    } else {
+      onMove({
+        color: draggedCard.color,
+        move: MoveType.FOUNDATION_TO_TABLEAU,
+        pileIndex: dropPileIndex,
       })
     }
   }
