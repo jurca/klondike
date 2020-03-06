@@ -1,18 +1,16 @@
-import {augmentor, useContext} from 'dom-augmentor'
-import {html} from 'lighterhtml'
+import {html, neverland, useContext} from 'neverland'
 import {Color} from '../../game/Card'
 import {IPile} from '../../game/Pile'
 import Card from './Card'
 import style from './foundationPile.css'
-import {hookedHtml} from './hookedHtml'
 import settingsContext from './settingsContext'
 
-export default augmentor(function FoundationPile(color: Color, pile: IPile) {
+export default neverland<any>(function FoundationPile(color: Color, pile: IPile) {
   const settings = useContext(settingsContext)
   const {darK: darkColor, light: lightColor} = settings.foundationBackgroundColor
 
   // Kudos for (most of the) minification of the original SVG files goes to: https://jakearchibald.github.io/svgomg/
-  return hookedHtml(color)`
+  return html`
     <klondike-foundation-pile class=${style.pile}>
       <div class=${style.card}>
         ${color === Color.CLUBS ?
@@ -37,7 +35,7 @@ export default augmentor(function FoundationPile(color: Color, pile: IPile) {
         }
       </div>
       ${pile.cards.map((card) =>
-        html.for(card)`<div class=${style.card}>${Card(card)}</div>`,
+        html`<div class=${style.card}>${Card(card)}</div>`,
       )}
     </klondike-foundation-pile>
   `

@@ -1,4 +1,4 @@
-import {html, render} from 'lighterhtml'
+import {html, render} from 'neverland'
 import {createNewGame, executeMove} from '../../game/Game'
 import {Move} from '../../game/Move'
 import Desk from './Desk'
@@ -15,7 +15,7 @@ rerenderUI()
 function rerenderUI() {
   render(uiRoot, html`
     <div style="width: 100%; height: 100%;">
-      ${Desk('game 1', game.state, game.rules, onMove)}
+      ${Desk(game.state, game.rules, onMove)}
     </div>
   `)
 }

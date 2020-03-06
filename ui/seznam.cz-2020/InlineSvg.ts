@@ -1,4 +1,4 @@
-import {html} from 'lighterhtml'
+import {html} from 'neverland'
 
 export default function InlineSvg(svgCode: string) {
   const fragments = [svgCode]

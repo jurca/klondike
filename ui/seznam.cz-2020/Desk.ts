@@ -1,5 +1,4 @@
-import {augmentor, useContext} from 'dom-augmentor'
-import {html} from 'lighterhtml'
+import {html, neverland, useContext} from 'neverland'
 import {Color} from '../../game/Card'
 import {IDesk} from '../../game/Desk'
 import {IGame} from '../../game/Game'
@@ -13,32 +12,25 @@ import DragNDrop from './DragNDrop'
 import DropArea from './DropArea'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
-import {hookedHtml} from './hookedHtml'
 import InlineSvg from './InlineSvg'
 import settingsContext from './settingsContext'
 import Tableau from './Tableau'
 
-export default augmentor(function Desk(
-  gameId: string,
-  deskState: IDesk,
-  gameRules: IGame['rules'],
-  onMove: (move: Move) => void,
-) {
+export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['rules'], onMove: (move: Move) => void) {
   const settings = useContext(settingsContext)
   const {deskStyle} = settings
 
-  return hookedHtml(gameId)`
+  return html`
     <klondike-desk class=${style.desk} style="background: ${settings.deskColor.background}">
       ${DragNDrop(
-        'game desk',
         html`
           <div class=${style.deskContent}>
             <div class=${style.topBar} style="background: ${settings.deskColor.topBar}">
               <div class="${style.stock} ${style.topBarItem}">
                 <div class=${style.cardHolder} onclick=${deskState.stock.cards.length ? onDraw : onRedeal}>
-                  ${EmptyPilePlaceholder('stock')}
+                  ${EmptyPilePlaceholder()}
                   ${deskState.stock.cards.map((card, cardIndex, {length}) =>
-                    html.for(card)`<div class=${style.stackedCard}>
+                    html`<div class=${style.stackedCard}>
                       ${Card(card, length - cardIndex < Math.min(3, length))}
                     </div>`,
                   )}
@@ -46,11 +38,11 @@ export default augmentor(function Desk(
               </div>
               <div class="${style.waste} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
-                  ${EmptyPilePlaceholder('waste')}
+                  ${EmptyPilePlaceholder()}
                   ${deskState.waste.cards.map((card, cardIndex, {length}) =>
-                    html.for(card)`<div class=${style.stackedCard}>
+                    html`<div class=${style.stackedCard}>
                       ${cardIndex === length - 1 ?
-                        draggable(JSON.stringify(card), Card(card, length - cardIndex < Math.min(3, length)))
+                        draggable(Card(card, length - cardIndex < Math.min(3, length)))
                       :
                         Card(card, length - cardIndex < Math.min(3, length))
                       }
@@ -64,7 +56,7 @@ export default augmentor(function Desk(
                   ${DropArea(html`
                     ${FoundationPile(Color.SPADES, {cards: []})}
                     ${deskState.foundation[Color.SPADES].cards.map((card) =>
-                      html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
                     )}
                   `)}
                 </div>
@@ -74,7 +66,7 @@ export default augmentor(function Desk(
                   ${DropArea(html`
                     ${FoundationPile(Color.HEARTHS, {cards: []})}
                     ${deskState.foundation[Color.HEARTHS].cards.map((card) =>
-                      html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
                     )}
                   `)}
                 </div>
@@ -84,7 +76,7 @@ export default augmentor(function Desk(
                   ${DropArea(html`
                     ${FoundationPile(Color.CLUBS, {cards: []})}
                     ${deskState.foundation[Color.CLUBS].cards.map((card) =>
-                      html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
                     )}
                   `)}
                 </div>
@@ -94,7 +86,7 @@ export default augmentor(function Desk(
                   ${DropArea(html`
                     ${FoundationPile(Color.DIAMONDS, {cards: []})}
                     ${deskState.foundation[Color.DIAMONDS].cards.map((card) =>
-                      html.for(card)`<div class=${style.stackedCard}>${Card(card)}</div>`,
+                      html`<div class=${style.stackedCard}>${Card(card)}</div>`,
                     )}
                   `)}
                 </div>
