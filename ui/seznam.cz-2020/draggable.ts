@@ -1,7 +1,8 @@
 import {augmentor, useContext, useEffect, useRef} from 'dom-augmentor'
-import {Hole, html} from 'lighterhtml'
+import {Hole} from 'lighterhtml'
 import styles from './draggable.css'
 import {DRAG_N_DROP_CONTEXT} from './DragNDrop'
+import {html} from './hookedHtml'
 
 export default augmentor(function draggable(content: Hole): Hole {
   const dragNDropContext = useContext(DRAG_N_DROP_CONTEXT)
