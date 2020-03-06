@@ -94,9 +94,9 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
             </div>
 
             <div class=${style.main}>
-              ${deskStyle === DeskStyle.GREEN_S ?
-                html`
-                  <div class=${style.greenS}>
+              <div class=${style.background}>
+                ${deskStyle === DeskStyle.GREEN_S ?
+                  html`
                     <div class=${style.greenSImageWrapper}>
                       <div class=${style.greenSInnerImageWrapper}>
                         <div class=${style.greenSImage}>
@@ -104,11 +104,11 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
                         </div>
                       </div>
                     </div>
-                  </div>
-                `
-              :
-                null
-              }
+                  `
+                :
+                  null
+                }
+              </div>
 
               <div class=${style.tableau}>
                 ${Tableau(deskState.tableau)}
