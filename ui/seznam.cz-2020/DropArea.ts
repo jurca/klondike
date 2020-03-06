@@ -1,8 +1,7 @@
 import classnames from 'classnames'
-import {augmentor} from 'dom-augmentor'
 import {Hole, html} from 'lighterhtml'
 import styles from './dropArea.css'
 
-export default augmentor(function DropArea(content: Hole, className?: string) {
+export default function DropArea(content: Hole | HTMLElement, className?: string) {
   return html`<drop-area class=${classnames(styles.dropArea, className)}>${content}</drop-area>`
-})
+}
