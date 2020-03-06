@@ -9,11 +9,11 @@ export default function Tableau(tableau: ITableau) {
   return html`
     <klondike-tableau class=${style.tableau}>
       <div class=${style.tableauContent}>
-        ${tableau.piles.map((pile) =>
+        ${tableau.piles.map((pile, index) =>
           html.for(pile)`
             <div class=${style.pile}>
               ${DropArea(html`
-                ${EmptyPilePlaceholder()}
+                ${EmptyPilePlaceholder(`pile ${index}`)}
                 <div class=${style.pileCards}>
                   ${pile.cards.map((card, cardIndex) =>
                     html.for(card)`

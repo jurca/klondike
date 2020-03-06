@@ -13,23 +13,30 @@ import DragNDrop from './DragNDrop'
 import DropArea from './DropArea'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
+import {hookedHtml} from './hookedHtml'
 import InlineSvg from './InlineSvg'
 import settingsContext from './settingsContext'
 import Tableau from './Tableau'
 
-export default augmentor(function Desk(deskState: IDesk, gameRules: IGame['rules'], onMove: (move: Move) => void) {
+export default augmentor(function Desk(
+  gameId: string,
+  deskState: IDesk,
+  gameRules: IGame['rules'],
+  onMove: (move: Move) => void,
+) {
   const settings = useContext(settingsContext)
   const {deskStyle} = settings
 
-  return html`
+  return hookedHtml(gameId)`
     <klondike-desk class=${style.desk} style="background: ${settings.deskColor.background}">
       ${DragNDrop(
+        'game desk',
         html`
           <div class=${style.deskContent}>
             <div class=${style.topBar} style="background: ${settings.deskColor.topBar}">
               <div class="${style.stock} ${style.topBarItem}">
                 <div class=${style.cardHolder} onclick=${deskState.stock.cards.length ? onDraw : onRedeal}>
-                  ${EmptyPilePlaceholder()}
+                  ${EmptyPilePlaceholder('stock')}
                   ${deskState.stock.cards.map((card, cardIndex, {length}) =>
                     html.for(card)`<div class=${style.stackedCard}>
                       ${Card(card, length - cardIndex < Math.min(3, length))}
@@ -39,11 +46,11 @@ export default augmentor(function Desk(deskState: IDesk, gameRules: IGame['rules
               </div>
               <div class="${style.waste} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
-                  ${EmptyPilePlaceholder()}
+                  ${EmptyPilePlaceholder('waste')}
                   ${deskState.waste.cards.map((card, cardIndex, {length}) =>
                     html.for(card)`<div class=${style.stackedCard}>
                       ${cardIndex === length - 1 ?
-                        draggable(Card(card, length - cardIndex < Math.min(3, length)))
+                        draggable(JSON.stringify(card), Card(card, length - cardIndex < Math.min(3, length)))
                       :
                         Card(card, length - cardIndex < Math.min(3, length))
                       }

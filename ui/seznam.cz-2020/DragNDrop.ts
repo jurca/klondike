@@ -1,7 +1,8 @@
 import {augmentor, createContext, useEffect, useMemo, useRef} from 'dom-augmentor'
-import {Hole, html} from 'lighterhtml'
+import {Hole} from 'lighterhtml'
 import getRectanglesOverlap from 'rectangle-overlap'
 import style from './dragNDrop.css'
+import {hookedHtml} from './hookedHtml'
 
 interface IDragNDropContext {
   dragged: null | Element
@@ -32,7 +33,11 @@ export const DRAG_N_DROP_CONTEXT = createContext<IDragNDropContext>({
   selected: null,
 })
 
-export default augmentor(function DragNDrop(content: Hole, onElementDragged: DragCallback) {
+export default augmentor(function DragNDrop(
+  areaId: string,
+  content: Hole | HTMLElement,
+  onElementDragged: DragCallback,
+) {
   const onClickListener = useMemo(() => onClick.bind(null, onElementDragged), [onElementDragged])
   const onMouseUpListener = useMemo(() => onMouseUp.bind(null, onElementDragged), [onElementDragged])
   const onTouchEndListener = useMemo(() => onTouchEnd.bind(null, onElementDragged), [onElementDragged])
@@ -67,7 +72,7 @@ export default augmentor(function DragNDrop(content: Hole, onElementDragged: Dra
     }
   })
 
-  return html`
+  return hookedHtml(`drag-n-drop:${areaId}`)`
     <drag-n-drop class=${style.container} ref=${containerRef}>
       ${content}
     </drag-n-drop>

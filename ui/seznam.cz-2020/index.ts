@@ -15,7 +15,7 @@ rerenderUI()
 function rerenderUI() {
   render(uiRoot, html`
     <div style="width: 100%; height: 100%;">
-      ${Desk(game.state, game.rules, onMove)}
+      ${Desk('game 1', game.state, game.rules, onMove)}
     </div>
   `)
 }

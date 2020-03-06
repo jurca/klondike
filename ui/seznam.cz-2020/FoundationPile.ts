@@ -4,6 +4,7 @@ import {Color} from '../../game/Card'
 import {IPile} from '../../game/Pile'
 import Card from './Card'
 import style from './foundationPile.css'
+import {hookedHtml} from './hookedHtml'
 import settingsContext from './settingsContext'
 
 export default augmentor(function FoundationPile(color: Color, pile: IPile) {
@@ -11,7 +12,7 @@ export default augmentor(function FoundationPile(color: Color, pile: IPile) {
   const {darK: darkColor, light: lightColor} = settings.foundationBackgroundColor
 
   // Kudos for (most of the) minification of the original SVG files goes to: https://jakearchibald.github.io/svgomg/
-  return html`
+  return hookedHtml(color)`
     <klondike-foundation-pile class=${style.pile}>
       <div class=${style.card}>
         ${color === Color.CLUBS ?
@@ -36,7 +37,7 @@ export default augmentor(function FoundationPile(color: Color, pile: IPile) {
         }
       </div>
       ${pile.cards.map((card) =>
-        html`<div class=${style.card}>${Card(card)}</div>`,
+        html.for(card)`<div class=${style.card}>${Card(card)}</div>`,
       )}
     </klondike-foundation-pile>
   `
