@@ -2,9 +2,8 @@ import {augmentor, useContext} from 'dom-augmentor'
 import {html} from 'lighterhtml'
 import {Color} from '../../game/Card'
 import {IPile} from '../../game/Pile'
-// @ts-ignore
-import style from './foundationPile.css'
 import Card from './Card'
+import style from './foundationPile.css'
 import settingsContext from './settingsContext'
 
 export default augmentor(function FoundationPile(color: Color, pile: IPile) {
