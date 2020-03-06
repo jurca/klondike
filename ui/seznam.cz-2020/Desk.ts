@@ -32,7 +32,7 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
                   ${EmptyPilePlaceholder()}
                   ${deskState.stock.cards.map((card, cardIndex, {length}) =>
                     html`<div class=${style.stackedCard}>
-                      ${Card(card, length - cardIndex < Math.min(3, length))}
+                      ${Card(card, null, length - cardIndex < Math.min(3, length))}
                     </div>`,
                   )}
                 </div>
@@ -43,9 +43,9 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
                   ${deskState.waste.cards.map((card, cardIndex, {length}) =>
                     html`<div class=${style.stackedCard}>
                       ${cardIndex === length - 1 ?
-                        draggable(card, Card(card, length - cardIndex < Math.min(3, length)))
+                        draggable(card, Card(card, null, length - cardIndex < Math.min(3, length)))
                       :
-                        Card(card, length - cardIndex < Math.min(3, length))
+                        Card(card, null, length - cardIndex < Math.min(3, length))
                       }
                     </div>`,
                   )}
@@ -112,7 +112,7 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               </div>
 
               <div class=${style.tableau}>
-                ${Tableau(deskState.tableau)}
+                ${Tableau(deskState.tableau, onRevealCard)}
               </div>
             </div>
           </div>
@@ -173,5 +173,12 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
         topMovedCardIndex: movedCardIndex,
       })
     }
+  }
+
+  function onRevealCard(card: ICard): void {
+    onMove({
+      move: MoveType.REVEAL_TABLEAU_CARD,
+      pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
+    })
   }
 })

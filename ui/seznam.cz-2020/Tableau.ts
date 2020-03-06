@@ -1,5 +1,5 @@
 import {html} from 'neverland'
-import {Side} from '../../game/Card'
+import {ICard, Side} from '../../game/Card'
 import {ITableau} from '../../game/Tableau'
 import Card from './Card'
 import draggable from './draggable'
@@ -7,7 +7,7 @@ import DropArea from './DropArea'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import style from './tableau.css'
 
-export default function Tableau(tableau: ITableau) {
+export default function Tableau(tableau: ITableau, onRevealCard: (card: ICard) => void) {
   return html`
     <klondike-tableau class=${style.tableau}>
       <div class=${style.tableauContent}>
@@ -21,7 +21,11 @@ export default function Tableau(tableau: ITableau) {
                     html`
                       <div class=${style.pileCardHolder}>
                         <div class=${style.pileCardWrapper}>
-                          ${card.side === Side.FACE ? draggable(card, Card(card, !!cardIndex)) : Card(card, !!cardIndex)}
+                          ${card.side === Side.FACE ?
+                            draggable(card, Card(card, null, !!cardIndex))
+                          :
+                            Card(card, cardIndex === pile.cards.length - 1 ? onRevealCard : null, !!cardIndex)
+                          }
                         </div>
                       </div>
                     `,
