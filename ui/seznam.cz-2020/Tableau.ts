@@ -1,6 +1,8 @@
 import {html} from 'neverland'
+import {Side} from '../../game/Card'
 import {ITableau} from '../../game/Tableau'
 import Card from './Card'
+import draggable from './draggable'
 import DropArea from './DropArea'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import style from './tableau.css'
@@ -19,7 +21,7 @@ export default function Tableau(tableau: ITableau) {
                     html`
                       <div class=${style.pileCardHolder}>
                         <div class=${style.pileCardWrapper}>
-                          ${Card(card, !!cardIndex)}
+                          ${card.side === Side.FACE ? draggable(Card(card, !!cardIndex)) : Card(card, !!cardIndex)}
                         </div>
                       </div>
                     `,
