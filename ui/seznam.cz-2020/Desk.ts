@@ -42,7 +42,7 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
                   ${deskState.waste.cards.map((card, cardIndex, {length}) =>
                     html`<div class=${style.stackedCard}>
                       ${cardIndex === length - 1 ?
-                        draggable(Card(card, length - cardIndex < Math.min(3, length)))
+                        draggable(card, Card(card, length - cardIndex < Math.min(3, length)))
                       :
                         Card(card, length - cardIndex < Math.min(3, length))
                       }
@@ -53,7 +53,7 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               <div class=${style.separator}></div>
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
-                  ${DropArea(html`
+                  ${DropArea(Color.SPADES, html`
                     ${FoundationPile(Color.SPADES, {cards: []})}
                     ${deskState.foundation[Color.SPADES].cards.map((card) =>
                       html`<div class=${style.stackedCard}>${Card(card)}</div>`,
@@ -63,7 +63,7 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               </div>
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
-                  ${DropArea(html`
+                  ${DropArea(Color.HEARTHS, html`
                     ${FoundationPile(Color.HEARTHS, {cards: []})}
                     ${deskState.foundation[Color.HEARTHS].cards.map((card) =>
                       html`<div class=${style.stackedCard}>${Card(card)}</div>`,
@@ -73,7 +73,7 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               </div>
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
-                  ${DropArea(html`
+                  ${DropArea(Color.CLUBS, html`
                     ${FoundationPile(Color.CLUBS, {cards: []})}
                     ${deskState.foundation[Color.CLUBS].cards.map((card) =>
                       html`<div class=${style.stackedCard}>${Card(card)}</div>`,
@@ -83,7 +83,7 @@ export default neverland<any>(function Desk(deskState: IDesk, gameRules: IGame['
               </div>
               <div class="${style.foundationPile} ${style.topBarItem}">
                 <div class=${style.cardHolder}>
-                  ${DropArea(html`
+                  ${DropArea(Color.DIAMONDS, html`
                     ${FoundationPile(Color.DIAMONDS, {cards: []})}
                     ${deskState.foundation[Color.DIAMONDS].cards.map((card) =>
                       html`<div class=${style.stackedCard}>${Card(card)}</div>`,

@@ -11,17 +11,17 @@ export default function Tableau(tableau: ITableau) {
   return html`
     <klondike-tableau class=${style.tableau}>
       <div class=${style.tableauContent}>
-        ${tableau.piles.map((pile) =>
+        ${tableau.piles.map((pile, pileIndex) =>
           html`
             <div class=${style.pile}>
-              ${DropArea(html`
+              ${DropArea({pileIndex}, html`
                 ${EmptyPilePlaceholder()}
                 <div class=${style.pileCards}>
                   ${pile.cards.map((card, cardIndex) =>
                     html`
                       <div class=${style.pileCardHolder}>
                         <div class=${style.pileCardWrapper}>
-                          ${card.side === Side.FACE ? draggable(Card(card, !!cardIndex)) : Card(card, !!cardIndex)}
+                          ${card.side === Side.FACE ? draggable(card, Card(card, !!cardIndex)) : Card(card, !!cardIndex)}
                         </div>
                       </div>
                     `,
