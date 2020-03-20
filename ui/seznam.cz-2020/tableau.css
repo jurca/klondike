@@ -48,7 +48,7 @@
 }
 
 :local(.pileCardHolder) {
-  flex-basis: calc(0.2em);
+  flex-basis: calc(0.4em);
 }
 
 :local(.pileCardWrapper) {
