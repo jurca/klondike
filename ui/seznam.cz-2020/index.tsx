@@ -41,6 +41,13 @@ function rerenderUI() {
 }
 
 function onMove(move: Move): void {
-  game = executeMove(game, move)
+  try {
+    game = executeMove(game, move)
+  } catch (moveError) {
+    // tslint:disable-next-line:no-console
+    console.error(moveError)
+    return
+  }
+
   rerenderUI()
 }
