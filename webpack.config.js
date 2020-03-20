@@ -29,7 +29,7 @@ module.exports = {
       },
       {
         test: /\.svg$/i,
-        use: 'raw-loader',
+        use: '@svgr/webpack',
       },
     ],
   },

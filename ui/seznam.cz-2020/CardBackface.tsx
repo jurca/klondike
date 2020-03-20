@@ -1,13 +1,12 @@
+import * as React from 'react'
 import COLORS_BACKFACE from './cardBackFace/colors.svg'
 import DOG_BACKFACE from './cardBackFace/dog.svg'
 import SEZNAM_LOGO_BACKFACE from './cardBackFace/seznamLogo.svg'
 import S_WITH_COLORS_BACKFACE from './cardBackFace/sWithColors.svg'
 import CardBackfaceStyle from './CardBackfaceStyle'
-import InlineSvg from './InlineSvg'
 
-export default function CardBackface(style: CardBackfaceStyle) {
-  // Kudos for (most of the) minification of the original SVG files goes to: https://jakearchibald.github.io/svgomg/
-  const backfaceImageMarkup = ((): string => {
+export default function CardBackface({style}: {style: CardBackfaceStyle}) {
+  const BackImageComponent = (() => {
     switch (style) {
       case CardBackfaceStyle.Colors:
         return COLORS_BACKFACE
@@ -22,5 +21,7 @@ export default function CardBackface(style: CardBackfaceStyle) {
     }
   })()
 
-  return InlineSvg(backfaceImageMarkup)
+  return (
+    <BackImageComponent/>
+  )
 }

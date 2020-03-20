@@ -1,3 +1,4 @@
+import * as React from 'react'
 import {Color, Rank} from '../../game/Card'
 import CLUBS_TEN from './cardFace/clubs/10.svg'
 import CLUBS_TWO from './cardFace/clubs/2.svg'
@@ -51,11 +52,10 @@ import SPADES_ACE from './cardFace/spades/ace.svg'
 import SPADES_JACK from './cardFace/spades/jack.svg'
 import SPADES_KING from './cardFace/spades/king.svg'
 import SPADES_QUEEN from './cardFace/spades/queen.svg'
-import InlineSvg from './InlineSvg'
 
-export default function CardFrontFace(color: Color, rank: Rank) {
+export default function CardFrontFace({color, rank}: {color: Color, rank: Rank}) {
   // Kudos for (most of the) minification of the original SVG files goes to: https://jakearchibald.github.io/svgomg/
-  const imageMarkup = (() => {
+  const ImageComponent = (() => {
     switch (color) {
       case Color.CLUBS:
         switch (rank) {
@@ -186,5 +186,5 @@ export default function CardFrontFace(color: Color, rank: Rank) {
     }
   })()
 
-  return InlineSvg(imageMarkup)
+  return <ImageComponent/>
 }
