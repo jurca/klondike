@@ -11,7 +11,9 @@
 }
 
 :local(.shadow) :local(.front),
-:local(.shadow) :local(.back) {
+:local(.shadow) :local(.back),
+ui-draggable[style]:not([style='']) :local(.front),
+ui-draggable[style]:not([style='']) :local(.back) {
   box-shadow: 0 0 0.1em #555;
 }
 
