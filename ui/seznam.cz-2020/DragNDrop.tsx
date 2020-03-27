@@ -262,6 +262,10 @@ function onDragEnd(
   currentContextValue: IDragNDropContextValue,
   dragCallback: DragCallback,
 ) {
+  if (!currentContextValue.draggedElementOffset.x && !currentContextValue.draggedElementOffset.y) {
+    return // A click or a tap
+  }
+
   if (currentContextValue.dragged && currentContextValue.currentDropArea) {
     dragCallback(currentContextValue.dragged, currentContextValue.currentDropArea)
   }
@@ -282,19 +286,19 @@ function onClick(
     return
   }
 
+  const draggable = target.closest('ui-draggable')
+  if (draggable) {
+    updateContextValue({
+      selected: draggable === currentContextValue.selected ? null : draggable,
+    })
+    return
+  }
+
   const dropArea = target.closest('drop-area')
   if (currentContextValue.selected && dropArea) {
     dragCallback(currentContextValue.selected, dropArea)
     updateContextValue({
       selected: null,
-    })
-    return
-  }
-
-  const draggable = target.closest('ui-draggable')
-  if (draggable) {
-    updateContextValue({
-      selected: draggable === currentContextValue.selected ? null : draggable,
     })
   }
 }
