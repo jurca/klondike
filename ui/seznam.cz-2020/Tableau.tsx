@@ -10,9 +10,10 @@ import style from './tableau.css'
 interface IProps {
   tableau: ITableau,
   onRevealCard(card: ICard): void,
+  onTransferCardToFoundation(card: ICard): void,
 }
 
-export default function Tableau({tableau, onRevealCard}: IProps) {
+export default function Tableau({tableau, onRevealCard, onTransferCardToFoundation}: IProps) {
   return (
     <div className={style.tableau}>
       <div className={style.tableauContent}>
@@ -29,7 +30,11 @@ export default function Tableau({tableau, onRevealCard}: IProps) {
                     <div className={style.pileCardWrapper}>
                       {card.side === Side.FACE ?
                         <Draggable entity={card}>
-                          <Card card={card} withShadow={!!cardIndex}/>
+                          <Card
+                            card={card}
+                            withShadow={!!cardIndex}
+                            onDoubleClick={cardIndex === length - 1 ? onTransferCardToFoundation : null}
+                          />
                         </Draggable>
                       :
                         <Card

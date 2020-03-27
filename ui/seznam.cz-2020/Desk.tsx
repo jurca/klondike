@@ -146,7 +146,11 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
             </div>
 
             <div className={style.tableau}>
-              <Tableau tableau={deskState.tableau} onRevealCard={onRevealCard}/>
+              <Tableau
+                tableau={deskState.tableau}
+                onRevealCard={onRevealCard}
+                onTransferCardToFoundation={onTransferCardToFoundation}
+              />
             </div>
           </div>
         </div>
@@ -215,6 +219,13 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
   function onRevealCard(card: ICard): void {
     onMove({
       move: MoveType.REVEAL_TABLEAU_CARD,
+      pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
+    })
+  }
+
+  function onTransferCardToFoundation(card: ICard): void {
+    onMove({
+      move: MoveType.TABLEAU_TO_FOUNDATION,
       pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
     })
   }

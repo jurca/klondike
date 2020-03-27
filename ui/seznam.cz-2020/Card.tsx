@@ -11,15 +11,21 @@ interface IProps {
   overrideRotation?: number,
   withShadow?: boolean,
   onClick?: null | ((card: ICard) => void),
+  onDoubleClick?: null | ((card: ICard) => void),
 }
 
-export default function Card({card, overrideRotation, withShadow, onClick}: IProps) {
+export default function Card({card, overrideRotation, withShadow, onClick, onDoubleClick}: IProps) {
   const {cardBackFace} = React.useContext(settingsContext)
   const rotation = typeof overrideRotation === 'number' ? overrideRotation : (card.side === Side.FACE ? 0 : 180)
   const onClickHandler = React.useMemo(() => onClick?.bind(null, card), [card, onClick])
+  const onDoubleClickHandler = React.useMemo(() => onDoubleClick?.bind(null, card), [card, onDoubleClick])
 
   return (
-    <div className={classnames(style.card, withShadow && style.shadow)} onClick={onClickHandler}>
+    <div
+      className={classnames(style.card, withShadow && style.shadow)}
+      onClick={onClickHandler}
+      onDoubleClick={onDoubleClickHandler}
+    >
       <div className={style.body} style={{transform: `rotateY(${rotation}deg)`}}>
         <div className={style.back}><CardBackface style={cardBackFace}/></div>
         <div className={style.front}><CardFrontFace color={card.color} rank={card.rank}/></div>
