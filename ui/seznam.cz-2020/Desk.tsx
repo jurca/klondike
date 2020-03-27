@@ -66,10 +66,10 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card}/>
+                          <Card card={card} withShadow={length > 1}/>
                         </Draggable>
                       :
-                        <Card card={card}/>
+                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
                       }
                     </div>,
                   )}
@@ -84,10 +84,10 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card}/>
+                          <Card card={card} withShadow={length > 1}/>
                         </Draggable>
                       :
-                        <Card card={card}/>
+                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
                       }
                     </div>,
                   )}
@@ -102,10 +102,10 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card}/>
+                          <Card card={card} withShadow={length > 1}/>
                         </Draggable>
                       :
-                        <Card card={card}/>
+                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
                       }
                     </div>,
                   )}
@@ -120,10 +120,10 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card}/>
+                          <Card card={card} withShadow={length > 1}/>
                         </Draggable>
                       :
-                        <Card card={card}/>
+                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
                       }
                     </div>,
                   )}
