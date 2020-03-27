@@ -1,7 +1,9 @@
 import * as React from 'react'
 import {render} from 'react-dom'
+import {Side} from '../../game/Card'
 import {createNewGame, executeMove} from '../../game/Game'
-import {Move} from '../../game/Move'
+import {Move, MoveType} from '../../game/Move'
+import {lastItemOrNull} from '../../game/util'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import DeskStyle from './DeskStyle'
@@ -43,6 +45,15 @@ function rerenderUI() {
 function onMove(move: Move): void {
   try {
     game = executeMove(game, move)
+    const unrevealedCardPileIndex = game.state.tableau.piles.findIndex(
+      (pile) => lastItemOrNull(pile.cards)?.side === Side.BACK,
+    )
+    if (unrevealedCardPileIndex > -1) {
+      game = executeMove(game, {
+        move: MoveType.REVEAL_TABLEAU_CARD,
+        pileIndex: unrevealedCardPileIndex,
+      })
+    }
   } catch (moveError) {
     // tslint:disable-next-line:no-console
     console.error(moveError)
