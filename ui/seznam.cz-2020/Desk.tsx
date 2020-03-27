@@ -170,7 +170,6 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
   function onElementDragged(draggedEntity: unknown, rawDropAreaId: unknown): void {
     const draggedCard = draggedEntity as ICard
     const dropAreaId = rawDropAreaId as (Color | {pileIndex: number})
-    console.log(draggedCard, dropAreaId)
 
     if (Object.values(Color).includes(dropAreaId as Color)) {
       if (draggedCard === lastItemOrNull(deskState.waste.cards)) {
