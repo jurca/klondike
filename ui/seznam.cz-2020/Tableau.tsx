@@ -22,7 +22,10 @@ export default function Tableau({tableau, onRevealCard}: IProps) {
               <EmptyPilePlaceholder/>
               <div className={style.pileCards}>
                 {pile.cards.map((card, cardIndex, {length}) =>
-                  <div key={`${card.color}:${card.rank}`} className={style.pileCardHolder}>
+                  <div
+                    key={`${card.color}:${card.rank}`}
+                    className={card.side === Side.FACE ? style.revealedCardHolder : style.unrevealedCardHolder}
+                  >
                     <div className={style.pileCardWrapper}>
                       {card.side === Side.FACE ?
                         <Draggable entity={card}>

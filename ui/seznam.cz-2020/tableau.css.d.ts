@@ -2,12 +2,13 @@
 // Please do not change this file!
 interface CssExports {
   'pile': string;
-  'pileCardHolder': string;
   'pileCardWrapper': string;
   'pileCards': string;
   'pileDropArea': string;
+  'revealedCardHolder': string;
   'tableau': string;
   'tableauContent': string;
+  'unrevealedCardHolder': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

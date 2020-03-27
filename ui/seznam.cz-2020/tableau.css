@@ -47,7 +47,11 @@
   flex-direction: column;
 }
 
-:local(.pileCardHolder) {
+:local(.unrevealedCardHolder) {
+  flex-basis: calc(0.2em);
+}
+
+:local(.revealedCardHolder) {
   flex-basis: calc(0.4em);
 }
 
