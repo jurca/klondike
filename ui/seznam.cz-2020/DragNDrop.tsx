@@ -4,13 +4,15 @@ import style from './dragNDrop.css'
 
 interface IDragNDropContextValue {
   dragged: null | Element
+  draggedEntities: readonly object[]
   selected: null | Element
   currentDropArea: null | Element
   draggedElementOffset: {x: number, y: number}
   draggedElementOriginalPosition: {x: number, y: number}
   draggedElementPosition: {x: number, y: number}
   dropAreasIds: WeakMap<Element, unknown>
-  draggableEntities: WeakMap<Element, unknown>
+  draggableEntities: WeakMap<Element, object>
+  relatedEntities: WeakMap<object, readonly unknown[]>
 }
 
 type DragCallback = (draggedElement: Element, dropArea: Element) => void
@@ -31,7 +33,9 @@ const DRAG_N_DROP_CONTEXT_DEFAULT_VALUE: IDragNDropContextValue = {
     x: 0,
     y: 0,
   },
+  draggedEntities: [],
   dropAreasIds: new WeakMap(),
+  relatedEntities: new WeakMap(),
   selected: null,
 }
 export const DRAG_N_DROP_CONTEXT = React.createContext<IDragNDropContextValue>(DRAG_N_DROP_CONTEXT_DEFAULT_VALUE)
@@ -68,8 +72,14 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     [onEntityDragged],
   )
 
-  const onMouseDownListener = React.useMemo(() => onMouseDown.bind(null, updateContextValue), [updateContextValue])
-  const onTouchStartListener = React.useMemo(() => onTouchStart.bind(null, updateContextValue), [updateContextValue])
+  const onMouseDownListener = React.useMemo(
+    () => onMouseDown.bind(null, updateContextValue, contextValue),
+    [updateContextValue, contextValue],
+  )
+  const onTouchStartListener = React.useMemo(
+    () => onTouchStart.bind(null, updateContextValue, contextValue),
+    [updateContextValue, contextValue],
+  )
   const onMouseMoveListener = React.useMemo(
     () => onMouseMove.bind(null, updateContextValue, contextValue),
     [updateContextValue, contextValue],
@@ -120,7 +130,11 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
 
 let currentlyTrackedTouchId: null | number = null
 
-function onTouchStart(updateContextValue: ContextValueUpdater, event: React.TouchEvent): void {
+function onTouchStart(
+  updateContextValue: ContextValueUpdater,
+  currentContextValue: IDragNDropContextValue,
+  event: React.TouchEvent,
+): void {
   if (currentlyTrackedTouchId) {
     return
   }
@@ -133,7 +147,7 @@ function onTouchStart(updateContextValue: ContextValueUpdater, event: React.Touc
   currentlyTrackedTouchId = currentTouch.identifier
   const dragContainer = currentTouch.target.closest('ui-draggable')
   if (dragContainer) {
-    onDragStart(updateContextValue, dragContainer, {
+    onDragStart(updateContextValue, currentContextValue, dragContainer, {
       x: currentTouch.pageX,
       y: currentTouch.pageY,
     })
@@ -142,14 +156,18 @@ function onTouchStart(updateContextValue: ContextValueUpdater, event: React.Touc
   event.preventDefault()
 }
 
-function onMouseDown(updateContextValue: ContextValueUpdater, event: React.MouseEvent<HTMLDivElement>): void {
+function onMouseDown(
+  updateContextValue: ContextValueUpdater,
+  currentContextValue: IDragNDropContextValue,
+  event: React.MouseEvent<HTMLDivElement>,
+): void {
   if (!(event.target instanceof Element)) {
     return
   }
 
   const dragContainer = event.target.closest('ui-draggable')
   if (dragContainer) {
-    onDragStart(updateContextValue, dragContainer, {
+    onDragStart(updateContextValue, currentContextValue, dragContainer, {
       x: event.pageX,
       y: event.pageY,
     })
@@ -158,10 +176,12 @@ function onMouseDown(updateContextValue: ContextValueUpdater, event: React.Mouse
 
 function onDragStart(
   updateContextValue: ContextValueUpdater,
+  currentContextValue: IDragNDropContextValue,
   draggedElement: Element,
   pointerOnPagePosition: {x: number, y: number},
 ): void {
   const bounds = draggedElement.getBoundingClientRect()
+  const draggedEntity = currentContextValue.draggableEntities.get(draggedElement)
   updateContextValue({
     dragged: draggedElement,
     draggedElementOffset: {
@@ -176,6 +196,9 @@ function onDragStart(
       x: bounds.x,
       y: bounds.y,
     },
+    draggedEntities: (draggedEntity ? [draggedEntity] : []).concat(
+      (draggedEntity && currentContextValue.relatedEntities.get(draggedEntity)) || [],
+    ),
   })
 }
 
@@ -273,6 +296,7 @@ function onDragEnd(
   updateContextValue({
     currentDropArea: null,
     dragged: null,
+    draggedEntities: [],
   })
 }
 

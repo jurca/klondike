@@ -5,7 +5,8 @@ import {DRAG_N_DROP_CONTEXT} from './DragNDrop'
 
 interface IProps {
   children: React.ReactNode
-  entity: unknown
+  entity: object
+  relatedEntities?: readonly object[]
 }
 
 declare global {
@@ -16,11 +17,11 @@ declare global {
   }
 }
 
-export default function Draggable({children, entity}: IProps) {
+export default function Draggable({children, entity, relatedEntities}: IProps) {
   const dragNDropContext = React.useContext(DRAG_N_DROP_CONTEXT)
   const wrapperRef = React.useRef<HTMLElement>()
 
-  const isDragged = dragNDropContext.dragged === wrapperRef.current
+  const isDragged = dragNDropContext.draggedEntities.includes(entity)
   const {draggedElementOriginalPosition, draggedElementPosition} = dragNDropContext
   const deltaX = draggedElementPosition.x - draggedElementOriginalPosition.x
   const deltaY = draggedElementPosition.y - draggedElementOriginalPosition.y
@@ -29,14 +30,16 @@ export default function Draggable({children, entity}: IProps) {
     const element = wrapperRef.current
     if (element) {
       dragNDropContext.draggableEntities.set(element, entity)
+      dragNDropContext.relatedEntities.set(entity, relatedEntities || [])
 
       return () => {
         dragNDropContext.draggableEntities.delete(element)
+        dragNDropContext.relatedEntities.delete(entity)
       }
     }
 
     return undefined
-  }, [wrapperRef.current])
+  }, [wrapperRef.current, entity, relatedEntities])
 
   return (
     <ui-draggable

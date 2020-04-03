@@ -29,7 +29,7 @@ export default function Tableau({tableau, onRevealCard, onTransferCardToFoundati
                   >
                     <div className={style.pileCardWrapper}>
                       {card.side === Side.FACE ?
-                        <Draggable entity={card}>
+                        <Draggable entity={card} relatedEntities={pile.cards.slice(cardIndex + 1)}>
                           <Card
                             card={card}
                             withShadow={!!cardIndex}
