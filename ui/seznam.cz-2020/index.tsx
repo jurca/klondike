@@ -12,6 +12,7 @@ import SettingsContext from './settingsContext'
 const uiRoot = document.getElementById('app')!
 
 let game = createNewGame({
+  allowNonKingToEmptyPileTransfer: false,
   drawnCards: 1,
   tableauPiles: 7,
 })

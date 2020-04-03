@@ -687,9 +687,10 @@ function getMovesWithMinisculeConfidence(
     }
   }
 
-  // Stock to empty pile transfer, prefer higher-ranking cards
   const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
-  if (emptyPileIndex > -1) {
+
+  // Stock to empty pile transfer, prefer higher-ranking cards - applies only if allowed by game rules
+  if (game.rules.allowNonKingToEmptyPileTransfer && emptyPileIndex > -1) {
     for (const card of stockPlayableCards.slice().sort((card1, card2) => compareRank(card2, card1))) {
       moves.push([
         {
@@ -702,8 +703,8 @@ function getMovesWithMinisculeConfidence(
     }
   }
 
-  // Tableau to empty pile transfer that allows revealing a card
-  if (emptyPileIndex > -1) {
+  // Tableau to empty pile transfer that allows revealing a card - applies only if allowed by game rules
+  if (game.rules.allowNonKingToEmptyPileTransfer && emptyPileIndex > -1) {
     const sourcePiles = tableau.piles.filter(
       (pile) => pile.cards.length && pile.cards[0].side === Side.BACK && lastItem(pile.cards).side === Side.FACE,
     ).sort(

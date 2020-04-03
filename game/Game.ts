@@ -22,8 +22,9 @@ export interface IGame {
   }
 }
 
-interface IGameRules {
-  readonly drawnCards: number,
+export interface IGameRules {
+  readonly drawnCards: number
+  readonly allowNonKingToEmptyPileTransfer: boolean
   // The number of piles in tableau is already represented by the tableau itself, since the number of piles is
   // immutable.
 }
@@ -71,6 +72,7 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
     future: [],
     history: [],
     rules: {
+      allowNonKingToEmptyPileTransfer: gameRules.allowNonKingToEmptyPileTransfer,
       drawnCards: gameRules.drawnCards,
     },
     startTime: {
@@ -92,7 +94,7 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
 }
 
 export function executeMove(game: IGame, move: Move): IGame {
-  const updatedDesk = executeMoveOnDesk(game.state, move)
+  const updatedDesk = executeMoveOnDesk(game.state, game.rules, move)
   return createNextGameState(game, updatedDesk, move)
 }
 

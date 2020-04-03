@@ -1,12 +1,5 @@
-import {
-  Color,
-  ICard,
-  isValidFoundationSequence,
-  isValidTableauSequence,
-  Rank,
-  RANK_SEQUENCE,
-  turnOver,
-} from './Card'
+import {Color, ICard, isValidFoundationSequence, isValidTableauSequence, Rank, RANK_SEQUENCE, turnOver} from './Card'
+import {IGameRules} from './Game'
 import {Move, MoveType} from './Move'
 import {draw, IPile, Pile, placeCardOnTop, placePileOnTop} from './Pile'
 import {addCardToPile, ITableau, movePilePart, removeTopCardFromPile, revealTopCard} from './Tableau'
@@ -36,25 +29,26 @@ export class Desk implements IDesk {
   }
 }
 
-export function executeMove(desk: IDesk, move: Move): IDesk {
+export function executeMove(desk: IDesk, rules: IGameRules, move: Move): IDesk {
   switch (move.move) {
     case MoveType.DRAW_CARDS:
-      return drawCards(desk, move.drawnCards)
+      return drawCards(desk, rules, move.drawnCards)
     case MoveType.REDEAL:
       return redeal(desk)
     case MoveType.WASTE_TO_FOUNDATION:
       return moveTopWasteCardToFoundation(desk)
     case MoveType.WASTE_TO_TABLEAU:
-      return moveTopWasteCardToTableau(desk, desk.tableau.piles[move.pileIndex])
+      return moveTopWasteCardToTableau(desk, rules, desk.tableau.piles[move.pileIndex])
     case MoveType.TABLEAU_TO_FOUNDATION:
       return moveTopTableauPileCardToFoundation(desk, desk.tableau.piles[move.pileIndex])
     case MoveType.REVEAL_TABLEAU_CARD:
       return revealTopTableauPileCard(desk, desk.tableau.piles[move.pileIndex])
     case MoveType.FOUNDATION_TO_TABLEAU:
-      return moveFoundationCardToTableauPile(desk, move.color, desk.tableau.piles[move.pileIndex])
+      return moveFoundationCardToTableauPile(desk, rules, move.color, desk.tableau.piles[move.pileIndex])
     case MoveType.TABLEAU_TO_TABLEAU:
       return moveTableauPilePart(
         desk,
+        rules,
         desk.tableau.piles[move.sourcePileIndex],
         desk.tableau.piles[move.sourcePileIndex].cards[move.topMovedCardIndex],
         desk.tableau.piles[move.targetPileIndex],
@@ -64,7 +58,12 @@ export function executeMove(desk: IDesk, move: Move): IDesk {
   }
 }
 
-function drawCards(desk: IDesk, numberOfCards: number) {
+function drawCards(desk: IDesk, rules: IGameRules, numberOfCards: number) {
+  if (numberOfCards !== rules.drawnCards) {
+    throw new Error(
+      `The number of cards to draw (${numberOfCards}) does not match the number in game rules (${rules.drawnCards})`,
+    )
+  }
   const [stockRemainder, drawnCards] = draw(desk.stock, numberOfCards)
   const newWaste = placePileOnTop(desk.waste, new Pile(drawnCards.map((card) => turnOver(card))))
   return new Desk(stockRemainder, newWaste, desk.foundation, desk.tableau)
@@ -99,12 +98,19 @@ function moveTopWasteCardToFoundation(desk: IDesk): IDesk {
   )
 }
 
-function moveTopWasteCardToTableau(desk: IDesk, tableauPile: IPile): IDesk {
+function moveTopWasteCardToTableau(desk: IDesk, rules: IGameRules, tableauPile: IPile): IDesk {
   if (!desk.waste.cards.length) {
     throw new Error('There is no card on the waste pile')
   }
 
   const [newWaste, [cardToPlace]] = draw(desk.waste, 1)
+  if (
+    !tableauPile.cards.length &&
+    !rules.allowNonKingToEmptyPileTransfer &&
+    cardToPlace.rank !== Rank.KING
+  ) {
+    throw new Error(`The current game rules forbid placing any card other than a King on an empty tableau pile`)
+  }
   if (
     tableauPile.cards.length &&
     !isValidTableauSequence(lastItem(tableauPile.cards), cardToPlace)
@@ -146,12 +152,19 @@ function revealTopTableauPileCard(desk: IDesk, tableauPile: IPile): IDesk {
   )
 }
 
-function moveFoundationCardToTableauPile(desk: IDesk, color: Color, tableauPile: IPile): IDesk {
+function moveFoundationCardToTableauPile(desk: IDesk, rules: IGameRules, color: Color, tableauPile: IPile): IDesk {
   if (!desk.foundation[color].cards.length) {
     throw new Error(`The specified foundation (${color}) contains no cards`)
   }
 
   const [newFoundationPile, [cardToPlace]] = draw(desk.foundation[color], 1)
+  if (
+    !tableauPile.cards.length &&
+    !rules.allowNonKingToEmptyPileTransfer &&
+    cardToPlace.rank !== Rank.KING
+  ) {
+    throw new Error(`The current game rules forbid placing any card other than a King on an empty tableau pile`)
+  }
   if (
     tableauPile.cards.length &&
     !isValidTableauSequence(lastItem(tableauPile.cards), cardToPlace)
@@ -174,7 +187,20 @@ function moveFoundationCardToTableauPile(desk: IDesk, color: Color, tableauPile:
   )
 }
 
-function moveTableauPilePart(desk: IDesk, sourcePile: IPile, topCardToMove: ICard, targetPile: IPile): IDesk {
+function moveTableauPilePart(
+  desk: IDesk,
+  rules: IGameRules,
+  sourcePile: IPile,
+  topCardToMove: ICard,
+  targetPile: IPile,
+): IDesk {
+  if (
+    !targetPile.cards.length &&
+    !rules.allowNonKingToEmptyPileTransfer &&
+    topCardToMove.rank !== Rank.KING
+  ) {
+    throw new Error(`The current game rules forbid placing any card other than a King on an empty tableau pile`)
+  }
   if (
     targetPile.cards.length &&
     !isValidTableauSequence(lastItem(targetPile.cards), topCardToMove)

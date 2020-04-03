@@ -10,7 +10,7 @@ import {
 } from './Game'
 import {Move, MoveType} from './Move'
 
-const SERIALIZER_VERSION = 1
+const SERIALIZER_VERSION = 2
 const NUM_RADIX = 36
 const EPOCH_START = 1572617642000
 
@@ -35,6 +35,7 @@ export function serialize(game: IGame): string {
   ]
   const serializedData = [
     SERIALIZER_VERSION,
+    game.rules.allowNonKingToEmptyPileTransfer ? '1' : '0',
     game.rules.drawnCards.toString(NUM_RADIX),
     game.state.tableau.piles.length.toString(NUM_RADIX).padStart(2, '0'),
     serializeDeck(cardsDeck),
@@ -56,15 +57,16 @@ export function deserialize(serializedState: string): IGame {
   }
 
   const gameRules: INewGameRules = {
-    drawnCards: parseInt(serializedState.charAt(1), NUM_RADIX),
-    tableauPiles: parseInt(serializedState.substring(2, 4), NUM_RADIX),
+    allowNonKingToEmptyPileTransfer: !!parseInt(serializedState.charAt(1), 10),
+    drawnCards: parseInt(serializedState.charAt(2), NUM_RADIX),
+    tableauPiles: parseInt(serializedState.substring(3, 5), NUM_RADIX),
   }
-  const cardDeck = deserializeDeck(serializedState.substring(4, 55))
-  const serializedStartTime = serializedState.substring(55, serializedState.indexOf(';', 55))
+  const cardDeck = deserializeDeck(serializedState.substring(5, 56))
+  const serializedStartTime = serializedState.substring(56, serializedState.indexOf(';', 56))
   const startTime = deserializeStartTime(serializedStartTime)
-  const historyLength = serializedState.substring(55 + serializedStartTime.length + 1, serializedState.indexOf(':', 55))
+  const historyLength = serializedState.substring(56 + serializedStartTime.length + 1, serializedState.indexOf(':', 56))
   const deserializedHistoryLength = parseInt(historyLength, NUM_RADIX)
-  const serializedHistory = serializedState.substring(55 + serializedStartTime.length + 1 + historyLength.length + 1)
+  const serializedHistory = serializedState.substring(56 + serializedStartTime.length + 1 + historyLength.length + 1)
   const baseGame = createNewGame(gameRules, cardDeck)
   const history = deserializeHistory(baseGame, startTime.logicalTimestamp, serializedHistory)
 

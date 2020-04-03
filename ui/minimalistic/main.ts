@@ -7,6 +7,7 @@ import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-rende
 import {GameWinnability} from './App.js'
 
 const DEFAULT_RULES = {
+  allowNonKingToEmptyPileTransfer: true,
   drawnCards: 3,
   tableauPiles: 7,
 }
@@ -28,6 +29,7 @@ addEventListener('DOMContentLoaded', () => {
 
   function onStartNewGame(drawnCards: number, tableauPiles: number, winnability: GameWinnability) {
     const gameRules = {
+      allowNonKingToEmptyPileTransfer: true,
       drawnCards,
       tableauPiles,
     }
