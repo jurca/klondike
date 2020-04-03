@@ -48,7 +48,11 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                   <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                     {cardIndex === length - 1 ?
                       <Draggable entity={card}>
-                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
+                        <Card
+                          card={card}
+                          withShadow={length - cardIndex < Math.min(3, length)}
+                          onDoubleClick={onTransferWasteCardToFoundation}
+                        />
                       </Draggable>
                     :
                       <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
@@ -149,7 +153,7 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
               <Tableau
                 tableau={deskState.tableau}
                 onRevealCard={onRevealCard}
-                onTransferCardToFoundation={onTransferCardToFoundation}
+                onTransferCardToFoundation={onTransferTableauCardToFoundation}
               />
             </div>
           </div>
@@ -223,7 +227,13 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
     })
   }
 
-  function onTransferCardToFoundation(card: ICard): void {
+  function onTransferWasteCardToFoundation(): void {
+    onMove({
+      move: MoveType.WASTE_TO_FOUNDATION,
+    })
+  }
+
+  function onTransferTableauCardToFoundation(card: ICard): void {
     onMove({
       move: MoveType.TABLEAU_TO_FOUNDATION,
       pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
