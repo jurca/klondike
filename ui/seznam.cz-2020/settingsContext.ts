@@ -10,7 +10,7 @@ interface ISettingsContext {
   },
   deskStyle: DeskStyle,
   foundationBackgroundColor: {
-    darK: string,
+    dark: string,
     light: string,
   }
 }
@@ -23,7 +23,7 @@ export default createContext<ISettingsContext>({
   },
   deskStyle: DeskStyle.GREEN_S,
   foundationBackgroundColor: {
-    darK: '#00ab51',
+    dark: '#00ab51',
     light: '#75cc81',
   },
 })

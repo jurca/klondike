@@ -5,7 +5,7 @@ import settingsContext from './settingsContext'
 
 export default function FoundationPile({color}: {color: Color}) {
   const settings = React.useContext(settingsContext)
-  const {darK: darkColor, light: lightColor} = settings.foundationBackgroundColor
+  const {dark: darkColor, light: lightColor} = settings.foundationBackgroundColor
 
   // Kudos for (most of the) minification of the original SVG files goes to: https://jakearchibald.github.io/svgomg/
   return (

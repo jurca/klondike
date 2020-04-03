@@ -31,7 +31,7 @@ function rerenderUI() {
           },
           deskStyle: DeskStyle.GREEN_S,
           foundationBackgroundColor: {
-            darK: '#00ab51',
+            dark: '#00ab51',
             light: '#75cc81',
           },
         }}
