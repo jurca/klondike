@@ -11,6 +11,7 @@ interface CssExports {
   'greenSInnerImageWrapper': string;
   'greenSTiles': string;
   'main': string;
+  'redSTiles': string;
   'separator': string;
   'stackedCard': string;
   'stock': string;

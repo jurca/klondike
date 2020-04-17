@@ -31,7 +31,7 @@ module.exports = {
       {
         oneOf: [
           {
-            test: /green-s-tile\.svg$/i,
+            test: /(?:green|red)-s-tile\.svg$/i,
             use: 'file-loader',
           },
           {

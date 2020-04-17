@@ -47,3 +47,15 @@ export const GREEN_S_TILES: IDeskSkin = {
     light: '#009e5f',
   },
 }
+
+export const RED_S_TILES: IDeskSkin = {
+  deskColor: {
+    background: 'linear-gradient(180deg, #9f292a 0%, #9c2829 48%, #932627 83%, #8c2425 98%)',
+    topBar: '#872324',
+  },
+  deskStyle: DeskStyle.RED_S_TILES,
+  foundationBackgroundColor: {
+    dark: '#802122',
+    light: '#b45656',
+  },
+}
