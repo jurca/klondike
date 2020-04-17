@@ -6,7 +6,11 @@ import {Move, MoveType} from '../../game/Move'
 import {lastItemOrNull} from '../../game/util'
 import Card from './Card'
 import style from './desk.css'
+import Clubs from './deskBackground/clubs.svg'
+import Diamonds from './deskBackground/diamonds.svg'
+import Hearths from './deskBackground/hearths.svg'
 import GreenS from './deskBackground/s.svg'
+import Spades from './deskBackground/spades.svg'
 import DeskStyle from './DeskStyle'
 import Draggable from './Draggable'
 import DragNDrop from './DragNDrop'
@@ -144,6 +148,18 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div className={style.greenSImage}>
                       <GreenS/>
                     </div>
+                  </div>
+                </div>
+              }
+              {deskStyle === DeskStyle.TEAL_COLORS &&
+                <div className={style.tealColors}>
+                  <div className={style.tealColorsGroup}>
+                    <Hearths/>
+                    <Spades/>
+                  </div>
+                  <div className={style.tealColorsGroup}>
+                    <Diamonds/>
+                    <Clubs/>
                   </div>
                 </div>
               }

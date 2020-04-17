@@ -14,6 +14,8 @@ interface CssExports {
   'stackedCard': string;
   'stock': string;
   'tableau': string;
+  'tealColors': string;
+  'tealColorsGroup': string;
   'topBar': string;
   'topBarItem': string;
   'waste': string;

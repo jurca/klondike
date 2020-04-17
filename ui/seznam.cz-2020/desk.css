@@ -150,3 +150,35 @@
 :local(.greenSImage) svg {
   width: 100%;
 }
+
+:local(.tealColors) {
+  display: flex;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  color: #189181;
+}
+
+:local(.tealColorsGroup) {
+  display: flex;
+
+  margin: 3vh 0;
+  width: 60vw;
+}
+
+:local(.tealColorsGroup) svg {
+  margin: 0 3vw;
+}
+
+@media (min-aspect-ratio: 1/1) {
+  :local(.tealColors) {
+    flex-direction: row;
+  }
+
+  :local(.tealColorsGroup) {
+    width: 30vw;
+    height: 30vh;
+  }
+}
