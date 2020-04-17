@@ -35,3 +35,15 @@ export const TEAL_COLORS: IDeskSkin = {
     light: '#5cc9b7',
   },
 }
+
+export const GREEN_S_TILES: IDeskSkin = {
+  deskColor: {
+    background: 'linear-gradient(0deg, #00824e 0%, #008751 100%)',
+    topBar: '#007d4b',
+  },
+  deskStyle: DeskStyle.GREEN_S_TILES,
+  foundationBackgroundColor: {
+    dark: '#007546',
+    light: '#009e5f',
+  },
+}

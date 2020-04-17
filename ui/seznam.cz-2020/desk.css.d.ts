@@ -9,6 +9,7 @@ interface CssExports {
   'greenSImage': string;
   'greenSImageWrapper': string;
   'greenSInnerImageWrapper': string;
+  'greenSTiles': string;
   'main': string;
   'separator': string;
   'stackedCard': string;

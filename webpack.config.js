@@ -1,3 +1,4 @@
+const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -25,16 +26,24 @@ module.exports = {
               modules: true,
             },
           },
-        ]
+        ],
       },
       {
-        test: /\.svg$/i,
-        use: {
-          loader:'@svgr/webpack',
-          options: {
-            svgo: false,
+        oneOf: [
+          {
+            test: /green-s-tile\.svg$/i,
+            use: 'file-loader',
           },
-        },
+          {
+            test: /\.svg$/i,
+            use: {
+              loader:'@svgr/webpack',
+              options: {
+                svgo: false,
+              },
+            },
+          },
+        ]
       },
     ],
   },

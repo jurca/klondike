@@ -184,3 +184,11 @@
     height: 30vh;
   }
 }
+
+:local(.greenSTiles) {
+  width: 100%;
+  height: 100%;
+
+  background: 10px 10px url('deskBackground/green-s-tile.svg') repeat transparent;
+  background-size: 95px 95px;
+}

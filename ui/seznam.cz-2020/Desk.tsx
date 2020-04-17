@@ -163,6 +163,9 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                   </div>
                 </div>
               }
+              {deskStyle === DeskStyle.GREEN_S_TILES &&
+                <div className={style.greenSTiles}/>
+              }
             </div>
 
             <div className={style.tableau}>
