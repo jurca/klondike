@@ -6,7 +6,7 @@ import {Move, MoveType} from '../../game/Move'
 import {lastItemOrNull} from '../../game/util'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
-import DeskStyle from './DeskStyle'
+import {GREEN_S} from './deskSkins'
 import SettingsContext from './settingsContext'
 
 const uiRoot = document.getElementById('app')!
@@ -24,16 +24,8 @@ function rerenderUI() {
     <div style={{width: '100%', height: '100%'}}>
       <SettingsContext.Provider
         value={{
+          ...GREEN_S,
           cardBackFace: CardBackfaceStyle.SeznamLogo,
-          deskColor: {
-            background: 'linear-gradient(0deg, #287d3b 0%, #298d41 17%, #29a249 45%, #2aaf4d 73%, #2ab34f 100%)',
-            topBar: '#009245',
-          },
-          deskStyle: DeskStyle.GREEN_S,
-          foundationBackgroundColor: {
-            dark: '#00ab51',
-            light: '#75cc81',
-          },
         }}
       >
         <Desk deskState={game.state} gameRules={game.rules} onMove={onMove}/>
