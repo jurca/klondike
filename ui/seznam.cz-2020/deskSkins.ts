@@ -24,7 +24,7 @@ export const GREEN_S: IDeskSkin = {
   },
 }
 
-export const TEAL_COLORS = {
+export const TEAL_COLORS: IDeskSkin = {
   deskColor: {
     background: 'linear-gradient(0deg, #1e8270 0%, #1e927f 17%, #1ea793 45%, #1eb49f 73%, #1eb8a3 100%)',
     topBar: '#009287',
