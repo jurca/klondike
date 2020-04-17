@@ -32,6 +32,8 @@
   flex-shrink: 0;
 
   box-shadow: 0 0 12px #000;
+
+  z-index: 1;
 }
 
 :local(.topBarItem) {

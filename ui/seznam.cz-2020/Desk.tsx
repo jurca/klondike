@@ -31,7 +31,7 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
   const {deskStyle} = settings
 
   return (
-    <div className={style.desk} style={{background: settings.deskColor.background}}>
+    <div className={style.desk}>
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
           <div className={style.topBar} style={{background: settings.deskColor.topBar}}>
@@ -141,7 +141,7 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
           </div>
 
           <div className={style.main}>
-            <div className={style.background}>
+            <div className={style.background} style={{background: settings.deskColor.background}}>
               {deskStyle === DeskStyle.GREEN_S &&
                 <div className={style.greenSImageWrapper}>
                   <div className={style.greenSInnerImageWrapper}>
