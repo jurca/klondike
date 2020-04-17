@@ -17,6 +17,7 @@ interface IDragNDropContextValue {
 
 type DragCallback = (draggedElement: Element, dropArea: Element) => void
 
+const DROP_AREA_SURROUNDING_TOLERANCE = Math.min(window.innerWidth, window.innerHeight) / 50 // px
 const DRAG_N_DROP_CONTEXT_DEFAULT_VALUE: IDragNDropContextValue = {
   currentDropArea: null,
   draggableEntities: new WeakMap(),
@@ -243,10 +244,36 @@ function onDrag(
   container: HTMLElement,
   pointerOnPagePosition: {x: number, y: number},
 ): void {
-  const currentDropArea = [...container.querySelectorAll('drop-area')].find((candidateArea) => {
-    const bounds = candidateArea.getBoundingClientRect()
-    return getRectanglesOverlap(bounds, {...pointerOnPagePosition, width: 1, height: 1})
-  })
+  const dropAreas = [...container.querySelectorAll('drop-area')]
+  const currentDropArea = (
+    dropAreas.find((candidateArea) => {
+      const bounds = candidateArea.getBoundingClientRect()
+      return getRectanglesOverlap(bounds, {...pointerOnPagePosition, width: 1, height: 1})
+    }) ||
+    dropAreas.reduce<[null | Element, number]>(
+      ([closestArea, closestDistance], candidateArea) => {
+        const bounds = candidateArea.getBoundingClientRect()
+        const extendedBounds = {
+          height: bounds.height + DROP_AREA_SURROUNDING_TOLERANCE * 2,
+          width: bounds.width + DROP_AREA_SURROUNDING_TOLERANCE * 2,
+          x: bounds.x - DROP_AREA_SURROUNDING_TOLERANCE,
+          y: bounds.y - DROP_AREA_SURROUNDING_TOLERANCE,
+        }
+        if (!getRectanglesOverlap(extendedBounds, {...pointerOnPagePosition, width: 1, height: 1})) {
+          return [closestArea, closestDistance]
+        }
+        const areaCenter = {
+          x: bounds.x + bounds.width / 2,
+          y: bounds.y + bounds.height / 2,
+        }
+        const distance = Math.sqrt(
+          Math.pow(pointerOnPagePosition.x - areaCenter.x, 2) + Math.pow(pointerOnPagePosition.y - areaCenter.y, 2),
+        )
+        return distance < closestDistance ? [candidateArea, distance] : [closestArea, distance]
+      },
+      [null, Number.POSITIVE_INFINITY],
+    )[0]
+  )
 
   updateContextValue({
     currentDropArea: currentDropArea || null,
