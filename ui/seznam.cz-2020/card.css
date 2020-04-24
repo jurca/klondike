@@ -3,6 +3,7 @@
 
   position: relative;
 
+  border-radius: 10%;
   width: 1em;
   height: calc(1em * 1.5 /* 40:60 aspect ratio */);
 
@@ -15,6 +16,11 @@
 ui-draggable[style]:not([style='']) :local(.front),
 ui-draggable[style]:not([style='']) :local(.back) {
   box-shadow: 0 0 0.1em #555;
+}
+
+:local(.isHinted) :local(.front),
+:local(.isHinted) :local(.back) {
+  box-shadow: 0 0 0.1em 0.06em #de0000;
 }
 
 :local(.body),

@@ -82,8 +82,12 @@ export function compareRank(card1: ICard, card2: ICard): number {
   return card1NumericRank - card2NumericRank
 }
 
-export function turnOver(card: Card): ICard {
+export function turnOver(card: ICard): ICard {
   return new Card(card.color, card.rank, card.side === Side.FACE ? Side.BACK : Side.FACE)
+}
+
+export function equals(card1: ICard, card2: ICard): boolean {
+  return card1.color === card2.color && card1.rank === card2.rank
 }
 
 // https://en.wikipedia.org/wiki/French_playing_cards

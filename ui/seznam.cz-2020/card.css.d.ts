@@ -5,6 +5,7 @@ interface CssExports {
   'body': string;
   'card': string;
   'front': string;
+  'isHinted': string;
   'shadow': string;
 }
 export const cssExports: CssExports;

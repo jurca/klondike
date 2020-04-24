@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {ICard, Side} from '../../game/Card'
+import {equals as cardsAreEqual, ICard, Side} from '../../game/Card'
 import {ITableau} from '../../game/Tableau'
 import Card from './Card'
 import Draggable from './Draggable'
@@ -8,12 +8,13 @@ import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import style from './tableau.css'
 
 interface IProps {
-  tableau: ITableau,
-  onRevealCard(card: ICard): void,
-  onTransferCardToFoundation(card: ICard): void,
+  tableau: ITableau
+  hint: null | ICard
+  onRevealCard(card: ICard): void
+  onTransferCardToFoundation(card: ICard): void
 }
 
-export default function Tableau({tableau, onRevealCard, onTransferCardToFoundation}: IProps) {
+export default function Tableau({tableau, hint, onRevealCard, onTransferCardToFoundation}: IProps) {
   return (
     <div className={style.tableau}>
       <div className={style.tableauContent}>
@@ -32,6 +33,7 @@ export default function Tableau({tableau, onRevealCard, onTransferCardToFoundati
                         <Draggable entity={card} relatedEntities={pile.cards.slice(cardIndex + 1)}>
                           <Card
                             card={card}
+                            isHinted={hint ? cardsAreEqual(card, hint) : false}
                             withShadow={!!cardIndex}
                             onDoubleClick={cardIndex === length - 1 ? onTransferCardToFoundation : null}
                           />
@@ -39,6 +41,7 @@ export default function Tableau({tableau, onRevealCard, onTransferCardToFoundati
                       :
                         <Card
                           card={card}
+                          isHinted={hint ? cardsAreEqual(card, hint) : false}
                           withShadow={!!cardIndex}
                           onClick={cardIndex === length - 1 ? onRevealCard : null}
                         />

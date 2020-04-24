@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {Color, ICard} from '../../game/Card'
+import {Color, equals as cardsAreEqual, ICard} from '../../game/Card'
 import {IDesk} from '../../game/Desk'
 import {IGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
@@ -21,12 +21,13 @@ import settingsContext from './settingsContext'
 import Tableau from './Tableau'
 
 interface IProps {
-  deskState: IDesk,
-  gameRules: IGame['rules'],
-  onMove(move: Move): void,
+  deskState: IDesk
+  gameRules: IGame['rules']
+  hint: null | ICard
+  onMove(move: Move): void
 }
 
-export default function Desk({deskState, gameRules, onMove}: IProps) {
+export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
   const settings = React.useContext(settingsContext)
   const {deskStyle} = settings
 
@@ -40,7 +41,11 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                 <EmptyPilePlaceholder/>
                 {deskState.stock.cards.map((card, cardIndex, {length}) =>
                   <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
-                    <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
+                    <Card
+                      card={card}
+                      isHinted={hint ? cardsAreEqual(card, hint) : false}
+                      withShadow={length - cardIndex < Math.min(3, length)}
+                    />
                   </div>,
                 )}
               </div>
@@ -54,12 +59,17 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                       <Draggable entity={card}>
                         <Card
                           card={card}
+                          isHinted={hint ? cardsAreEqual(card, hint) : false}
                           withShadow={length - cardIndex < Math.min(3, length)}
                           onDoubleClick={onTransferWasteCardToFoundation}
                         />
                       </Draggable>
                     :
-                      <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
+                      <Card
+                        card={card}
+                        isHinted={hint ? cardsAreEqual(card, hint) : false}
+                        withShadow={length - cardIndex < Math.min(3, length)}
+                      />
                     }
                   </div>,
                 )}
@@ -74,10 +84,18 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card} withShadow={length > 1}/>
+                          <Card
+                            card={card}
+                            isHinted={hint ? cardsAreEqual(card, hint) : false}
+                            withShadow={length > 1}
+                          />
                         </Draggable>
                       :
-                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
+                        <Card
+                          card={card}
+                          isHinted={hint ? cardsAreEqual(card, hint) : false}
+                          withShadow={length - cardIndex < Math.min(3, length)}
+                        />
                       }
                     </div>,
                   )}
@@ -92,10 +110,18 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card} withShadow={length > 1}/>
+                          <Card
+                            card={card}
+                            isHinted={hint ? cardsAreEqual(card, hint) : false}
+                            withShadow={length > 1}
+                          />
                         </Draggable>
                       :
-                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
+                        <Card
+                          card={card}
+                          isHinted={hint ? cardsAreEqual(card, hint) : false}
+                          withShadow={length - cardIndex < Math.min(3, length)}
+                        />
                       }
                     </div>,
                   )}
@@ -110,10 +136,18 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card} withShadow={length > 1}/>
+                          <Card
+                            card={card}
+                            isHinted={hint ? cardsAreEqual(card, hint) : false}
+                            withShadow={length > 1}
+                          />
                         </Draggable>
                       :
-                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
+                        <Card
+                          card={card}
+                          isHinted={hint ? cardsAreEqual(card, hint) : false}
+                          withShadow={length - cardIndex < Math.min(3, length)}
+                        />
                       }
                     </div>,
                   )}
@@ -128,10 +162,18 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
-                          <Card card={card} withShadow={length > 1}/>
+                          <Card
+                            card={card}
+                            isHinted={hint ? cardsAreEqual(card, hint) : false}
+                            withShadow={length > 1}
+                          />
                         </Draggable>
                       :
-                        <Card card={card} withShadow={length - cardIndex < Math.min(3, length)}/>
+                        <Card
+                          card={card}
+                          isHinted={hint ? cardsAreEqual(card, hint) : false}
+                          withShadow={length - cardIndex < Math.min(3, length)}
+                        />
                       }
                     </div>,
                   )}
@@ -174,6 +216,7 @@ export default function Desk({deskState, gameRules, onMove}: IProps) {
             <div className={style.tableau}>
               <Tableau
                 tableau={deskState.tableau}
+                hint={hint}
                 onRevealCard={onRevealCard}
                 onTransferCardToFoundation={onTransferTableauCardToFoundation}
               />

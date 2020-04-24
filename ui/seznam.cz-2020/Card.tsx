@@ -7,14 +7,16 @@ import CardFrontFace from './CardFrontFace'
 import settingsContext from './settingsContext'
 
 interface IProps {
-  card: ICard,
-  overrideRotation?: number,
-  withShadow?: boolean,
-  onClick?: null | ((card: ICard) => void),
-  onDoubleClick?: null | ((card: ICard) => void),
+  card: ICard
+  isHinted: boolean
+  overrideRotation?: number
+  withShadow?: boolean
+  onClick?: null | ((card: ICard) => void)
+  onDoubleClick?: null | ((card: ICard) => void)
 }
 
-export default React.memo(function Card({card, overrideRotation, withShadow, onClick, onDoubleClick}: IProps) {
+export default React.memo(function Card({card, isHinted, overrideRotation, withShadow, ...callbacks}: IProps) {
+  const {onClick, onDoubleClick} = callbacks
   const {cardBackFace} = React.useContext(settingsContext)
   const rotation = typeof overrideRotation === 'number' ? overrideRotation : (card.side === Side.FACE ? 0 : 180)
   const onClickHandler = React.useMemo(() => onClick?.bind(null, card), [card, onClick])
@@ -22,7 +24,7 @@ export default React.memo(function Card({card, overrideRotation, withShadow, onC
 
   return (
     <div
-      className={classnames(style.card, withShadow && style.shadow)}
+      className={classnames(style.card, isHinted && style.isHinted, withShadow && style.shadow)}
       onClick={onClickHandler}
       onDoubleClick={onDoubleClickHandler}
     >

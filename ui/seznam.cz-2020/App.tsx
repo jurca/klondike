@@ -1,4 +1,5 @@
 import * as React from 'react'
+import {ICard} from '../../game/Card'
 import {IGame} from '../../game/Game'
 import {Move} from '../../game/Move'
 import style from './app.css'
@@ -10,6 +11,7 @@ import SettingsContext from './settingsContext'
 
 interface IProps {
   game: IGame
+  hint: null | ICard
   cardBackFace: CardBackfaceStyle
   deskSkin: IDeskSkin
   onMove: (move: Move) => void
@@ -17,10 +19,11 @@ interface IProps {
   onRedo: () => void
   onReset: () => void
   onNewGame: (drawnCards: 1 | 3) => void
+  onShowHint: () => void
 }
 
-export default function App({game, cardBackFace, deskSkin, ...callbacks}: IProps) {
-  const {onMove, onNewGame, onRedo, onReset, onUndo} = callbacks
+export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: IProps) {
+  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
 
   return (
@@ -32,9 +35,11 @@ export default function App({game, cardBackFace, deskSkin, ...callbacks}: IProps
         <button onClick={onReset}>reset</button>
         &nbsp;|&nbsp;
         <GameStats game={game}/>
+        &nbsp;|&nbsp;
+        <button onClick={onShowHint}>poradit tah</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
-        <Desk deskState={game.state} gameRules={game.rules} onMove={onMove}/>
+        <Desk deskState={game.state} gameRules={game.rules} hint={hint} onMove={onMove}/>
       </SettingsContext.Provider>
     </div>
   )
