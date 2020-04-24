@@ -31,6 +31,7 @@
   },
   "homepage": "https://github.com/jurca/klondike#readme",
   "devDependencies": {
+    "@babel/compat-data": "^7.9.0",
     "@babel/core": "^7.6.4",
     "@babel/plugin-transform-modules-commonjs": "^7.6.0",
     "@jurca/-x-ignore": "^0.1.1",
