@@ -14,7 +14,7 @@ interface IProps {
   onDoubleClick?: null | ((card: ICard) => void),
 }
 
-export default function Card({card, overrideRotation, withShadow, onClick, onDoubleClick}: IProps) {
+export default React.memo(function Card({card, overrideRotation, withShadow, onClick, onDoubleClick}: IProps) {
   const {cardBackFace} = React.useContext(settingsContext)
   const rotation = typeof overrideRotation === 'number' ? overrideRotation : (card.side === Side.FACE ? 0 : 180)
   const onClickHandler = React.useMemo(() => onClick?.bind(null, card), [card, onClick])
@@ -32,4 +32,4 @@ export default function Card({card, overrideRotation, withShadow, onClick, onDou
       </div>
     </div>
   )
-}
+})
