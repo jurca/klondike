@@ -5,6 +5,7 @@ import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import {IDeskSkin} from './deskSkins'
+import GameStats from './GameStats'
 import SettingsContext from './settingsContext'
 
 interface IProps {
@@ -29,6 +30,8 @@ export default function App({game, cardBackFace, deskSkin, ...callbacks}: IProps
         <button onClick={onUndo}>&lt;-</button>
         <button onClick={onRedo}>-&gt;</button>
         <button onClick={onReset}>reset</button>
+        &nbsp;|&nbsp;
+        <GameStats game={game}/>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
         <Desk deskState={game.state} gameRules={game.rules} onMove={onMove}/>
