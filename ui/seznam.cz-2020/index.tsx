@@ -1,36 +1,34 @@
 import * as React from 'react'
 import {render} from 'react-dom'
 import {Side} from '../../game/Card'
-import {createNewGame, executeMove} from '../../game/Game'
+import {createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
-import {lastItemOrNull} from '../../game/util'
+import {lastItem, lastItemOrNull} from '../../game/util'
+import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
-import Desk from './Desk'
 import {GREEN_S} from './deskSkins'
-import SettingsContext from './settingsContext'
+
+const ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER = false
+const TABLEAU_PILES_COUNT = 7
 
 const uiRoot = document.getElementById('app')!
 
-let game = createNewGame({
-  allowNonKingToEmptyPileTransfer: false,
-  drawnCards: 1,
-  tableauPiles: 7,
-})
+let game = createGame(1)
 
 rerenderUI()
 
 function rerenderUI() {
   render(
-    <div style={{width: '100%', height: '100%'}}>
-      <SettingsContext.Provider
-        value={{
-          ...GREEN_S,
-          cardBackFace: CardBackfaceStyle.SeznamLogo,
-        }}
-      >
-        <Desk deskState={game.state} gameRules={game.rules} onMove={onMove}/>
-      </SettingsContext.Provider>
-    </div>,
+    <App
+      game={game}
+      deskSkin={GREEN_S}
+      cardBackFace={CardBackfaceStyle.SeznamLogo}
+      onMove={onMove}
+      onUndo={onUndo}
+      onRedo={onRedo}
+      onReset={onReset}
+      onNewGame={onNewGame}
+    />,
     uiRoot,
   )
 }
@@ -54,4 +52,38 @@ function onMove(move: Move): void {
   }
 
   rerenderUI()
+}
+
+function onNewGame(drawnCards: 1 | 3): void {
+  game = createGame(drawnCards)
+  rerenderUI()
+}
+
+function onUndo(): void {
+  if (game.history.length && lastItem(game.history)[1].move === MoveType.REVEAL_TABLEAU_CARD) {
+    game = undoLastMove(game)
+  }
+  game = undoLastMove(game)
+  rerenderUI()
+}
+
+function onRedo(): void {
+  game = redoNextMove(game)
+  if (game.future.length && game.future[0][1].move === MoveType.REVEAL_TABLEAU_CARD) {
+    game = redoNextMove(game)
+  }
+  rerenderUI()
+}
+
+function onReset(): void {
+  game = resetGame(game)
+  rerenderUI()
+}
+
+function createGame(drawnCards: 1 | 3): IGame {
+  return createNewGame({
+    allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
+    drawnCards,
+    tableauPiles: TABLEAU_PILES_COUNT,
+  })
 }
