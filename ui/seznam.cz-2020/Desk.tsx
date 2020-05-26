@@ -1,6 +1,6 @@
 import * as React from 'react'
-import {Color, equals as cardsAreEqual, ICard} from '../../game/Card'
-import {IDesk} from '../../game/Desk'
+import {Color, equals as cardsAreEqual, ICard, Rank, Side} from '../../game/Card'
+import {IDesk, isVictory} from '../../game/Desk'
 import {IGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {lastItemOrNull} from '../../game/util'
@@ -19,6 +19,7 @@ import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
 import settingsContext from './settingsContext'
 import Tableau from './Tableau'
+import VictoryScreen from './VictoryScreen'
 
 interface IProps {
   deskState: IDesk
@@ -27,9 +28,47 @@ interface IProps {
   onMove(move: Move): void
 }
 
+const VICTORY_SCREEN_OPTIONS = {
+  animationSpeed: 1,
+  bounciness: 0.85,
+  drag: 0.05,
+  gravity: 1.5,
+  maxHorizontalInitialForce: -20,
+  minHorizontalInitialForce: -60,
+  nextActorStartDelay: 200,
+  squashiness: 1.75,
+  timeDeltaCap: 100,
+}
+
 export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
   const settings = React.useContext(settingsContext)
   const {deskStyle} = settings
+
+  const [spadesFoundationRef, hearthsFoundationRef, clubsFoundationRef, diamondsFoundationRef] = [
+    React.useRef<Element>(null),
+    React.useRef<Element>(null),
+    React.useRef<Element>(null),
+    React.useRef<Element>(null),
+  ]
+  const foundationRefs = React.useMemo(() => new Map([
+    [Color.SPADES, spadesFoundationRef],
+    [Color.HEARTHS, hearthsFoundationRef],
+    [Color.CLUBS, clubsFoundationRef],
+    [Color.DIAMONDS, diamondsFoundationRef],
+  ]), [
+    spadesFoundationRef,
+    hearthsFoundationRef,
+    clubsFoundationRef,
+    diamondsFoundationRef,
+  ])
+  const victoryScreenActors = React.useMemo(() => new Map(Array.from(foundationRefs).map(
+    ([color, ref]) => [ref, {color, rank: Rank.KING, side: Side.FACE}],
+  )), [foundationRefs])
+
+  const [, setShowVictory] = React.useState(false)
+  React.useEffect(() => {
+    setShowVictory(true)
+  }, [])
 
   return (
     <div className={style.desk}>
@@ -79,7 +118,7 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
             <div className={`${style.foundationPile} ${style.topBarItem}`}>
               <div className={style.cardHolder}>
                 <DropArea areaId={Color.SPADES}>
-                  <FoundationPile color={Color.SPADES}/>
+                  <FoundationPile color={Color.SPADES} ref={foundationRefs.get(Color.SPADES)}/>
                   {deskState.foundation[Color.SPADES].cards.map((card, cardIndex, {length}) =>
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
@@ -105,7 +144,7 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
             <div className={`${style.foundationPile} ${style.topBarItem}`}>
               <div className={style.cardHolder}>
                 <DropArea areaId={Color.HEARTHS}>
-                  <FoundationPile color={Color.HEARTHS}/>
+                  <FoundationPile color={Color.HEARTHS} ref={foundationRefs.get(Color.HEARTHS)}/>
                   {deskState.foundation[Color.HEARTHS].cards.map((card, cardIndex, {length}) =>
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
@@ -131,7 +170,7 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
             <div className={`${style.foundationPile} ${style.topBarItem}`}>
               <div className={style.cardHolder}>
                 <DropArea areaId={Color.CLUBS}>
-                  <FoundationPile color={Color.CLUBS}/>
+                  <FoundationPile color={Color.CLUBS} ref={foundationRefs.get(Color.CLUBS)}/>
                   {deskState.foundation[Color.CLUBS].cards.map((card, cardIndex, {length}) =>
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
@@ -157,7 +196,7 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
             <div className={`${style.foundationPile} ${style.topBarItem}`}>
               <div className={style.cardHolder}>
                 <DropArea areaId={Color.DIAMONDS}>
-                  <FoundationPile color={Color.DIAMONDS}/>
+                  <FoundationPile color={Color.DIAMONDS} ref={foundationRefs.get(Color.DIAMONDS)}/>
                   {deskState.foundation[Color.DIAMONDS].cards.map((card, cardIndex, {length}) =>
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
@@ -224,6 +263,12 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
           </div>
         </div>
       </DragNDrop>
+      {isVictory(deskState) &&
+        <VictoryScreen
+          {...VICTORY_SCREEN_OPTIONS}
+          actors={victoryScreenActors}
+        />
+      }
     </div>
   )
 

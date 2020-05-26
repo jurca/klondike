@@ -3,6 +3,7 @@ import {
   Desk,
   executeMove as executeMoveOnDesk,
   IDesk,
+  isVictory as isDeskInVictoryState,
 } from './Desk'
 import {Move} from './Move'
 import {draw, IPile, Pile, shuffle, turnCard} from './Pile'
@@ -146,8 +147,8 @@ export function redoNextMove(game: IGame): IGame {
   }
 }
 
-export function isVictory({state: {stock, tableau, waste}}: IGame): boolean {
-  return !stock.cards.length && !waste.cards.length && tableau.piles.every((pile) => !pile.cards.length)
+export function isVictory({state}: IGame): boolean {
+  return isDeskInVictoryState(state)
 }
 
 export function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {

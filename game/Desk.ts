@@ -58,6 +58,10 @@ export function executeMove(desk: IDesk, rules: IGameRules, move: Move): IDesk {
   }
 }
 
+export function isVictory({stock, tableau, waste}: IDesk): boolean {
+  return !stock.cards.length && !waste.cards.length && tableau.piles.every((pile) => !pile.cards.length)
+}
+
 function drawCards(desk: IDesk, rules: IGameRules, numberOfCards: number) {
   if (numberOfCards !== rules.drawnCards) {
     throw new Error(
