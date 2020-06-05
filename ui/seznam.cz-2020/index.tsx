@@ -7,7 +7,7 @@ import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
 import {lastItem, lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
-import {GREEN_S} from './deskSkins'
+import * as DeskSkins from './deskSkins'
 
 const ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER = false
 const TABLEAU_PILES_COUNT = 7
@@ -16,6 +16,8 @@ const uiRoot = document.getElementById('app')!
 
 let game = createGame(1)
 let hint: null | ICard = null
+let deskSkin = DeskSkins.GREEN_S
+let cardBackStyle = CardBackfaceStyle.SeznamLogo
 
 rerenderUI()
 
@@ -24,14 +26,16 @@ function rerenderUI() {
     <App
       game={game}
       hint={hint}
-      deskSkin={GREEN_S}
-      cardBackFace={CardBackfaceStyle.SeznamLogo}
+      deskSkin={deskSkin}
+      cardBackFace={cardBackStyle}
       onMove={onMove}
       onUndo={onUndo}
       onRedo={onRedo}
       onReset={onReset}
       onNewGame={onNewGame}
       onShowHint={onShowHint}
+      onDeskStyleChange={onDeskStyleChange}
+      onCardStyleChange={onCardBackStyleChange}
     />,
     uiRoot,
   )
@@ -109,6 +113,18 @@ function onShowHint(): void {
     const generatedHints = getMoveHints(game, HintGeneratorMode.WITH_FULL_STOCK)
     hint = generatedHints.length ? generatedHints[0][1] : null
   }
+  rerenderUI()
+}
+
+function onDeskStyleChange(newDeskStyle: string): void {
+  if (newDeskStyle in DeskSkins) {
+    deskSkin = (DeskSkins as any)[newDeskStyle]
+    rerenderUI()
+  }
+}
+
+function onCardBackStyleChange(newCardBackStyle: CardBackfaceStyle): void {
+  cardBackStyle = newCardBackStyle
   rerenderUI()
 }
 
