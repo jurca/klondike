@@ -1,4 +1,13 @@
-import {Color, ICard, isValidFoundationSequence, isValidTableauSequence, Rank, RANK_SEQUENCE, turnOver} from './Card'
+import {
+  Color,
+  ICard,
+  isValidFoundationSequence,
+  isValidTableauSequence,
+  Rank,
+  RANK_SEQUENCE,
+  Side,
+  turnOver,
+} from './Card'
 import {IGameRules} from './Game'
 import {Move, MoveType} from './Move'
 import {draw, IPile, Pile, placeCardOnTop, placePileOnTop} from './Pile'
@@ -60,6 +69,14 @@ export function executeMove(desk: IDesk, rules: IGameRules, move: Move): IDesk {
 
 export function isVictory({stock, tableau, waste}: IDesk): boolean {
   return !stock.cards.length && !waste.cards.length && tableau.piles.every((pile) => !pile.cards.length)
+}
+
+export function isVictoryGuaranteed({stock, waste, tableau: {piles: tableauPiles}}: IDesk): boolean {
+  return (
+    !stock.cards.length &&
+    !waste.cards.length &&
+    tableauPiles.every((pile) => pile.cards.every((card) => card.side === Side.FACE))
+  )
 }
 
 function drawCards(desk: IDesk, rules: IGameRules, numberOfCards: number) {

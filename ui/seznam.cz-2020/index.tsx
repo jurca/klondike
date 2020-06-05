@@ -110,7 +110,7 @@ function onShowHint(): void {
   if (hint) {
     hint = null
   } else {
-    const generatedHints = getMoveHints(game, HintGeneratorMode.WITH_FULL_STOCK)
+    const generatedHints = getMoveHints(game.state, game.rules, HintGeneratorMode.WITH_FULL_STOCK)
     hint = generatedHints.length ? generatedHints[0][1] : null
   }
   rerenderUI()

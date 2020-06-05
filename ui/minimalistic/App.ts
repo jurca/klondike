@@ -62,7 +62,11 @@ define(
 
     public render(): any {
       const {allcardsvisible, currentGameView: game, newgametableaupilescount, showhints} = this
-      const hints = showhints && getMoveHints(this.props.game, HintGeneratorMode.WITH_FULL_STOCK)
+      const hints = showhints && getMoveHints(
+        this.props.game.state,
+        this.props.game.rules,
+        HintGeneratorMode.WITH_FULL_STOCK,
+      )
 
       return tpl`
         <style>

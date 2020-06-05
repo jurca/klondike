@@ -47,7 +47,7 @@ export function defaultStateRankingHeuristic({state: {foundation, tableau: {pile
 }
 
 function findBestMove(game: IGame, options: IBotOptions, lookAheadMoves: number): null | [MoveHint, IGame, number] {
-  const hints = getMoveHints(game, HintGeneratorMode.WITH_FULL_STOCK)
+  const hints = getMoveHints(game.state, game.rules, HintGeneratorMode.WITH_FULL_STOCK)
   if (!hints.length) {
     return null
   }

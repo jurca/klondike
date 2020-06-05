@@ -12,10 +12,11 @@ import {
   isValidTableauSequence,
   Rank,
   Side,
+  turnOver,
 } from './Card'
-import {executeMove, IGame, isVictoryGuaranteed} from './Game'
+import {IDesk, isVictoryGuaranteed} from './Desk'
+import {IGameRules} from './Game'
 import {Move, MoveType} from './Move'
-import {draw} from './Pile'
 import {ITableau} from './Tableau'
 import {lastItem, lastItemOrNull} from './util'
 
@@ -53,9 +54,8 @@ interface IFoundationTop {
   [Color.SPADES]: null | ICard
 }
 
-export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
-  const desk = game.state
-  const stockPlayableCards: ICard[] = getStockPlayableCards(game, mode)
+export function getMoveHints(desk: IDesk, rules: IGameRules, mode: HintGeneratorMode): MoveHint[] {
+  const stockPlayableCards: ICard[] = getStockPlayableCards(desk, rules, mode)
   const {foundation, tableau} = desk
   const topTableauCards = tableau.piles.filter((pile) => pile.cards.length).map((pile) => lastItem(pile.cards))
   const topFoundationCards = {
@@ -66,13 +66,13 @@ export function getMoveHints(game: IGame, mode: HintGeneratorMode): MoveHint[] {
   }
   const moves: MoveHint[] = []
 
-  moves.push(...getMovesWithAbsoluteConfidence(game, stockPlayableCards, topTableauCards, topFoundationCards))
-  moves.push(...getMovesWithVeryHighConfidence(game, stockPlayableCards))
-  moves.push(...getMovesWithHighConfidence(game, stockPlayableCards))
-  moves.push(...getMovesWithMediumConfidence(game))
-  moves.push(...getMovesWithLowConfidence(game))
-  moves.push(...getMovesWithVeryLowConfidence(game, stockPlayableCards, topFoundationCards))
-  moves.push(...getMovesWithMinisculeConfidence(game, stockPlayableCards, topFoundationCards))
+  moves.push(...getMovesWithAbsoluteConfidence(desk, stockPlayableCards, topTableauCards, topFoundationCards))
+  moves.push(...getMovesWithVeryHighConfidence(desk, stockPlayableCards))
+  moves.push(...getMovesWithHighConfidence(desk, stockPlayableCards))
+  moves.push(...getMovesWithMediumConfidence(desk))
+  moves.push(...getMovesWithLowConfidence(desk))
+  moves.push(...getMovesWithVeryLowConfidence(desk, stockPlayableCards, topFoundationCards))
+  moves.push(...getMovesWithMinisculeConfidence(desk, rules, stockPlayableCards, topFoundationCards))
 
   return filterDuplicateHints(moves)
 }
@@ -104,7 +104,7 @@ function filterDuplicateHints(hints: MoveHint[]): MoveHint[] {
 }
 
 function getMovesWithAbsoluteConfidence(
-  game: IGame,
+  desk: IDesk,
   stockPlayableCards: ICard[],
   topTableauCards: ICard[],
   topFoundationCards: {
@@ -114,7 +114,7 @@ function getMovesWithAbsoluteConfidence(
     [Color.SPADES]: null | ICard,
   },
 ): MoveHint[] {
-  const {tableau} = game.state
+  const {tableau} = desk
   const moves: MoveHint[] = []
 
   // Revealing a card
@@ -181,7 +181,7 @@ function getMovesWithAbsoluteConfidence(
   }
 
   // Finishing the game
-  if (isVictoryGuaranteed(game)) {
+  if (isVictoryGuaranteed(desk)) {
     for (const card of topTableauCards) {
       const topFoundationCard = topFoundationCards[card.color]
       if (topFoundationCard && isValidFoundationSequence(topFoundationCard, card)) {
@@ -201,10 +201,10 @@ function getMovesWithAbsoluteConfidence(
 }
 
 function getMovesWithVeryHighConfidence(
-  game: IGame,
+  desk: IDesk,
   stockPlayableCards: ICard[],
 ): MoveHint[] {
-  const {tableau} = game.state
+  const {tableau} = desk
   const moves: MoveHint[] = []
 
   // Tableau to tableau transfer that allows revealing a card, source is not 5, 6, 7 or 8 and target pile is not empty
@@ -287,9 +287,9 @@ function getMovesWithVeryHighConfidence(
   return moves
 }
 
-function getMovesWithHighConfidence(game: IGame, stockPlayableCards: ICard[]): MoveHint[] {
+function getMovesWithHighConfidence(desk: IDesk, stockPlayableCards: ICard[]): MoveHint[] {
   const moves: MoveHint[] = []
-  const {state: {tableau}} = game
+  const {tableau} = desk
 
   // King to an empty tableau pile transfer that allows moving the largest built sequence to the king's pile
   const availableKings = tableau.piles
@@ -340,9 +340,9 @@ function getMovesWithHighConfidence(game: IGame, stockPlayableCards: ICard[]): M
   return moves
 }
 
-function getMovesWithMediumConfidence(game: IGame): MoveHint[] {
+function getMovesWithMediumConfidence(desk: IDesk): MoveHint[] {
   const moves: MoveHint[] = []
-  const {state: {tableau}} = game
+  const {tableau} = desk
 
   // Moving a 5, 6, 7 or 8 from a tableau pile that (probably) has not been touched yet and will reveal a card to
   // another tableau pile
@@ -375,9 +375,9 @@ function getMovesWithMediumConfidence(game: IGame): MoveHint[] {
   return moves
 }
 
-function getMovesWithLowConfidence(game: IGame): MoveHint[] {
+function getMovesWithLowConfidence(desk: IDesk): MoveHint[] {
   const moves: MoveHint[] = []
-  const {state: {tableau}} = game
+  const {tableau} = desk
 
   // Making a transfer from tableau pile to a non-empty tableau pile that will reveal a card
   const pilesOfVisibleCards = tableau.piles.map(
@@ -441,12 +441,12 @@ function getMovesWithLowConfidence(game: IGame): MoveHint[] {
 }
 
 function getMovesWithVeryLowConfidence(
-  game: IGame,
+  desk: IDesk,
   stockPlayableCards: ICard[],
   topFoundationCards: IFoundationTop,
 ): MoveHint[] {
   const moves: MoveHint[] = []
-  const {state: {tableau}} = game
+  const {tableau} = desk
   const filteredTopFoundationCards: ICard[] = Object.values(topFoundationCards).filter((card) => card)
 
   // Foundation to tableau transfer that allows revealing a card by tableau to tableau transfer
@@ -586,12 +586,13 @@ function getMovesWithVeryLowConfidence(
 }
 
 function getMovesWithMinisculeConfidence(
-  game: IGame,
+  desk: IDesk,
+  rules: IGameRules,
   stockPlayableCards: ICard[],
   topFoundationCards: IFoundationTop,
 ): MoveHint[] {
   const moves: MoveHint[] = []
-  const {state: {tableau}} = game
+  const {tableau} = desk
 
   // Tableau to foundation transfer that allows a transfer revealing card or reveal a card
   for (const pile of tableau.piles) {
@@ -690,7 +691,7 @@ function getMovesWithMinisculeConfidence(
   const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
 
   // Stock to empty pile transfer, prefer higher-ranking cards - applies only if allowed by game rules
-  if (game.rules.allowNonKingToEmptyPileTransfer && emptyPileIndex > -1) {
+  if (rules.allowNonKingToEmptyPileTransfer && emptyPileIndex > -1) {
     for (const card of stockPlayableCards.slice().sort((card1, card2) => compareRank(card2, card1))) {
       moves.push([
         {
@@ -704,7 +705,7 @@ function getMovesWithMinisculeConfidence(
   }
 
   // Tableau to empty pile transfer that allows revealing a card - applies only if allowed by game rules
-  if (game.rules.allowNonKingToEmptyPileTransfer && emptyPileIndex > -1) {
+  if (rules.allowNonKingToEmptyPileTransfer && emptyPileIndex > -1) {
     const sourcePiles = tableau.piles.filter(
       (pile) => pile.cards.length && pile.cards[0].side === Side.BACK && lastItem(pile.cards).side === Side.FACE,
     ).sort(
@@ -752,40 +753,31 @@ function getMovesWithMinisculeConfidence(
   return moves
 }
 
-function getStockPlayableCards(game: IGame, mode: HintGeneratorMode): ICard[] {
+function getStockPlayableCards(deskState: IDesk, rules: IGameRules, mode: HintGeneratorMode): ICard[] {
   switch (mode) {
     case HintGeneratorMode.CURRENT_STATE:
-      return game.state.waste.cards.length ? [draw(game.state.waste, 1)[1][0]] : []
+      return deskState.waste.cards.length ? [lastItem(deskState.waste.cards)] : []
     case HintGeneratorMode.WITH_FULL_STOCK: {
-        if (!game.state.waste.cards.length && !game.state.stock.cards.length) {
+        if (!deskState.waste.cards.length && !deskState.stock.cards.length) {
           return []
         }
-        let inspectedGame = game
-        const cards: ICard[] = []
-        if (inspectedGame.state.waste.cards.length) {
-          cards.push(lastItem(inspectedGame.state.waste.cards))
-          while (inspectedGame.state.stock.cards.length) {
-            inspectedGame = executeMove(inspectedGame, {
-              drawnCards: inspectedGame.rules.drawnCards,
-              move: MoveType.DRAW_CARDS,
-            })
-            cards.push(lastItem(inspectedGame.state.waste.cards))
-          }
-          inspectedGame = executeMove(inspectedGame, {
-            move: MoveType.REDEAL,
-          })
-        }
-        while (inspectedGame.state.stock.cards.length) {
-          inspectedGame = executeMove(inspectedGame, {
-            drawnCards: inspectedGame.rules.drawnCards,
-            move: MoveType.DRAW_CARDS,
-          })
-          const card = draw(inspectedGame.state.waste, 1)[1][0]
-          if (!cards.includes(card)) {
-            cards.push(card)
+
+        const stock = deskState.stock.cards.slice()
+        const waste = deskState.waste.cards.slice()
+        const cards = new Set<ICard>()
+        if (waste.length) {
+          cards.add(lastItem(waste))
+          // Iterate through the remaining stock
+          for (let cardIndex = stock.length - 1; cardIndex >= 0; cardIndex -= rules.drawnCards) {
+            cards.add(turnOver(stock[cardIndex]))
           }
         }
-        return cards
+        stock.push(...waste.reverse().map(turnOver)) // redeal
+        // Iterate through the stock
+        for (let cardIndex = stock.length - rules.drawnCards; cardIndex >= 0; cardIndex -= rules.drawnCards) {
+          cards.add(turnOver(stock[cardIndex]))
+        }
+        return [...cards]
       }
     default:
       throw new TypeError(`Unknown hint generator mode: ${mode}`)

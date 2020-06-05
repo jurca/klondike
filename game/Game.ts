@@ -4,6 +4,7 @@ import {
   executeMove as executeMoveOnDesk,
   IDesk,
   isVictory as isDeskInVictoryState,
+  isVictoryGuaranteed as isDeskInVictoryGuaranteedState,
 } from './Desk'
 import {Move} from './Move'
 import {draw, IPile, Pile, shuffle, turnCard} from './Pile'
@@ -94,6 +95,23 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
   }
 }
 
+export function createGameWithBotPredicate(
+  rules: INewGameRules,
+  botOptions: IBotOptions,
+  simulationPredicate: (desk: IDesk) => boolean,
+): IGame {
+  const game = createNewGame(rules)
+  let lastDeskState = game.state
+  do {
+    const newDeskState = lastDeskState // TODO: execute BOT
+    if (newDeskState === lastDeskState || simulationPredicate(newDeskState)) {
+      break
+    }
+    lastDeskState = newDeskState
+  } while (true)
+  return game
+}
+
 export function executeMove(game: IGame, move: Move): IGame {
   const updatedDesk = executeMoveOnDesk(game.state, game.rules, move)
   return createNextGameState(game, updatedDesk, move)
@@ -151,12 +169,8 @@ export function isVictory({state}: IGame): boolean {
   return isDeskInVictoryState(state)
 }
 
-export function isVictoryGuaranteed({state: {stock, waste, tableau: {piles: tableauPiles}}}: IGame): boolean {
-  return (
-    !stock.cards.length &&
-    !waste.cards.length &&
-    tableauPiles.every((pile) => pile.cards.every((card) => card.side === Side.FACE))
-  )
+export function isVictoryGuaranteed({state}: IGame): boolean {
+  return isDeskInVictoryGuaranteedState(state)
 }
 
 function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
