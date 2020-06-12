@@ -797,7 +797,7 @@ function getStockPlayableCards(deskState: IDesk, rules: IGameRules, mode: HintGe
         if (waste.length) {
           cards.add(lastItem(waste))
           // Iterate through the remaining stock
-          for (let cardIndex = stock.length - 1; cardIndex >= 0; cardIndex -= rules.drawnCards) {
+          for (let cardIndex = stock.length - rules.drawnCards; cardIndex >= 0; cardIndex -= rules.drawnCards) {
             cards.add(turnOver(stock[cardIndex]))
           }
         }
