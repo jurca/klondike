@@ -6,6 +6,7 @@ import {isVictoryGuaranteed} from '../../game/Desk'
 import {createGameWithBotPredicate, createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode, MoveConfidence} from '../../game/MoveHintGenerator'
+import {deserialize} from '../../game/Serializer'
 import {lastItem, lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
@@ -48,6 +49,7 @@ function rerenderUI() {
       onDeskStyleChange={onDeskStyleChange}
       onCardStyleChange={onCardBackStyleChange}
       onBotMove={onBotMove}
+      onImport={onImport}
     />,
     uiRoot,
   )
@@ -148,6 +150,12 @@ function onCardBackStyleChange(newCardBackStyle: CardBackfaceStyle): void {
 
 function onBotMove() {
   game = makeMove(game, BOT_OPTIONS)
+  rerenderUI()
+}
+
+function onImport() {
+  const state = prompt('Exportovaný stav hry:') || ''
+  game = deserialize(state)
   rerenderUI()
 }
 

@@ -2,6 +2,7 @@ import * as React from 'react'
 import {ICard} from '../../game/Card'
 import {IGame} from '../../game/Game'
 import {Move} from '../../game/Move'
+import {serialize} from '../../game/Serializer'
 import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
@@ -24,10 +25,11 @@ interface IProps {
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
   onBotMove: () => void
+  onImport: () => void
 }
 
 export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: IProps) {
-  const {onMove, onNewGame, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo} = callbacks
+  const {onMove, onNewGame, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const deskStyleName = React.useMemo(() => {
     switch (deskSkin) {
@@ -81,6 +83,8 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
         </select>
         &nbsp;|&nbsp;
         <button onClick={callbacks.onBotMove}>automatický tah</button>
+        <button onClick={onExport}>exportovat hru</button>
+        <button onClick={onImport}>importovat hru</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
         <Desk deskState={game.state} gameRules={game.rules} hint={hint} onMove={onMove}/>
@@ -100,5 +104,9 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
     if (drawnCards === 1 || drawnCards === 3) {
       onNewWinnableGame(drawnCards)
     }
+  }
+
+  function onExport(): void {
+    console.log(serialize(game))
   }
 }
