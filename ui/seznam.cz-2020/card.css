@@ -20,7 +20,7 @@ ui-draggable[style]:not([style='']) :local(.back) {
 
 :local(.isHinted) :local(.front),
 :local(.isHinted) :local(.back) {
-  box-shadow: 0 0 0.1em 0.06em #de0000;
+  box-shadow: 0 0 0.1em 0.06em var(--hint-color);
 }
 
 :local(.body),

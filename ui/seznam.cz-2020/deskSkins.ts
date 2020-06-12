@@ -10,6 +10,7 @@ export interface IDeskSkin {
     dark: string,
     light: string,
   }
+  hint: string
 }
 
 export const GREEN_S: IDeskSkin = {
@@ -22,6 +23,7 @@ export const GREEN_S: IDeskSkin = {
     dark: '#00ab51',
     light: '#75cc81',
   },
+  hint: '#de0000',
 }
 
 export const TEAL_COLORS: IDeskSkin = {
@@ -34,6 +36,7 @@ export const TEAL_COLORS: IDeskSkin = {
     dark: '#00ab9e',
     light: '#5cc9b7',
   },
+  hint: '#de0000',
 }
 
 export const GREEN_S_TILES: IDeskSkin = {
@@ -46,6 +49,7 @@ export const GREEN_S_TILES: IDeskSkin = {
     dark: '#007546',
     light: '#009e5f',
   },
+  hint: '#de0000',
 }
 
 export const RED_S_TILES: IDeskSkin = {
@@ -58,4 +62,5 @@ export const RED_S_TILES: IDeskSkin = {
     dark: '#802122',
     light: '#b45656',
   },
+  hint: '#00de00',
 }

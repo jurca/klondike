@@ -17,7 +17,7 @@ interface IProps {
 
 export default React.memo(function Card({card, isHinted, overrideRotation, withShadow, ...callbacks}: IProps) {
   const {onClick, onDoubleClick} = callbacks
-  const {cardBackFace} = React.useContext(settingsContext)
+  const {cardBackFace, hint: hintColor} = React.useContext(settingsContext)
   const rotation = typeof overrideRotation === 'number' ? overrideRotation : (card.side === Side.FACE ? 0 : 180)
   const onClickHandler = React.useMemo(() => onClick?.bind(null, card), [card, onClick])
   const onDoubleClickHandler = React.useMemo(() => onDoubleClick?.bind(null, card), [card, onDoubleClick])
@@ -25,6 +25,9 @@ export default React.memo(function Card({card, isHinted, overrideRotation, withS
   return (
     <div
       className={classnames(style.card, isHinted && style.isHinted, withShadow && style.shadow)}
+      style={isHinted ? {
+        '--hint-color': hintColor,
+      } as React.CSSProperties : undefined}
       onClick={onClickHandler}
       onDoubleClick={onDoubleClickHandler}
     >
