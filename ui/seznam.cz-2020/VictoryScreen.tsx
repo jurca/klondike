@@ -109,26 +109,10 @@ export default function VictoryScreen(props: IProps) {
       let lastFrameTimestamp = performance.now()
       currentAnimationFrameRequestId = requestAnimationFrame(runAnimation)
 
-      // const previousStateImage = document.createElement('canvas')
-      // previousStateImage.width = drawingContext.canvas.width
-      // previousStateImage.height = drawingContext.canvas.height
-      // const maybePreviousStateImageContext = previousStateImage.getContext('2d')
-      // if (!maybePreviousStateImageContext) {
-      //   throw new Error('Failed to create a helper buffer rendering context')
-      // }
-      // const previousStateImageContext = maybePreviousStateImageContext
-
       function runAnimation() {
         const now = performance.now()
         const delta = Math.min(now - lastFrameTimestamp, props.timeDeltaCap)
         lastFrameTimestamp = now
-
-        // previousStateImageContext.clearRect(0, 0, previousStateImage.width, previousStateImage.height)
-        // previousStateImageContext.drawImage(drawingContext.canvas, 0, 0)
-        // drawingContext.clearRect(0, 0, drawingContext.canvas.width, drawingContext.canvas.height)
-        // drawingContext.globalAlpha = 0.75
-        // drawingContext.drawImage(previousStateImage, 0, 0)
-        // drawingContext.globalAlpha = 1
 
         const actorToRevive = actors.find((actor) => !actor.revivedAt)
         const livingActors = actors.filter((actor) => !!actor.revivedAt && !actor.killed)
