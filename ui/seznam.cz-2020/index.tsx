@@ -194,9 +194,11 @@ const knownWinnableDecks = new Set<string>()
 function onGenerateWinnableGames(drawnCards: 1 | 3): void {
   if (winnableGameGeneratorRafId) {
     cancelAnimationFrame(winnableGameGeneratorRafId)
+    winnableGameGeneratorRafId = null
     console.log(
       `Here are the generated decks:\n${JSON.stringify([...knownWinnableDecks], null, 2).replace(/"/g, '\'')}`,
     )
+    knownWinnableDecks.clear()
     return
   }
 
