@@ -505,10 +505,11 @@ function getMovesWithVeryLowConfidence(
     }
   }
 
+  const emptyPileIndex = tableau.piles.findIndex((candidatePile) => !candidatePile.cards.length)
+
   // King to empty pile transfer that reveals a new card
   for (const pile of tableau.piles) {
     const kingIndex = pile.cards.findIndex((card) => card.side === Side.FACE && card.rank === Rank.KING)
-    const emptyPileIndex = tableau.piles.findIndex((candidatePile) => !candidatePile.cards.length)
     const king = pile.cards[kingIndex]
     if (king && kingIndex > 0 && pile.cards[kingIndex - 1].side === Side.BACK && emptyPileIndex > -1) {
       moves.push([
@@ -584,7 +585,6 @@ function getMovesWithVeryLowConfidence(
   }
 
   // Card from waste/stock to an empty tableau pile transfer
-  const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
   if (emptyPileIndex > -1) {
     const usableCards = rules.allowNonKingToEmptyPileTransfer ?
       stockPlayableCards
