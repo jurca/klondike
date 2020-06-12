@@ -26,6 +26,7 @@ interface IProps {
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
   onBotMove: () => void
   onImport: () => void
+  onGenerateWinnableGames: (drawnCards: 1 | 3) => void
 }
 
 export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: IProps) {
@@ -85,6 +86,7 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
         <button onClick={callbacks.onBotMove}>automatický tah</button>
         <button onClick={onExport}>exportovat hru</button>
         <button onClick={onImport}>importovat hru</button>
+        <button onClick={onGenerateWinnableGames}>generovat vyhratelné hry</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
         <Desk deskState={game.state} gameRules={game.rules} hint={hint} onMove={onMove}/>
@@ -108,5 +110,12 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
 
   function onExport(): void {
     console.log(serialize(game))
+  }
+
+  function onGenerateWinnableGames() {
+    const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
+    if (drawnCards === 1 || drawnCards === 3) {
+      callbacks.onGenerateWinnableGames(drawnCards)
+    }
   }
 }

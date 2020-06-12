@@ -6,7 +6,7 @@ import {isVictoryGuaranteed} from '../../game/Desk'
 import {createGameWithBotPredicate, createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode, MoveConfidence} from '../../game/MoveHintGenerator'
-import {deserialize} from '../../game/Serializer'
+import {deserialize, serializeDeckFromDesk} from '../../game/Serializer'
 import {lastItem, lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
@@ -50,6 +50,7 @@ function rerenderUI() {
       onCardStyleChange={onCardBackStyleChange}
       onBotMove={onBotMove}
       onImport={onImport}
+      onGenerateWinnableGames={onGenerateWinnableGames}
     />,
     uiRoot,
   )
@@ -156,6 +157,7 @@ function onBotMove() {
 function onImport() {
   const state = prompt('Exportovaný stav hry:') || ''
   game = deserialize(state)
+  console.log(serializeDeckFromDesk(game.state))
   rerenderUI()
 }
 
@@ -168,7 +170,7 @@ function createGame(drawnCards: 1 | 3): IGame {
 }
 
 function createWinnableGame(drawnCards: 1 | 3): IGame {
-  const [generatedGame] = createGameWithBotPredicate(
+  const [generatedGame, isWinnable] = createGameWithBotPredicate(
     {
       allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
       drawnCards,
@@ -182,5 +184,43 @@ function createWinnableGame(drawnCards: 1 | 3): IGame {
     },
   )
 
+  console.log(isWinnable)
+
   return generatedGame
+}
+
+function onGenerateWinnableGames(drawnCards: 1 | 3): void {
+  console.log(`Generating games for number drawn cards: ${drawnCards}`)
+  const knownDecks = new Set<string>()
+  requestAnimationFrame(tryAntoherGame)
+
+  function tryAntoherGame() {
+    const [generatedGame, isWinnable] = createGameWithBotPredicate(
+      {
+        allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
+        drawnCards,
+        tableauPiles: TABLEAU_PILES_COUNT,
+      },
+      BOT_OPTIONS,
+      {
+        maxMoves: MAX_BOT_SIMULATION_MOVES,
+        maxSimulationTime: MAX_BOT_SIMULATION_TIME,
+        simulationEndPredicate: isVictoryGuaranteed,
+      },
+    )
+
+    if (isWinnable) {
+      const deck = serializeDeckFromDesk(generatedGame.state)
+      if (!knownDecks.has(deck)) {
+        knownDecks.add(deck)
+        console.log(`Found winnable deck: ${deck}`)
+      } else {
+        console.log('Generated a winnable deck again')
+      }
+    } else {
+      console.log('The generated deck is not winnable')
+    }
+
+    requestAnimationFrame(tryAntoherGame)
+  }
 }
