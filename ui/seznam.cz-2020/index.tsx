@@ -189,10 +189,19 @@ function createWinnableGame(drawnCards: 1 | 3): IGame {
   return generatedGame
 }
 
+let winnableGameGeneratorRafId: null | number = null
+const knownWinnableDecks = new Set<string>()
 function onGenerateWinnableGames(drawnCards: 1 | 3): void {
+  if (winnableGameGeneratorRafId) {
+    cancelAnimationFrame(winnableGameGeneratorRafId)
+    console.log(
+      `Here are the generated decks:\n${JSON.stringify([...knownWinnableDecks], null, 2).replace(/"/g, '\'')}`,
+    )
+    return
+  }
+
   console.log(`Generating games for number drawn cards: ${drawnCards}`)
-  const knownDecks = new Set<string>()
-  requestAnimationFrame(tryAntoherGame)
+  winnableGameGeneratorRafId = requestAnimationFrame(tryAntoherGame)
 
   function tryAntoherGame() {
     const [generatedGame, isWinnable] = createGameWithBotPredicate(
@@ -211,8 +220,8 @@ function onGenerateWinnableGames(drawnCards: 1 | 3): void {
 
     if (isWinnable) {
       const deck = serializeDeckFromDesk(generatedGame.state)
-      if (!knownDecks.has(deck)) {
-        knownDecks.add(deck)
+      if (!knownWinnableDecks.has(deck)) {
+        knownWinnableDecks.add(deck)
         console.log(`Found winnable deck: ${deck}`)
       } else {
         console.log('Generated a winnable deck again')
@@ -221,6 +230,6 @@ function onGenerateWinnableGames(drawnCards: 1 | 3): void {
       console.log('The generated deck is not winnable')
     }
 
-    requestAnimationFrame(tryAntoherGame)
+    winnableGameGeneratorRafId = requestAnimationFrame(tryAntoherGame)
   }
 }
