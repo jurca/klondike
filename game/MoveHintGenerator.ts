@@ -74,7 +74,16 @@ export function getMoveHints(desk: IDesk, rules: IGameRules, mode: HintGenerator
   moves.push(...getMovesWithVeryLowConfidence(desk, stockPlayableCards, topFoundationCards, rules))
   moves.push(...getMovesWithMinisculeConfidence(desk, rules, stockPlayableCards, topFoundationCards))
 
-  return filterDuplicateHints(moves)
+  return filterFoundationToTableauHints(filterDuplicateHints(moves))
+}
+
+function filterFoundationToTableauHints(hints: MoveHint[]): MoveHint[] {
+  const hintsWithoutTransfersFromFoundation = hints.filter(([move]) => move.move !== MoveType.FOUNDATION_TO_TABLEAU)
+  if (hintsWithoutTransfersFromFoundation.length && hintsWithoutTransfersFromFoundation.length !== hints.length) {
+    return hintsWithoutTransfersFromFoundation
+  }
+
+  return hints
 }
 
 function filterDuplicateHints(hints: MoveHint[]): MoveHint[] {
