@@ -1,3 +1,4 @@
+import {IBotOptions, makeMoveOnDesk} from './Bot'
 import {Color, DECK, ICard, Side} from './Card'
 import {
   Desk,
@@ -33,6 +34,12 @@ export interface IGameRules {
 
 export interface INewGameRules extends IGameRules {
   readonly tableauPiles: number
+}
+
+interface IBotSimulationOptions {
+  maxMoves: number,
+  simulationEndPredicate: (dest: IDesk) => boolean,
+  maxSimulationTime: number,
 }
 
 export interface IRecordTimestamp {
@@ -98,18 +105,27 @@ export function createNewGame(gameRules: INewGameRules, cardDeck: null | Readonl
 export function createGameWithBotPredicate(
   rules: INewGameRules,
   botOptions: IBotOptions,
-  simulationPredicate: (desk: IDesk) => boolean,
-): IGame {
+  {maxMoves, maxSimulationTime, simulationEndPredicate}: IBotSimulationOptions,
+): [IGame, boolean] {
   const game = createNewGame(rules)
   let lastDeskState = game.state
+  let satisfiesPredicate = false
+  let moveCount = 0
+  const startTimestamp = performance.now()
   do {
-    const newDeskState = lastDeskState // TODO: execute BOT
-    if (newDeskState === lastDeskState || simulationPredicate(newDeskState)) {
+    const newDeskState = makeMoveOnDesk(lastDeskState, rules, botOptions)
+    moveCount++
+    if (newDeskState === lastDeskState || moveCount >= maxMoves || simulationEndPredicate(newDeskState)) {
+      satisfiesPredicate = simulationEndPredicate(newDeskState)
+      break
+    }
+    if (!(moveCount % 10) && performance.now() - startTimestamp >= maxSimulationTime) {
+      satisfiesPredicate = simulationEndPredicate(newDeskState) // for code consistency, but will be false
       break
     }
     lastDeskState = newDeskState
   } while (true)
-  return game
+  return [game, satisfiesPredicate]
 }
 
 export function executeMove(game: IGame, move: Move): IGame {
@@ -173,7 +189,7 @@ export function isVictoryGuaranteed({state}: IGame): boolean {
   return isDeskInVictoryGuaranteedState(state)
 }
 
-function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
+export function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
   return {
     ...game,
     future: [],

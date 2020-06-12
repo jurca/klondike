@@ -2,7 +2,8 @@ import * as React from 'react'
 import {render} from 'react-dom'
 import {defaultStateRankingHeuristic, IBotOptions, makeMove} from '../../game/Bot'
 import {equals as cardsArEqual, ICard, Side} from '../../game/Card'
-import {createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
+import {isVictoryGuaranteed} from '../../game/Desk'
+import {createGameWithBotPredicate, createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode, MoveConfidence} from '../../game/MoveHintGenerator'
 import {lastItem, lastItemOrNull} from '../../game/util'
@@ -18,6 +19,8 @@ const BOT_OPTIONS: IBotOptions = {
   minAutoAcceptConfidence: MoveConfidence.VERY_HIGH,
   stateRankingHeuristic: defaultStateRankingHeuristic,
 }
+const MAX_BOT_SIMULATION_MOVES = 250
+const MAX_BOT_SIMULATION_TIME = 20_000 // milliseconds
 
 const uiRoot = document.getElementById('app')!
 
@@ -40,6 +43,7 @@ function rerenderUI() {
       onRedo={onRedo}
       onReset={onReset}
       onNewGame={onNewGame}
+      onNewWinnableGame={onNewWinnableGame}
       onShowHint={onShowHint}
       onDeskStyleChange={onDeskStyleChange}
       onCardStyleChange={onCardBackStyleChange}
@@ -86,6 +90,12 @@ function onMove(move: Move): void {
 
 function onNewGame(drawnCards: 1 | 3): void {
   game = createGame(drawnCards)
+  hint = null
+  rerenderUI()
+}
+
+function onNewWinnableGame(drawnCards: 1 | 3): void {
+  game = createWinnableGame(drawnCards)
   hint = null
   rerenderUI()
 }
@@ -147,4 +157,22 @@ function createGame(drawnCards: 1 | 3): IGame {
     drawnCards,
     tableauPiles: TABLEAU_PILES_COUNT,
   })
+}
+
+function createWinnableGame(drawnCards: 1 | 3): IGame {
+  const [generatedGame] = createGameWithBotPredicate(
+    {
+      allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
+      drawnCards,
+      tableauPiles: TABLEAU_PILES_COUNT,
+    },
+    BOT_OPTIONS,
+    {
+      maxMoves: MAX_BOT_SIMULATION_MOVES,
+      maxSimulationTime: MAX_BOT_SIMULATION_TIME,
+      simulationEndPredicate: isVictoryGuaranteed,
+    },
+  )
+
+  return generatedGame
 }

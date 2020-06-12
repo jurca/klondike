@@ -19,6 +19,7 @@ interface IProps {
   onRedo: () => void
   onReset: () => void
   onNewGame: (drawnCards: 1 | 3) => void
+  onNewWinnableGame: (drawnCards: 1 | 3) => void
   onShowHint: () => void
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
@@ -26,7 +27,7 @@ interface IProps {
 }
 
 export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: IProps) {
-  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo} = callbacks
+  const {onMove, onNewGame, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const deskStyleName = React.useMemo(() => {
     switch (deskSkin) {
@@ -56,7 +57,8 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
   return (
     <div className={style.app}>
       <div className={style.toolbar}>
-        <button onClick={onStartNewGame}>nová hra</button>
+        <button onClick={onStartNewGame}>nová hra s náhodnými kartami</button>
+        <button onClick={onStartNewWinnableGame}>nová vyhratelná hra</button>
         <button onClick={onUndo}>&lt;-</button>
         <button onClick={onRedo}>-&gt;</button>
         <button onClick={onReset}>reset</button>
@@ -90,6 +92,13 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
     const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
     if (drawnCards === 1 || drawnCards === 3) {
       onNewGame(drawnCards)
+    }
+  }
+
+  function onStartNewWinnableGame(): void {
+    const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
+    if (drawnCards === 1 || drawnCards === 3) {
+      onNewWinnableGame(drawnCards)
     }
   }
 }
