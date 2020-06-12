@@ -203,9 +203,9 @@ function onGenerateWinnableGames(drawnCards: 1 | 3): void {
   }
 
   console.log(`Generating games for number drawn cards: ${drawnCards}`)
-  winnableGameGeneratorRafId = requestAnimationFrame(tryAntoherGame)
+  winnableGameGeneratorRafId = requestAnimationFrame(tryAnotherGame)
 
-  function tryAntoherGame() {
+  function tryAnotherGame() {
     const [generatedGame, isWinnable] = createGameWithBotPredicate(
       {
         allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
@@ -232,6 +232,6 @@ function onGenerateWinnableGames(drawnCards: 1 | 3): void {
       console.log('The generated deck is not winnable')
     }
 
-    winnableGameGeneratorRafId = requestAnimationFrame(tryAntoherGame)
+    winnableGameGeneratorRafId = requestAnimationFrame(tryAnotherGame)
   }
 }
