@@ -29,16 +29,12 @@ export function serialize(game: IGame): string {
   }
 
   const initialState = game.history.length ? game.history[0][0] : game.state
-  const cardsDeck = [
-    ...initialState.stock.cards,
-    ...initialState.tableau.piles.map((pile) => pile.cards.slice().reverse()).reverse().flat(),
-  ]
   const serializedData = [
     SERIALIZER_VERSION,
     game.rules.allowNonKingToEmptyPileTransfer ? '1' : '0',
     game.rules.drawnCards.toString(NUM_RADIX),
     game.state.tableau.piles.length.toString(NUM_RADIX).padStart(2, '0'),
-    serializeDeck(cardsDeck),
+    serializeDeckFromDesk(initialState),
     Math.floor((game.startTime.absoluteTimestamp - EPOCH_START) / 1000).toString(NUM_RADIX),
     ',',
     Math.floor(game.startTime.logicalTimestamp).toString(NUM_RADIX),
@@ -79,6 +75,14 @@ export function deserialize(serializedState: string): IGame {
     deserializedGame = redoNextMove(deserializedGame)
   }
   return deserializedGame
+}
+
+export function serializeDeckFromDesk(desk: IDesk): string {
+  const cardsDeck = [
+    ...desk.stock.cards,
+    ...desk.tableau.piles.map((pile) => pile.cards.slice().reverse()).reverse().flat(),
+  ]
+  return serializeDeck(cardsDeck)
 }
 
 export function serializeDeck(cardsDeck: ICard[]): string {
