@@ -71,7 +71,7 @@ export function getMoveHints(desk: IDesk, rules: IGameRules, mode: HintGenerator
   moves.push(...getMovesWithHighConfidence(desk, stockPlayableCards))
   moves.push(...getMovesWithMediumConfidence(desk))
   moves.push(...getMovesWithLowConfidence(desk))
-  moves.push(...getMovesWithVeryLowConfidence(desk, stockPlayableCards, topFoundationCards))
+  moves.push(...getMovesWithVeryLowConfidence(desk, stockPlayableCards, topFoundationCards, rules))
   moves.push(...getMovesWithMinisculeConfidence(desk, rules, stockPlayableCards, topFoundationCards))
 
   return filterDuplicateHints(moves)
@@ -444,6 +444,7 @@ function getMovesWithVeryLowConfidence(
   desk: IDesk,
   stockPlayableCards: ICard[],
   topFoundationCards: IFoundationTop,
+  rules: IGameRules,
 ): MoveHint[] {
   const moves: MoveHint[] = []
   const {tableau} = desk
@@ -582,17 +583,20 @@ function getMovesWithVeryLowConfidence(
     }
   }
 
-  // King from waste/stock to an empty tableau pile transfer
+  // Card from waste/stock to an empty tableau pile transfer
   const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
   if (emptyPileIndex > -1) {
-    const stockKings = stockPlayableCards.filter((card) => card.rank === Rank.KING)
-    for (const king of stockKings) {
+    const usableCards = rules.allowNonKingToEmptyPileTransfer ?
+      stockPlayableCards
+    :
+      stockPlayableCards.filter((card) => card.rank === Rank.KING)
+    for (const card of usableCards) {
       moves.push([
         {
           move: MoveType.WASTE_TO_TABLEAU,
           pileIndex: emptyPileIndex,
         },
-        king,
+        card,
         MoveConfidence.VERY_LOW,
       ])
     }
