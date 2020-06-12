@@ -121,12 +121,12 @@ function findBestMove(
 function executeMoveHint(game: IGame, hint: MoveHint, autoDrawCards: boolean): IGame {
   const moveType = hint[0].move
   if (!autoDrawCards || (moveType !== MoveType.WASTE_TO_FOUNDATION && moveType !== MoveType.WASTE_TO_TABLEAU)) {
-    return createNextGameState(game, executeMoveOnDesk(game.state, game.rules, hint[0]), hint[0])
+    return createNextGameState(game, executeMoveHintOnDesk(game.state, game.rules, hint, autoDrawCards), hint[0])
   }
 
   const topWasteCard = lastItemOrNull(game.state.waste.cards)
   if (topWasteCard?.rank === hint[1].rank && topWasteCard.color === hint[1].color) {
-    return createNextGameState(game, executeMoveOnDesk(game.state, game.rules, hint[0]), hint[0])
+    return createNextGameState(game, executeMoveHintOnDesk(game.state, game.rules, hint, autoDrawCards), hint[0])
   }
 
   const stockCyclingMove: Move = game.state.stock.cards.length ?
