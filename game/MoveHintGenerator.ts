@@ -582,6 +582,22 @@ function getMovesWithVeryLowConfidence(
     }
   }
 
+  // King from waste/stock to an empty tableau pile transfer
+  const emptyPileIndex = tableau.piles.findIndex((pile) => !pile.cards.length)
+  if (emptyPileIndex > -1) {
+    const stockKings = stockPlayableCards.filter((card) => card.rank === Rank.KING)
+    for (const king of stockKings) {
+      moves.push([
+        {
+          move: MoveType.WASTE_TO_TABLEAU,
+          pileIndex: emptyPileIndex,
+        },
+        king,
+        MoveConfidence.VERY_LOW,
+      ])
+    }
+  }
+
   return moves
 }
 
