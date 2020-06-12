@@ -1,9 +1,10 @@
 import * as React from 'react'
 import {render} from 'react-dom'
+import {defaultStateRankingHeuristic, IBotOptions, makeMove} from '../../game/Bot'
 import {equals as cardsArEqual, ICard, Side} from '../../game/Card'
 import {createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
-import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
+import {getMoveHints, HintGeneratorMode, MoveConfidence} from '../../game/MoveHintGenerator'
 import {lastItem, lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
@@ -11,6 +12,12 @@ import * as DeskSkins from './deskSkins'
 
 const ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER = false
 const TABLEAU_PILES_COUNT = 7
+const BOT_OPTIONS: IBotOptions = {
+  lookAheadMoves: 3,
+  maxConsideredConfidenceLevels: 4,
+  minAutoAcceptConfidence: MoveConfidence.VERY_HIGH,
+  stateRankingHeuristic: defaultStateRankingHeuristic,
+}
 
 const uiRoot = document.getElementById('app')!
 
@@ -36,6 +43,7 @@ function rerenderUI() {
       onShowHint={onShowHint}
       onDeskStyleChange={onDeskStyleChange}
       onCardStyleChange={onCardBackStyleChange}
+      onBotMove={onBotMove}
     />,
     uiRoot,
   )
@@ -125,6 +133,11 @@ function onDeskStyleChange(newDeskStyle: string): void {
 
 function onCardBackStyleChange(newCardBackStyle: CardBackfaceStyle): void {
   cardBackStyle = newCardBackStyle
+  rerenderUI()
+}
+
+function onBotMove() {
+  game = makeMove(game, BOT_OPTIONS)
   rerenderUI()
 }
 

@@ -22,6 +22,7 @@ interface IProps {
   onShowHint: () => void
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
+  onBotMove: () => void
 }
 
 export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: IProps) {
@@ -76,6 +77,8 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
           <option value={CardBackfaceStyle.Dog}>Krasty</option>
           <option value={CardBackfaceStyle.Colors}>Symboly</option>
         </select>
+        &nbsp;|&nbsp;
+        <button onClick={callbacks.onBotMove}>automatický tah</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
         <Desk deskState={game.state} gameRules={game.rules} hint={hint} onMove={onMove}/>
