@@ -15,12 +15,12 @@ import * as DeskSkins from './deskSkins'
 const ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER = false
 const TABLEAU_PILES_COUNT = 7
 const BOT_OPTIONS: IBotOptions = {
-  lookAheadMoves: 3,
-  maxConsideredConfidenceLevels: 4,
-  minAutoAcceptConfidence: MoveConfidence.VERY_HIGH,
+  lookAheadMoves: 2,
+  maxConsideredConfidenceLevels: 3,
+  minAutoAcceptConfidence: MoveConfidence.HIGH,
   stateRankingHeuristic: defaultStateRankingHeuristic,
 }
-const MAX_BOT_SIMULATION_MOVES = 250
+const MAX_BOT_SIMULATION_MOVES = 300
 const MAX_BOT_SIMULATION_TIME = 20_000 // milliseconds
 
 const uiRoot = document.getElementById('app')!
