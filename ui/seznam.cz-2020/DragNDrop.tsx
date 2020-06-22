@@ -340,6 +340,8 @@ function onClick(
   const draggable = target.closest('ui-draggable')
   if (draggable) {
     updateContextValue({
+      dragged: null,
+      draggedEntities: [],
       selected: draggable === currentContextValue.selected ? null : draggable,
     })
     return
