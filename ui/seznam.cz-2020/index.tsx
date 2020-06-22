@@ -1,9 +1,17 @@
 import * as React from 'react'
 import {render} from 'react-dom'
 import {defaultStateRankingHeuristic, IBotOptions, makeMove} from '../../game/Bot'
-import {equals as cardsArEqual, ICard, Side} from '../../game/Card'
+import {ICard, Side} from '../../game/Card'
 import {isVictoryGuaranteed} from '../../game/Desk'
-import {createGameWithBotPredicate, createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
+import {
+  createGameWithBotPredicate,
+  createNewGame,
+  executeMove,
+  IGame,
+  redoNextMove,
+  resetGame,
+  undoLastMove,
+} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode, MoveConfidence} from '../../game/MoveHintGenerator'
 import {deserialize, serializeDeckFromDesk} from '../../game/Serializer'
@@ -74,20 +82,7 @@ function onMove(move: Move): void {
     return
   }
 
-  const isHintCardInStock = [...game.state.stock.cards, ...game.state.waste.cards].some(
-    (otherCard) => hint && cardsArEqual(otherCard, hint),
-  )
-  if (
-    (
-      move.move !== MoveType.DRAW_CARDS ||
-      !isHintCardInStock
-    ) && (
-      move.move !== MoveType.REDEAL ||
-      !isHintCardInStock
-    )
-  ) {
-    hint = null
-  }
+  hint = null
   rerenderUI()
 }
 
