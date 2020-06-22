@@ -36,7 +36,7 @@ export interface INewGameRules extends IGameRules {
   readonly tableauPiles: number
 }
 
-interface IBotSimulationOptions {
+export interface IBotSimulationOptions {
   maxMoves: number,
   simulationEndPredicate: (dest: IDesk) => boolean,
   maxSimulationTime: number,

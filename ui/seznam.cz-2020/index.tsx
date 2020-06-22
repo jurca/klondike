@@ -7,7 +7,9 @@ import {
   createGameWithBotPredicate,
   createNewGame,
   executeMove,
+  IBotSimulationOptions,
   IGame,
+  INewGameRules,
   redoNextMove,
   resetGame,
   undoLastMove,
@@ -16,20 +18,27 @@ import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode, MoveConfidence} from '../../game/MoveHintGenerator'
 import {deserialize, serializeDeckFromDesk} from '../../game/Serializer'
 import {lastItem, lastItemOrNull} from '../../game/util'
+import WinnableGamesGenerator from '../../game/WinnableGamesGenerator'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import * as DeskSkins from './deskSkins'
 
-const ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER = false
-const TABLEAU_PILES_COUNT = 7
+const DEFAULT_NEW_GAME_OPTIONS: INewGameRules = {
+  allowNonKingToEmptyPileTransfer: false,
+  drawnCards: 1,
+  tableauPiles: 7,
+}
 const BOT_OPTIONS: IBotOptions = {
   lookAheadMoves: 2,
   maxConsideredConfidenceLevels: 3,
   minAutoAcceptConfidence: MoveConfidence.HIGH,
   stateRankingHeuristic: defaultStateRankingHeuristic,
 }
-const MAX_BOT_SIMULATION_MOVES = 300
-const MAX_BOT_SIMULATION_TIME = 20_000 // milliseconds
+const GAME_SIMULATION_OPTIONS: IBotSimulationOptions = {
+  maxMoves: 300,
+  maxSimulationTime: 20_000, // milliseconds
+  simulationEndPredicate: isVictoryGuaranteed,
+}
 
 const uiRoot = document.getElementById('app')!
 
@@ -163,25 +172,19 @@ function onImport() {
 
 function createGame(drawnCards: 1 | 3): IGame {
   return createNewGame({
-    allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
+    ...DEFAULT_NEW_GAME_OPTIONS,
     drawnCards,
-    tableauPiles: TABLEAU_PILES_COUNT,
   })
 }
 
 function createWinnableGame(drawnCards: 1 | 3): IGame {
   const [generatedGame, isWinnable] = createGameWithBotPredicate(
     {
-      allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
+      ...DEFAULT_NEW_GAME_OPTIONS,
       drawnCards,
-      tableauPiles: TABLEAU_PILES_COUNT,
     },
     BOT_OPTIONS,
-    {
-      maxMoves: MAX_BOT_SIMULATION_MOVES,
-      maxSimulationTime: MAX_BOT_SIMULATION_TIME,
-      simulationEndPredicate: isVictoryGuaranteed,
-    },
+    GAME_SIMULATION_OPTIONS,
   )
 
   console.log(isWinnable)
@@ -189,49 +192,37 @@ function createWinnableGame(drawnCards: 1 | 3): IGame {
   return generatedGame
 }
 
-let winnableGameGeneratorRafId: null | number = null
-const knownWinnableDecks = new Set<string>()
+let winnableGamesGenerator: null | WinnableGamesGenerator = null
 function onGenerateWinnableGames(drawnCards: 1 | 3): void {
-  if (winnableGameGeneratorRafId) {
-    cancelAnimationFrame(winnableGameGeneratorRafId)
-    winnableGameGeneratorRafId = null
+  if (winnableGamesGenerator) {
+    winnableGamesGenerator.stopGenerator()
+    const {generatedDecks} = winnableGamesGenerator
     console.log(
-      `Here are the generated decks:\n${JSON.stringify([...knownWinnableDecks], null, 2).replace(/"/g, '\'')}`,
+      `Here are the generated decks:\n${JSON.stringify([...generatedDecks], null, 2).replace(/"/g, '\'')}`,
     )
-    knownWinnableDecks.clear()
+    winnableGamesGenerator = null
     return
   }
 
   console.log(`Generating games for number drawn cards: ${drawnCards}`)
-  winnableGameGeneratorRafId = requestAnimationFrame(tryAnotherGame)
-
-  function tryAnotherGame() {
-    const [generatedGame, isWinnable] = createGameWithBotPredicate(
-      {
-        allowNonKingToEmptyPileTransfer: ALLOW_NON_KING_TO_EMPTY_PILE_TRANSFER,
-        drawnCards,
-        tableauPiles: TABLEAU_PILES_COUNT,
-      },
-      BOT_OPTIONS,
-      {
-        maxMoves: MAX_BOT_SIMULATION_MOVES,
-        maxSimulationTime: MAX_BOT_SIMULATION_TIME,
-        simulationEndPredicate: isVictoryGuaranteed,
-      },
-    )
-
-    if (isWinnable) {
-      const deck = serializeDeckFromDesk(generatedGame.state)
-      if (!knownWinnableDecks.has(deck)) {
-        knownWinnableDecks.add(deck)
-        console.log(`Found winnable deck: ${deck}`)
-      } else {
-        console.log('Generated a winnable deck again')
+  winnableGamesGenerator = new WinnableGamesGenerator(
+    {
+      ...DEFAULT_NEW_GAME_OPTIONS,
+      drawnCards,
+    },
+    BOT_OPTIONS,
+    GAME_SIMULATION_OPTIONS,
+    (task) => {
+      const animationFrameRequestId = requestAnimationFrame(task)
+      return {
+        cancel() {
+          cancelAnimationFrame(animationFrameRequestId)
+        },
       }
-    } else {
-      console.log('The generated deck is not winnable')
-    }
-
-    winnableGameGeneratorRafId = requestAnimationFrame(tryAnotherGame)
+    },
+  )
+  winnableGamesGenerator.onProgress = (lastWinnableDeck) => {
+    console.log(lastWinnableDeck ? `Found winnable deck: ${lastWinnableDeck}` : 'The generated deck is not winnable')
   }
+  winnableGamesGenerator.runGenerator()
 }
