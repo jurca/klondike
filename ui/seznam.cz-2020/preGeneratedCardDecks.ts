@@ -99,6 +99,7 @@ export const DRAW_1_PILES_7_ONLY_KING = [
   'hTBQrmackzEpXyqxYvDeglwijNFPbKMGfdHSsAWRCLJUVtuoOZn',
   'hBlAnPTuKcpzrNWRdjUtIfLMYXDCwZJySoeikOvbFVHsEQaqgGm',
   'godzeUMKuknrJbNEGaLZXmRhjAPCIwxtqyVpicsHBQSvYDOFWlf',
+  'GDxKzjwcUueSgbZknrOpXaQEdFIJRtsmTvhiPyMlNqoCYLAWfHB',
 ]
 
 export const DRAW_3_PILES_7_ONLY_KING = [

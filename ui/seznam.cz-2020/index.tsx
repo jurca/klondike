@@ -157,7 +157,7 @@ function onBotMove() {
 function onImport() {
   const state = prompt('Exportovaný stav hry:') || ''
   game = deserialize(state)
-  console.log(serializeDeckFromDesk(game.state))
+  console.log(serializeDeckFromDesk(resetGame(game).state))
   rerenderUI()
 }
 
