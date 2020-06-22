@@ -131,8 +131,13 @@ function onShowHint(): void {
   if (hint) {
     hint = null
   } else {
-    const generatedHints = getMoveHints(game.state, game.rules, HintGeneratorMode.WITH_FULL_STOCK)
-    hint = generatedHints.length ? generatedHints[0][1] : null
+    const basicHints = getMoveHints(game.state, game.rules, HintGeneratorMode.CURRENT_STATE)
+    if (basicHints.length) {
+      hint = basicHints[0][1]
+    } else {
+      const generalHints = getMoveHints(game.state, game.rules, HintGeneratorMode.WITH_FULL_STOCK)
+      hint = generalHints.length ? generalHints[0][1] : null
+    }
   }
   rerenderUI()
 }
