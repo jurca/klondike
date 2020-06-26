@@ -15,12 +15,14 @@ import * as DeskSkins from './deskSkins'
 
 const uiRoot = document.getElementById('app')!
 
-let game = createGame(1)
+let game: IGame // TODO: set explicitly to null until a game is generated or selected
 let hint: null | ICard = null
 let deskSkin = DeskSkins.GREEN_S
 let cardBackStyle = CardBackfaceStyle.SeznamLogo
 
-rerenderUI()
+requestAnimationFrame(() => {
+  return onNewWinnableGame(1)
+})
 
 function rerenderUI() {
   render(
@@ -169,7 +171,7 @@ winnableGamesProviderWorker.onmessage = (event) => {
 
 function createWinnableGame(drawnCards: 1 | 3): Promise<IGame> {
   if (currentWinnableGameRequestResolver) {
-    return Promise.resolve(game) // the communication with the game provider is already in progress
+    return Promise.reject(new Error('A winnable game is already being requested'))
   }
 
   return new Promise((resolve) => {
