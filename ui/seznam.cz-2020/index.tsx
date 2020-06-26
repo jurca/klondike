@@ -2,14 +2,7 @@ import * as React from 'react'
 import {render} from 'react-dom'
 import {makeMove} from '../../game/Bot'
 import {ICard, Side} from '../../game/Card'
-import {
-  createNewGame,
-  executeMove,
-  IGame,
-  redoNextMove,
-  resetGame,
-  undoLastMove,
-} from '../../game/Game'
+import {createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
 import {deserialize, deserializeDeck} from '../../game/Serializer'
@@ -83,7 +76,6 @@ function onNewGame(drawnCards: 1 | 3): void {
 
 async function onNewWinnableGame(drawnCards: 1 | 3): Promise<void> {
   game = await createWinnableGame(drawnCards)
-  console.log('got game!', game)
   hint = null
   rerenderUI()
 }
