@@ -4,6 +4,12 @@
     "module": "esnext",
     "sourceMap": true,
     "outDir": "./dist",
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext",
+      "WebWorker"
+    ],
 
     "strict": true,
     "noUnusedLocals": true,

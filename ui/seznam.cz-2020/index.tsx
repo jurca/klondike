@@ -1,44 +1,24 @@
 import * as React from 'react'
 import {render} from 'react-dom'
-import {defaultStateRankingHeuristic, IBotOptions, makeMove} from '../../game/Bot'
+import {makeMove} from '../../game/Bot'
 import {ICard, Side} from '../../game/Card'
-import {isVictoryGuaranteed} from '../../game/Desk'
 import {
-  createGameWithBotPredicate,
   createNewGame,
   executeMove,
-  IBotSimulationOptions,
   IGame,
-  INewGameRules,
   redoNextMove,
   resetGame,
   undoLastMove,
 } from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
-import {getMoveHints, HintGeneratorMode, MoveConfidence} from '../../game/MoveHintGenerator'
-import {deserialize, serializeDeckFromDesk} from '../../game/Serializer'
+import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
+import {deserialize, deserializeDeck} from '../../game/Serializer'
 import {lastItem, lastItemOrNull} from '../../game/util'
 import WinnableGamesGenerator from '../../game/WinnableGamesGenerator'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
+import {BOT_OPTIONS, DEFAULT_NEW_GAME_OPTIONS, GAME_SIMULATION_OPTIONS} from './config'
 import * as DeskSkins from './deskSkins'
-
-const DEFAULT_NEW_GAME_OPTIONS: INewGameRules = {
-  allowNonKingToEmptyPileTransfer: false,
-  drawnCards: 1,
-  tableauPiles: 7,
-}
-const BOT_OPTIONS: IBotOptions = {
-  lookAheadMoves: 2,
-  maxConsideredConfidenceLevels: 3,
-  minAutoAcceptConfidence: MoveConfidence.HIGH,
-  stateRankingHeuristic: defaultStateRankingHeuristic,
-}
-const GAME_SIMULATION_OPTIONS: IBotSimulationOptions = {
-  maxMoves: 300,
-  maxSimulationTime: 20_000, // milliseconds
-  simulationEndPredicate: isVictoryGuaranteed,
-}
 
 const uiRoot = document.getElementById('app')!
 
@@ -101,8 +81,9 @@ function onNewGame(drawnCards: 1 | 3): void {
   rerenderUI()
 }
 
-function onNewWinnableGame(drawnCards: 1 | 3): void {
-  game = createWinnableGame(drawnCards)
+async function onNewWinnableGame(drawnCards: 1 | 3): Promise<void> {
+  game = await createWinnableGame(drawnCards)
+  console.log('got game!', game)
   hint = null
   rerenderUI()
 }
@@ -166,7 +147,6 @@ function onBotMove() {
 function onImport() {
   const state = prompt('Exportovaný stav hry:') || ''
   game = deserialize(state)
-  console.log(serializeDeckFromDesk(resetGame(game).state))
   rerenderUI()
 }
 
@@ -177,19 +157,37 @@ function createGame(drawnCards: 1 | 3): IGame {
   })
 }
 
-function createWinnableGame(drawnCards: 1 | 3): IGame {
-  const [generatedGame, isWinnable] = createGameWithBotPredicate(
-    {
-      ...DEFAULT_NEW_GAME_OPTIONS,
-      drawnCards,
-    },
-    BOT_OPTIONS,
-    GAME_SIMULATION_OPTIONS,
-  )
+const winnableGamesProviderWorker = new Worker('./winnableGamesProvider.js', {
+  name: 'Winnable games generator',
+})
+let currentWinnableGameRequestResolver: null | ((game: IGame) => void) = null
+winnableGamesProviderWorker.onmessage = (event) => {
+  if (event.data && event.data.deck && event.data.drawnCards && currentWinnableGameRequestResolver) {
+    const deck = deserializeDeck(event.data.deck)
+    game = createNewGame(
+      {
+        ...DEFAULT_NEW_GAME_OPTIONS,
+        drawnCards: event.data.drawnCards,
+      },
+      deck,
+    )
+    winnableGamesProviderWorker.onmessage = null
+    currentWinnableGameRequestResolver(game)
+  }
+}
 
-  console.log(isWinnable)
+function createWinnableGame(drawnCards: 1 | 3): Promise<IGame> {
+  if (currentWinnableGameRequestResolver) {
+    return Promise.resolve(game) // the communication with the game provider is already in progress
+  }
 
-  return generatedGame
+  return new Promise((resolve) => {
+    currentWinnableGameRequestResolver = (generatedGame) => {
+      currentWinnableGameRequestResolver = null
+      resolve(generatedGame)
+    }
+    winnableGamesProviderWorker.postMessage({drawnCards})
+  })
 }
 
 let winnableGamesGenerator: null | WinnableGamesGenerator = null

@@ -1,10 +1,13 @@
-const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   mode: process.env.NODE_ENV,
 
-  entry: './ui/seznam.cz-2020/',
+  entry: {
+    main: './ui/seznam.cz-2020/',
+    winnableGamesGenerator: './ui/seznam.cz-2020/worker/winnableGamesGenerator.ts',
+    winnableGamesProvider: './ui/seznam.cz-2020/worker/winnableGamesProvider.ts',
+  },
 
   devtool: 'inline-source-map',
 
