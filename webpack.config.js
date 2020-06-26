@@ -58,6 +58,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './ui/seznam.cz-2020/index.html',
+      chunks: ['main'],
     })
   ]
 }
