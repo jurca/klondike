@@ -171,7 +171,6 @@ winnableGamesProviderWorker.onmessage = (event) => {
       },
       deck,
     )
-    winnableGamesProviderWorker.onmessage = null
     currentWinnableGameRequestResolver(game)
   }
 }
