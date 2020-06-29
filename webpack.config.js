@@ -6,7 +6,6 @@ module.exports = {
   entry: {
     main: './ui/seznam.cz-2020/',
     winnableGamesGenerator: './ui/seznam.cz-2020/worker/winnableGamesGenerator.ts',
-    winnableGamesProvider: './ui/seznam.cz-2020/worker/winnableGamesProvider.ts',
   },
 
   devtool: 'inline-source-map',

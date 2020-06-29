@@ -5,13 +5,14 @@ import {ICard, Side} from '../../game/Card'
 import {createNewGame, executeMove, IGame, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
-import {deserialize, deserializeDeck} from '../../game/Serializer'
+import {deserialize} from '../../game/Serializer'
 import {lastItem, lastItemOrNull} from '../../game/util'
 import WinnableGamesGenerator from '../../game/WinnableGamesGenerator'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {BOT_OPTIONS, DEFAULT_NEW_GAME_OPTIONS, GAME_SIMULATION_OPTIONS} from './config'
 import * as DeskSkins from './deskSkins'
+import WinnableGamesProvider from './WinnableGamesProvider'
 
 const uiRoot = document.getElementById('app')!
 
@@ -76,8 +77,8 @@ function onNewGame(drawnCards: 1 | 3): void {
   rerenderUI()
 }
 
-async function onNewWinnableGame(drawnCards: 1 | 3): Promise<void> {
-  game = await createWinnableGame(drawnCards)
+function onNewWinnableGame(drawnCards: 1 | 3): void {
+  game = createWinnableGame(drawnCards)
   hint = null
   rerenderUI()
 }
@@ -151,36 +152,15 @@ function createGame(drawnCards: 1 | 3): IGame {
   })
 }
 
-const winnableGamesProviderWorker = new Worker('./winnableGamesProvider.js', {
-  name: 'Winnable games generator',
-})
-let currentWinnableGameRequestResolver: null | ((game: IGame) => void) = null
-winnableGamesProviderWorker.onmessage = (event) => {
-  if (event.data && event.data.deck && event.data.drawnCards && currentWinnableGameRequestResolver) {
-    const deck = deserializeDeck(event.data.deck)
-    game = createNewGame(
-      {
-        ...DEFAULT_NEW_GAME_OPTIONS,
-        drawnCards: event.data.drawnCards,
-      },
-      deck,
-    )
-    currentWinnableGameRequestResolver(game)
-  }
-}
-
-function createWinnableGame(drawnCards: 1 | 3): Promise<IGame> {
-  if (currentWinnableGameRequestResolver) {
-    return Promise.reject(new Error('A winnable game is already being requested'))
-  }
-
-  return new Promise((resolve) => {
-    currentWinnableGameRequestResolver = (generatedGame) => {
-      currentWinnableGameRequestResolver = null
-      resolve(generatedGame)
-    }
-    winnableGamesProviderWorker.postMessage({drawnCards})
-  })
+const winnableGamesProvider = new WinnableGamesProvider()
+function createWinnableGame(drawnCards: 1 | 3): IGame {
+  return createNewGame(
+    {
+      ...DEFAULT_NEW_GAME_OPTIONS,
+      drawnCards,
+    },
+    winnableGamesProvider.getWinnableCardDeck(drawnCards),
+  )
 }
 
 let winnableGamesGenerator: null | WinnableGamesGenerator = null
