@@ -10,6 +10,9 @@
 :local(.toolbar) {
   display: flex;
 
+  width: 100%;
+  overflow: auto;
+
   flex-basis: 24px;
   flex-shrink: 0;
 
