@@ -16,7 +16,7 @@ interface IDragNDropContextValue {
 
 type DragCallback = (draggedElement: Element, dropArea: Element) => void
 
-const DROP_AREA_SURROUNDING_TOLERANCE = Math.min(window.innerWidth, window.innerHeight) / 50 // px
+const DROP_AREA_SURROUNDING_TOLERANCE = Math.min(window.innerWidth, window.innerHeight) / 10 // px
 const DRAG_N_DROP_CONTEXT_DEFAULT_VALUE: IDragNDropContextValue = {
   draggableEntities: new WeakMap(),
   dragged: null,
