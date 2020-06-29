@@ -80,9 +80,9 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
           <option value={CardBackfaceStyle.Colors}>Symboly</option>
         </select>
         &nbsp;|&nbsp;
-        <button onClick={callbacks.onBotMove}>automatický tah</button>
-        <button onClick={onExport}>exportovat hru</button>
-        <button onClick={onImport}>importovat hru</button>
+        <button onClick={callbacks.onBotMove}>bot</button>
+        <button onClick={onExport}>export</button>
+        <button onClick={onImport}>import</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
         <Desk deskState={game.state} gameRules={game.rules} hint={hint} onMove={onMove}/>
