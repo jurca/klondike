@@ -19,18 +19,16 @@ interface IProps {
   onUndo: () => void
   onRedo: () => void
   onReset: () => void
-  onNewGame: (drawnCards: 1 | 3) => void
   onNewWinnableGame: (drawnCards: 1 | 3) => void
   onShowHint: () => void
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
   onBotMove: () => void
   onImport: () => void
-  onGenerateWinnableGames: (drawnCards: 1 | 3) => void
 }
 
 export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: IProps) {
-  const {onMove, onNewGame, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
+  const {onMove, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const deskStyleName = React.useMemo(() => {
     switch (deskSkin) {
@@ -60,8 +58,7 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
   return (
     <div className={style.app}>
       <div className={style.toolbar}>
-        <button onClick={onStartNewGame}>nová hra s náhodnými kartami</button>
-        <button onClick={onStartNewWinnableGame}>nová vyhratelná hra</button>
+        <button onClick={onStartNewWinnableGame}>nová hra</button>
         <button onClick={onUndo}>&lt;-</button>
         <button onClick={onRedo}>-&gt;</button>
         <button onClick={onReset}>reset</button>
@@ -86,20 +83,12 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
         <button onClick={callbacks.onBotMove}>automatický tah</button>
         <button onClick={onExport}>exportovat hru</button>
         <button onClick={onImport}>importovat hru</button>
-        <button onClick={onGenerateWinnableGames}>generovat vyhratelné hry</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
         <Desk deskState={game.state} gameRules={game.rules} hint={hint} onMove={onMove}/>
       </SettingsContext.Provider>
     </div>
   )
-
-  function onStartNewGame(): void {
-    const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
-    if (drawnCards === 1 || drawnCards === 3) {
-      onNewGame(drawnCards)
-    }
-  }
 
   function onStartNewWinnableGame(): void {
     const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
@@ -110,12 +99,5 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
 
   function onExport(): void {
     console.log(serialize(game))
-  }
-
-  function onGenerateWinnableGames() {
-    const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
-    if (drawnCards === 1 || drawnCards === 3) {
-      callbacks.onGenerateWinnableGames(drawnCards)
-    }
   }
 }

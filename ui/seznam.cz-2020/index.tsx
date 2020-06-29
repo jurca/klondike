@@ -7,10 +7,9 @@ import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
 import {deserialize} from '../../game/Serializer'
 import {lastItem, lastItemOrNull} from '../../game/util'
-import WinnableGamesGenerator from '../../game/WinnableGamesGenerator'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
-import {BOT_OPTIONS, DEFAULT_NEW_GAME_OPTIONS, GAME_SIMULATION_OPTIONS} from './config'
+import {BOT_OPTIONS, DEFAULT_NEW_GAME_OPTIONS} from './config'
 import * as DeskSkins from './deskSkins'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
@@ -36,14 +35,12 @@ function rerenderUI() {
       onUndo={onUndo}
       onRedo={onRedo}
       onReset={onReset}
-      onNewGame={onNewGame}
       onNewWinnableGame={onNewWinnableGame}
       onShowHint={onShowHint}
       onDeskStyleChange={onDeskStyleChange}
       onCardStyleChange={onCardBackStyleChange}
       onBotMove={onBotMove}
       onImport={onImport}
-      onGenerateWinnableGames={onGenerateWinnableGames}
     />,
     uiRoot,
   )
@@ -67,12 +64,6 @@ function onMove(move: Move): void {
     return
   }
 
-  hint = null
-  rerenderUI()
-}
-
-function onNewGame(drawnCards: 1 | 3): void {
-  game = createGame(drawnCards)
   hint = null
   rerenderUI()
 }
@@ -145,13 +136,6 @@ function onImport() {
   rerenderUI()
 }
 
-function createGame(drawnCards: 1 | 3): IGame {
-  return createNewGame({
-    ...DEFAULT_NEW_GAME_OPTIONS,
-    drawnCards,
-  })
-}
-
 const winnableGamesProvider = new WinnableGamesProvider()
 function createWinnableGame(drawnCards: 1 | 3): IGame {
   return createNewGame(
@@ -161,39 +145,4 @@ function createWinnableGame(drawnCards: 1 | 3): IGame {
     },
     winnableGamesProvider.getWinnableCardDeck(drawnCards),
   )
-}
-
-let winnableGamesGenerator: null | WinnableGamesGenerator = null
-function onGenerateWinnableGames(drawnCards: 1 | 3): void {
-  if (winnableGamesGenerator) {
-    winnableGamesGenerator.stopGenerator()
-    const {generatedDecks} = winnableGamesGenerator
-    console.log(
-      `Here are the generated decks:\n${JSON.stringify([...generatedDecks], null, 2).replace(/"/g, '\'')}`,
-    )
-    winnableGamesGenerator = null
-    return
-  }
-
-  console.log(`Generating games for number drawn cards: ${drawnCards}`)
-  winnableGamesGenerator = new WinnableGamesGenerator(
-    {
-      ...DEFAULT_NEW_GAME_OPTIONS,
-      drawnCards,
-    },
-    BOT_OPTIONS,
-    GAME_SIMULATION_OPTIONS,
-    (task) => {
-      const animationFrameRequestId = requestAnimationFrame(task)
-      return {
-        cancel() {
-          cancelAnimationFrame(animationFrameRequestId)
-        },
-      }
-    },
-  )
-  winnableGamesGenerator.onProgress = (lastWinnableDeck) => {
-    console.log(lastWinnableDeck ? `Found winnable deck: ${lastWinnableDeck}` : 'The generated deck is not winnable')
-  }
-  winnableGamesGenerator.runGenerator()
 }
