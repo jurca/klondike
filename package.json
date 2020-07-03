@@ -7,7 +7,7 @@
   "scripts": {
     "compile": "tsc --project .",
     "watch:minimalistic": "npm run compile -- --watch --incremental",
-    "watch:seznam.cz-2020": "NODE_ENV=development ENTRY_NAME=main ENTRY_FILE=./ui/seznam.cz-2020/index.tsx webpack-dev-server",
+    "watch:seznam.cz-2020": "NODE_ENV=development ENTRY_NAME=main ENTRY_FILE=./ui/seznam.cz-2020/index.tsx webpack-dev-server --host 0.0.0.0",
     "bundle:minimalistic": "browserify -g [ babelify --plugins [ @babel/plugin-transform-modules-commonjs ] ] dist/ui/minimalistic/main.js -o dist/ui/minimalistic/legacy-bundle.js",
     "build:seznam.cz-2020": "NODE_ENV=production ENTRY_NAME=winnableGamesGenerator ENTRY_FILE=./ui/seznam.cz-2020/worker/winnableGamesGenerator.ts webpack && NODE_ENV=production ENTRY_NAME=main ENTRY_FILE=./ui/seznam.cz-2020/index.tsx webpack",
     "build": "rm -rf dist && npm test && npm run compile && mkdir dist/node_modules/ && cp -r node_modules/@jurca dist/node_modules && npm run bundle:minimalistic && cp ui/minimalistic/index.html dist/ui/minimalistic/",
