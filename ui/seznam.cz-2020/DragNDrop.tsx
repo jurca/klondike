@@ -56,7 +56,14 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     [contextValue, setContextValue],
   )
 
-  const rootRef = React.createRef<HTMLDivElement>()
+  let currentRootElement: null | HTMLDivElement = null
+  const rootRef = React.useMemo(() => (rootElement: null | HTMLDivElement) => {
+    // React is too eager to update the ref to null while we are performing updates, which leads to onDragEnd not being
+    // called because the container element seems to be missing while the event is being processed.
+    if (rootElement) {
+      currentRootElement = rootElement
+    }
+  }, [])
 
   const onElementDragged = React.useMemo<DragCallback>(
     () => (draggableElement: Element, dropAreaElement: Element) => {
@@ -90,7 +97,7 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     [updateContextValue, contextValue],
   )
 
-  const containerGetter = React.useMemo(() => () => rootRef.current, [rootRef])
+  const containerGetter = React.useMemo(() => () => currentRootElement, [])
   const onClickListener = React.useMemo(
     () => onClick.bind(null, updateContextValue, contextValue, onElementDragged),
     [updateContextValue, contextValue, onElementDragged],
