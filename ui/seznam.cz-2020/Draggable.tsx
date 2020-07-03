@@ -11,6 +11,7 @@ interface IProps {
 
 declare global {
   namespace JSX {
+    // tslint:disable-next-line:interface-name
     interface IntrinsicElements {
       'ui-draggable': any
     }
