@@ -9,7 +9,7 @@ interface IDragNDropContextValue {
   draggedElementOffset: {x: number, y: number}
   draggedElementOriginalPosition: {x: number, y: number}
   draggedElementPosition: {x: number, y: number}
-  dropAreasIds: WeakMap<Element, unknown>
+  dropAreasIds: Map<Element, unknown>
   draggableEntities: WeakMap<Element, object>
   relatedEntities: WeakMap<object, readonly unknown[]>
 }
@@ -33,7 +33,7 @@ const DRAG_N_DROP_CONTEXT_DEFAULT_VALUE: IDragNDropContextValue = {
     y: 0,
   },
   draggedEntities: [],
-  dropAreasIds: new WeakMap(),
+  dropAreasIds: new Map(),
   relatedEntities: new WeakMap(),
   selected: null,
 }
@@ -55,15 +55,6 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     }),
     [contextValue, setContextValue],
   )
-
-  let currentRootElement: null | HTMLDivElement = null
-  const rootRef = React.useMemo(() => (rootElement: null | HTMLDivElement) => {
-    // React is too eager to update the ref to null while we are performing updates, which leads to onDragEnd not being
-    // called because the container element seems to be missing while the event is being processed.
-    if (rootElement) {
-      currentRootElement = rootElement
-    }
-  }, [])
 
   const onElementDragged = React.useMemo<DragCallback>(
     () => (draggableElement: Element, dropAreaElement: Element) => {
@@ -97,17 +88,16 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     [updateContextValue, contextValue],
   )
 
-  const containerGetter = React.useMemo(() => () => currentRootElement, [])
   const onClickListener = React.useMemo(
     () => onClick.bind(null, updateContextValue, contextValue, onElementDragged),
     [updateContextValue, contextValue, onElementDragged],
   )
   const onMouseUpListener = React.useMemo(
-    () => onMouseUp.bind(null, updateContextValue, contextValue, containerGetter, onElementDragged),
+    () => onMouseUp.bind(null, updateContextValue, contextValue, onElementDragged),
     [updateContextValue, contextValue, onElementDragged],
   )
   const onTouchEndListener = React.useMemo(
-    () => onTouchEnd.bind(null, updateContextValue, contextValue, containerGetter, onElementDragged),
+    () => onTouchEnd.bind(null, updateContextValue, contextValue, onElementDragged),
     [updateContextValue, contextValue, onElementDragged],
     )
 
@@ -129,7 +119,6 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
       onTouchStart={onTouchStartListener}
       onTouchMove={onTouchMoveListener}
       onClick={onClickListener}
-      ref={rootRef}
     >
       <DRAG_N_DROP_CONTEXT.Provider value={contextValue}>
         {children}
@@ -261,15 +250,13 @@ function onDrag(
 function onTouchEnd(
   updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
-  rootGetter: () => null | HTMLElement,
   dragCallback: DragCallback,
   event: TouchEvent,
 ): void {
   const currentTouch = Array.from(event.changedTouches).find((touch) => touch.identifier === currentlyTrackedTouchId)
-  const root = rootGetter()
-  if (currentTouch && root) {
+  if (currentTouch) {
     currentlyTrackedTouchId = null
-    onDragEnd(updateContextValue, currentContextValue, root, dragCallback, {
+    onDragEnd(updateContextValue, currentContextValue, dragCallback, {
       x: currentTouch.pageX,
       y: currentTouch.pageY,
     })
@@ -279,13 +266,11 @@ function onTouchEnd(
 function onMouseUp(
   updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
-  rootGetter: () => null | HTMLElement,
   dragCallback: DragCallback,
   event: MouseEvent,
 ): void {
-  const root = rootGetter()
-  if (currentContextValue.dragged && root) {
-    onDragEnd(updateContextValue, currentContextValue, root, dragCallback, {
+  if (currentContextValue.dragged) {
+    onDragEnd(updateContextValue, currentContextValue, dragCallback, {
       x: event.pageX,
       y: event.pageY,
     })
@@ -295,7 +280,6 @@ function onMouseUp(
 function onDragEnd(
   updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
-  container: HTMLElement,
   dragCallback: DragCallback,
   pointerOnPagePosition: {x: number, y: number},
 ) {
@@ -303,7 +287,7 @@ function onDragEnd(
     return // A click or a tap
   }
 
-  const dropAreas = [...container.querySelectorAll('drop-area')]
+  const dropAreas = Array.from(currentContextValue.dropAreasIds.keys())
   const currentDropArea = (
     dropAreas.find((candidateArea) => {
       const bounds = candidateArea.getBoundingClientRect()
