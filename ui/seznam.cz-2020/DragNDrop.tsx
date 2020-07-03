@@ -143,12 +143,14 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     )
 
   React.useEffect(() => {
+    addEventListener('touchmove', onTouchMoveListener)
     addEventListener('mouseup', onMouseUpListener)
     addEventListener('touchend', onTouchEndListener)
 
     return () => {
       removeEventListener('mouseup', onMouseUpListener)
       removeEventListener('touchend', onTouchEndListener)
+      addEventListener('touchmove', onTouchMoveListener)
     }
   }, [onMouseUpListener, onTouchEndListener])
 
@@ -158,7 +160,6 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
       onMouseDown={onMouseDownListener}
       onMouseMove={onMouseMoveListener}
       onTouchStart={onTouchStartListener}
-      onTouchMove={onTouchMoveListener}
       onClick={onClickListener}
     >
       <DRAG_N_DROP_CONTEXT.Provider value={contextValue}>
@@ -243,7 +244,7 @@ function onDragStart(
 function onTouchMove(
   state: IDragNDropState,
   setState: (statePatch: Partial<IDragNDropState>) => void,
-  event: React.TouchEvent<HTMLElement>,
+  event: TouchEvent,
 ): void {
   if (!state.dragged) {
     return
