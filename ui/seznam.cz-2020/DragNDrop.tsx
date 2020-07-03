@@ -155,8 +155,6 @@ function onTouchStart(
       y: currentTouch.pageY,
     })
   }
-
-  event.preventDefault()
 }
 
 function onMouseDown(
