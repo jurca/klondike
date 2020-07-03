@@ -170,6 +170,7 @@
 
   margin: 3vh 0;
   width: 60vw;
+  height: 30vh;
 }
 
 :local(.tealColorsGroup) svg {
