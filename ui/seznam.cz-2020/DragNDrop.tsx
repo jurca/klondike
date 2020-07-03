@@ -80,6 +80,15 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
       isNewDragNDrop = !!statePatch.dragged
     }
 
+    if ('selected' in statePatch && statePatch.selected !== dragNDropState.selected) {
+      if (dragNDropState.selected) {
+        dragNDropState.selected.removeAttribute('is-selected')
+      }
+      if (statePatch.selected) {
+        statePatch.selected.setAttribute('is-selected', '')
+      }
+    }
+
     Object.assign(dragNDropState, statePatch)
 
     if (dragNDropState.draggedEntities.length && statePatch.draggedElementPosition) {
@@ -328,7 +337,10 @@ function onDragEnd(
   dragCallback: DragCallback,
   pointerOnPagePosition: {x: number, y: number},
 ) {
-  if (!state.draggedElementOffset.x && !state.draggedElementOffset.y) {
+  const {draggedElementPosition, draggedElementOriginalPosition} = state
+  const deltaX = draggedElementPosition.x - draggedElementOriginalPosition.x
+  const deltaY = draggedElementPosition.y - draggedElementOriginalPosition.y
+  if (!deltaX && !deltaY) {
     return // A click or a tap
   }
 
@@ -383,21 +395,23 @@ function onClick(
     return
   }
 
+  const dropArea = target.closest('drop-area')
+  if (state.selected && dropArea) {
+    dragCallback(state.selected, dropArea)
+    setState({
+      dragged: null,
+      draggedEntities: [],
+      selected: null,
+    })
+    return
+  }
+
   const draggable = target.closest('ui-draggable') as null | HTMLElement
   if (draggable) {
     setState({
       dragged: null,
       draggedEntities: [],
       selected: draggable === state.selected ? null : draggable,
-    })
-    return
-  }
-
-  const dropArea = target.closest('drop-area')
-  if (state.selected && dropArea) {
-    dragCallback(state.selected, dropArea)
-    setState({
-      selected: null,
     })
   }
 }
