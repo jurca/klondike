@@ -2,7 +2,7 @@
   display: block;
 }
 
-:local(.isDragged) {
+:local(.draggable)[is-dragged] {
   position: relative;
   z-index: 1;
 }

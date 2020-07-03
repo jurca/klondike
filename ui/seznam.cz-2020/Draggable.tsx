@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import * as React from 'react'
 import styles from './draggable.css'
 import {DRAG_N_DROP_CONTEXT} from './DragNDrop'
@@ -22,11 +21,6 @@ export default function Draggable({children, entity, relatedEntities}: IProps) {
   const dragNDropContext = React.useContext(DRAG_N_DROP_CONTEXT)
   const wrapperRef = React.useRef<HTMLElement>()
 
-  const isDragged = dragNDropContext.draggedEntities.includes(entity)
-  const {draggedElementOriginalPosition, draggedElementPosition} = dragNDropContext
-  const deltaX = draggedElementPosition.x - draggedElementOriginalPosition.x
-  const deltaY = draggedElementPosition.y - draggedElementOriginalPosition.y
-
   React.useEffect(() => {
     const element = wrapperRef.current
     if (element) {
@@ -43,11 +37,7 @@ export default function Draggable({children, entity, relatedEntities}: IProps) {
   }, [wrapperRef.current, entity, relatedEntities])
 
   return (
-    <ui-draggable
-      class={classnames(styles.draggable, isDragged && styles.isDragged)}
-      style={isDragged ? {transform: `translateX(${deltaX}px) translateY(${deltaY}px)`} : null}
-      ref={wrapperRef}
-    >
+    <ui-draggable class={styles.draggable} ref={wrapperRef}>
       {children}
     </ui-draggable>
   )

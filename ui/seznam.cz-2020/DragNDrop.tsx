@@ -3,22 +3,29 @@ import getRectanglesOverlap from 'rectangle-overlap'
 import style from './dragNDrop.css'
 
 interface IDragNDropContextValue {
-  dragged: null | Element
-  draggedEntities: readonly object[]
-  selected: null | Element
-  draggedElementOffset: {x: number, y: number}
-  draggedElementOriginalPosition: {x: number, y: number}
-  draggedElementPosition: {x: number, y: number}
   dropAreasIds: Map<Element, unknown>
-  draggableEntities: WeakMap<Element, object>
+  draggableEntities: Map<HTMLElement, object>
   relatedEntities: WeakMap<object, readonly unknown[]>
 }
 
-type DragCallback = (draggedElement: Element, dropArea: Element) => void
+interface IDragNDropState {
+  dragged: null | HTMLElement
+  draggedEntities: readonly object[]
+  selected: null | HTMLElement
+  draggedElementOffset: {x: number, y: number}
+  draggedElementOriginalPosition: {x: number, y: number}
+  draggedElementPosition: {x: number, y: number}
+}
+
+type DragCallback = (draggedElement: HTMLElement, dropArea: Element) => void
 
 const DROP_AREA_SURROUNDING_TOLERANCE = Math.min(window.innerWidth, window.innerHeight) / 10 // px
 const DRAG_N_DROP_CONTEXT_DEFAULT_VALUE: IDragNDropContextValue = {
-  draggableEntities: new WeakMap(),
+  draggableEntities: new Map(),
+  dropAreasIds: new Map(),
+  relatedEntities: new WeakMap(),
+}
+const DRAG_N_DROP_DEFAULT_STATE: IDragNDropState = {
   dragged: null,
   draggedElementOffset: {
     x: 0,
@@ -33,13 +40,9 @@ const DRAG_N_DROP_CONTEXT_DEFAULT_VALUE: IDragNDropContextValue = {
     y: 0,
   },
   draggedEntities: [],
-  dropAreasIds: new Map(),
-  relatedEntities: new WeakMap(),
   selected: null,
 }
 export const DRAG_N_DROP_CONTEXT = React.createContext<IDragNDropContextValue>(DRAG_N_DROP_CONTEXT_DEFAULT_VALUE)
-
-type ContextValueUpdater = (value: Partial<IDragNDropContextValue>) => void
 
 interface IProps {
   children: React.ReactNode
@@ -56,8 +59,46 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     [contextValue, setContextValue],
   )
 
+  const dragNDropState = React.useMemo(() => ({
+    ...DRAG_N_DROP_DEFAULT_STATE,
+  }), [])
+  const setDragNDropState = React.useMemo(() => (statePatch: Partial<IDragNDropState>): void => {
+    const entityToElement = new Map(
+      Array.from(contextValue.draggableEntities.entries()).map(([key, value]) => [value, key]),
+    )
+
+    let isNewDragNDrop = false
+    if ('dragged' in statePatch && statePatch.dragged !== dragNDropState.dragged) {
+      if (dragNDropState.dragged) {
+        for (const dragged of dragNDropState.draggedEntities.map((entity) => entityToElement.get(entity))) {
+          if (dragged) {
+            dragged.removeAttribute('is-dragged')
+            dragged.style.transform = ''
+          }
+        }
+      }
+      isNewDragNDrop = !!statePatch.dragged
+    }
+
+    Object.assign(dragNDropState, statePatch)
+
+    if (dragNDropState.draggedEntities.length && statePatch.draggedElementPosition) {
+      const {draggedElementOriginalPosition, draggedElementPosition} = dragNDropState
+      const deltaX = draggedElementPosition.x - draggedElementOriginalPosition.x
+      const deltaY = draggedElementPosition.y - draggedElementOriginalPosition.y
+      for (const dragged of dragNDropState.draggedEntities.map((entity) => entityToElement.get(entity))) {
+        if (dragged) {
+          if (isNewDragNDrop) {
+            dragged.setAttribute('is-dragged', '')
+          }
+          dragged.style.transform = `translateX(${deltaX}px) translateY(${deltaY}px)`
+        }
+      }
+    }
+  }, [])
+
   const onElementDragged = React.useMemo<DragCallback>(
-    () => (draggableElement: Element, dropAreaElement: Element) => {
+    () => (draggableElement: HTMLElement, dropAreaElement: Element) => {
       if (
         !contextValue.draggableEntities.has(draggableElement) ||
         !contextValue.dropAreasIds.has(dropAreaElement)
@@ -72,32 +113,32 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
   )
 
   const onMouseDownListener = React.useMemo(
-    () => onMouseDown.bind(null, updateContextValue, contextValue),
-    [updateContextValue, contextValue],
+    () => onMouseDown.bind(null, contextValue, setDragNDropState),
+    [contextValue, setDragNDropState],
   )
   const onTouchStartListener = React.useMemo(
-    () => onTouchStart.bind(null, updateContextValue, contextValue),
-    [updateContextValue, contextValue],
+    () => onTouchStart.bind(null, contextValue, setDragNDropState),
+    [contextValue, setDragNDropState],
   )
   const onMouseMoveListener = React.useMemo(
-    () => onMouseMove.bind(null, updateContextValue, contextValue),
-    [updateContextValue, contextValue],
+    () => onMouseMove.bind(null, dragNDropState, setDragNDropState),
+    [dragNDropState, setDragNDropState],
   )
   const onTouchMoveListener = React.useMemo(
-    () => onTouchMove.bind(null, updateContextValue, contextValue),
-    [updateContextValue, contextValue],
+    () => onTouchMove.bind(null, dragNDropState, setDragNDropState),
+    [dragNDropState, setDragNDropState],
   )
 
   const onClickListener = React.useMemo(
-    () => onClick.bind(null, updateContextValue, contextValue, onElementDragged),
+    () => onClick.bind(null, dragNDropState, setDragNDropState, onElementDragged),
     [updateContextValue, contextValue, onElementDragged],
   )
   const onMouseUpListener = React.useMemo(
-    () => onMouseUp.bind(null, updateContextValue, contextValue, onElementDragged),
+    () => onMouseUp.bind(null, contextValue, dragNDropState, setDragNDropState, onElementDragged),
     [updateContextValue, contextValue, onElementDragged],
   )
   const onTouchEndListener = React.useMemo(
-    () => onTouchEnd.bind(null, updateContextValue, contextValue, onElementDragged),
+    () => onTouchEnd.bind(null, contextValue, dragNDropState, setDragNDropState, onElementDragged),
     [updateContextValue, contextValue, onElementDragged],
     )
 
@@ -130,8 +171,8 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
 let currentlyTrackedTouchId: null | number = null
 
 function onTouchStart(
-  updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.TouchEvent,
 ): void {
   if (currentlyTrackedTouchId) {
@@ -144,9 +185,9 @@ function onTouchStart(
   }
 
   currentlyTrackedTouchId = currentTouch.identifier
-  const dragContainer = currentTouch.target.closest('ui-draggable')
+  const dragContainer = currentTouch.target.closest('ui-draggable') as null | HTMLElement
   if (dragContainer) {
-    onDragStart(updateContextValue, currentContextValue, dragContainer, {
+    onDragStart(currentContextValue, setState, dragContainer, {
       x: currentTouch.pageX,
       y: currentTouch.pageY,
     })
@@ -154,17 +195,17 @@ function onTouchStart(
 }
 
 function onMouseDown(
-  updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.MouseEvent<HTMLDivElement>,
 ): void {
   if (!(event.target instanceof Element)) {
     return
   }
 
-  const dragContainer = event.target.closest('ui-draggable')
+  const dragContainer = event.target.closest('ui-draggable') as null | HTMLElement
   if (dragContainer) {
-    onDragStart(updateContextValue, currentContextValue, dragContainer, {
+    onDragStart(currentContextValue, setState, dragContainer, {
       x: event.pageX,
       y: event.pageY,
     })
@@ -172,14 +213,14 @@ function onMouseDown(
 }
 
 function onDragStart(
-  updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
-  draggedElement: Element,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
+  draggedElement: HTMLElement,
   pointerOnPagePosition: {x: number, y: number},
 ): void {
   const bounds = draggedElement.getBoundingClientRect()
   const draggedEntity = currentContextValue.draggableEntities.get(draggedElement)
-  updateContextValue({
+  setState({
     dragged: draggedElement,
     draggedElementOffset: {
       x: bounds.x - pointerOnPagePosition.x,
@@ -200,11 +241,11 @@ function onDragStart(
 }
 
 function onTouchMove(
-  updateContextValue: ContextValueUpdater,
-  currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.TouchEvent<HTMLElement>,
 ): void {
-  if (!currentContextValue.dragged) {
+  if (!state.dragged) {
     return
   }
 
@@ -213,50 +254,51 @@ function onTouchMove(
     return
   }
 
-  onDrag(updateContextValue, currentContextValue, {
+  onDrag(state, setState, {
     x: currentTouch.pageX,
     y: currentTouch.pageY,
   })
 }
 
 function onMouseMove(
-  updateContextValue: ContextValueUpdater,
-  currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.MouseEvent<HTMLElement>,
 ): void {
-  if (!currentContextValue.dragged) {
+  if (!state.dragged) {
     return
   }
 
-  onDrag(updateContextValue, currentContextValue, {
+  onDrag(state, setState, {
     x: event.pageX,
     y: event.pageY,
   })
 }
 
 function onDrag(
-  updateContextValue: ContextValueUpdater,
-  currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   pointerOnPagePosition: {x: number, y: number},
 ): void {
-  updateContextValue({
+  setState({
     draggedElementPosition: {
-      x: pointerOnPagePosition.x + currentContextValue.draggedElementOffset.x,
-      y: pointerOnPagePosition.y + currentContextValue.draggedElementOffset.y,
+      x: pointerOnPagePosition.x + state.draggedElementOffset.x,
+      y: pointerOnPagePosition.y + state.draggedElementOffset.y,
     },
   })
 }
 
 function onTouchEnd(
-  updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   dragCallback: DragCallback,
   event: TouchEvent,
 ): void {
   const currentTouch = Array.from(event.changedTouches).find((touch) => touch.identifier === currentlyTrackedTouchId)
-  if (currentTouch) {
+  if (currentTouch && state.dragged) {
     currentlyTrackedTouchId = null
-    onDragEnd(updateContextValue, currentContextValue, dragCallback, {
+    onDragEnd(currentContextValue, state, setState, dragCallback, {
       x: currentTouch.pageX,
       y: currentTouch.pageY,
     })
@@ -264,13 +306,14 @@ function onTouchEnd(
 }
 
 function onMouseUp(
-  updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   dragCallback: DragCallback,
   event: MouseEvent,
 ): void {
-  if (currentContextValue.dragged) {
-    onDragEnd(updateContextValue, currentContextValue, dragCallback, {
+  if (state.dragged) {
+    onDragEnd(currentContextValue, state, setState, dragCallback, {
       x: event.pageX,
       y: event.pageY,
     })
@@ -278,12 +321,13 @@ function onMouseUp(
 }
 
 function onDragEnd(
-  updateContextValue: ContextValueUpdater,
   currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   dragCallback: DragCallback,
   pointerOnPagePosition: {x: number, y: number},
 ) {
-  if (!currentContextValue.draggedElementOffset.x && !currentContextValue.draggedElementOffset.y) {
+  if (!state.draggedElementOffset.x && !state.draggedElementOffset.y) {
     return // A click or a tap
   }
 
@@ -318,19 +362,19 @@ function onDragEnd(
     )[0]
   )
 
-  if (currentContextValue.dragged && currentDropArea) {
-    dragCallback(currentContextValue.dragged, currentDropArea)
+  if (state.dragged && currentDropArea) {
+    dragCallback(state.dragged, currentDropArea)
   }
 
-  updateContextValue({
+  setState({
     dragged: null,
     draggedEntities: [],
   })
 }
 
 function onClick(
-  updateContextValue: ContextValueUpdater,
-  currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
   dragCallback: DragCallback,
   {target}: React.MouseEvent,
 ): void {
@@ -338,20 +382,20 @@ function onClick(
     return
   }
 
-  const draggable = target.closest('ui-draggable')
+  const draggable = target.closest('ui-draggable') as null | HTMLElement
   if (draggable) {
-    updateContextValue({
+    setState({
       dragged: null,
       draggedEntities: [],
-      selected: draggable === currentContextValue.selected ? null : draggable,
+      selected: draggable === state.selected ? null : draggable,
     })
     return
   }
 
   const dropArea = target.closest('drop-area')
-  if (currentContextValue.selected && dropArea) {
-    dragCallback(currentContextValue.selected, dropArea)
-    updateContextValue({
+  if (state.selected && dropArea) {
+    dragCallback(state.selected, dropArea)
+    setState({
       selected: null,
     })
   }
