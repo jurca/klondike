@@ -1,3 +1,4 @@
+import GENERATOR_WORKER_CODE from '!!raw-loader!../../dist/winnableGamesGenerator'
 import {ICard} from '../../game/Card'
 import {deserializeDeck} from '../../game/Serializer'
 import {DRAW_1_PILES_7_ONLY_KING, DRAW_3_PILES_7_ONLY_KING} from './preGeneratedCardDecks'
@@ -27,7 +28,8 @@ export default class WinnableGamesProvider {
   }
 
   private createWinnableGamesGenerator(drawnCards: 1 | 3): Worker {
-    const generator = new Worker('./winnableGamesGenerator.js', {
+    const workerCodeBlob = new Blob([GENERATOR_WORKER_CODE], {type: 'application/javascript'})
+    const generator = new Worker(URL.createObjectURL(workerCodeBlob), {
       name: `Winnable games generator - ${drawnCards} drawn cards`,
     })
     generator.onmessage = (event) => {

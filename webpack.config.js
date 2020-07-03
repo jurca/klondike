@@ -4,8 +4,7 @@ module.exports = {
   mode: process.env.NODE_ENV,
 
   entry: {
-    main: './ui/seznam.cz-2020/',
-    winnableGamesGenerator: './ui/seznam.cz-2020/worker/winnableGamesGenerator.ts',
+    [process.env.ENTRY_NAME]: [process.env.ENTRY_FILE],
   },
 
   devtool: 'inline-source-map',
@@ -54,10 +53,10 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
 
-  plugins: [
+  plugins: process.env.ENTRY_NAME === 'main' ? [
     new HtmlWebpackPlugin({
       template: './ui/seznam.cz-2020/index.html',
       chunks: ['main'],
     })
-  ]
+  ] : []
 }
