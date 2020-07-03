@@ -18,6 +18,11 @@ ui-draggable[is-dragged] :local(.back) {
   box-shadow: 0 0 0.1em #555;
 }
 
+ui-draggable[is-selected] :local(.front),
+ui-draggable[is-selected] :local(.back) {
+  box-shadow: 0 0 0.1em 0.06em var(--selected-color);
+}
+
 :local(.isHinted) :local(.front),
 :local(.isHinted) :local(.back) {
   box-shadow: 0 0 0.1em 0.06em var(--hint-color);
