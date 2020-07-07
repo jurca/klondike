@@ -52,7 +52,7 @@
 }
 
 :local(.revealedCardHolder) {
-  flex-basis: calc(0.4em);
+  flex-basis: calc(0.52em);
 }
 
 :local(.pileCardWrapper) {
