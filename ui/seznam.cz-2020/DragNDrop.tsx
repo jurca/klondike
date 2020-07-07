@@ -395,6 +395,9 @@ function onClick(
     return
   }
 
+  // Safari does not fire the touchend event if the pointer did not move since touchstart event
+  currentlyTrackedTouchId = null
+
   const dropArea = target.closest('drop-area')
   if (state.selected && dropArea) {
     dragCallback(state.selected, dropArea)
