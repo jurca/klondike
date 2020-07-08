@@ -306,8 +306,12 @@ function onTouchEnd(
   event: TouchEvent,
 ): void {
   const currentTouch = Array.from(event.changedTouches).find((touch) => touch.identifier === currentlyTrackedTouchId)
-  if (currentTouch && state.dragged) {
-    currentlyTrackedTouchId = null
+  if (!currentTouch) {
+    return
+  }
+
+  currentlyTrackedTouchId = null
+  if (state.dragged) {
     onDragEnd(currentContextValue, state, setState, dragCallback, {
       x: currentTouch.pageX,
       y: currentTouch.pageY,
