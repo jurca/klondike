@@ -69,3 +69,10 @@ export const RED_S_TILES: IDeskSkin = {
   hint: '#00de00',
   selected: '#00dea0',
 }
+
+export const DESK_SKINS = {
+  GREEN_S,
+  GREEN_S_TILES,
+  RED_S_TILES,
+  TEAL_COLORS,
+}
