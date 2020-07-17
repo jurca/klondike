@@ -21,3 +21,5 @@ export const GAME_SIMULATION_OPTIONS: IBotSimulationOptions = {
   maxSimulationTime: 20_000, // milliseconds
   simulationEndPredicate: isVictoryGuaranteed,
 }
+
+export const MAX_HIGH_SCORE_TABLE_ENTRIES = 10

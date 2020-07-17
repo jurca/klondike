@@ -203,3 +203,11 @@ export function createNextGameState(game: IGame, nextState: IDesk, appliedMove: 
     state: nextState,
   }
 }
+
+export function getGameplayDuration(game: IGame): number {
+  if (!game.history.length) {
+    return 0
+  }
+
+  return lastItem(game.history)[1].logicalTimestamp - game.startTime.logicalTimestamp
+}

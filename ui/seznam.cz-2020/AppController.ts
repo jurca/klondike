@@ -2,6 +2,7 @@ import {createElement} from 'react'
 import {render, unmountComponentAtNode} from 'react-dom'
 import {IBotOptions, makeMove} from '../../game/Bot'
 import {ICard, Side} from '../../game/Card'
+import {isVictory} from '../../game/Desk'
 import {createNewGame, executeMove, IGame, INewGameRules, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
@@ -10,6 +11,7 @@ import {lastItem, lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {DESK_SKINS, IDeskSkin} from './deskSkins'
+import HighScoresStorage from './storage/HighScoresStorage'
 import SettingsStorage from './storage/SettingsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
@@ -22,6 +24,7 @@ interface IUIState {
 
 export default class AppController {
   private readonly uiState: Readonly<IUIState>
+  private gameAddedToHighScores: boolean = false
 
   constructor(
     private readonly uiRoot: HTMLElement,
@@ -29,6 +32,7 @@ export default class AppController {
     deskSkin: IDeskSkin,
     cardBackFaceStyle: CardBackfaceStyle,
     private readonly settingsStorage: SettingsStorage,
+    private readonly highScoresStorage: HighScoresStorage,
     private readonly newGameOptions: INewGameRules,
     private readonly botOption: IBotOptions,
   ) {
@@ -100,6 +104,15 @@ export default class AppController {
     }
 
     statePatch.hint = null
+
+    if (isVictory(statePatch.game.state) && !this.gameAddedToHighScores) {
+      this.gameAddedToHighScores = true
+      this.highScoresStorage.addGame(statePatch.game).catch((error) => {
+        // tslint:disable-next-line:no-console
+        console.error('Failed to add the won game to the high scores table', error)
+      })
+    }
+
     this.updateUI(statePatch)
   }
 
@@ -137,6 +150,7 @@ export default class AppController {
     const statePatch: Partial<IUIState> = {}
     statePatch.game = this.createNewGame(drawnCards)
     statePatch.hint = null
+    this.gameAddedToHighScores = false
     this.updateUI(statePatch)
   }
 
