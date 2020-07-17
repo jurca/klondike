@@ -199,7 +199,7 @@ export default class AppController {
   }
 
   private createNewGame(drawnCards: 1 | 3): IGame {
-    const deck = this.newGameProvider.getWinnableCardDeck(1)
+    const deck = this.newGameProvider.getWinnableCardDeck(drawnCards)
     return createNewGame(
       {
         ...this.newGameOptions,
