@@ -6,10 +6,10 @@ import {getMoveHints, HintGeneratorMode, MOVE_CONFIDENCES, MoveConfidence, MoveH
 import {lastItemOrNull} from './util'
 
 export interface IBotOptions {
-  minAutoAcceptConfidence: null | MoveConfidence
-  maxConsideredConfidenceLevels: number
-  lookAheadMoves: number
-  stateRankingHeuristic: (desk: IDesk) => number
+  readonly minAutoAcceptConfidence: null | MoveConfidence
+  readonly maxConsideredConfidenceLevels: number
+  readonly lookAheadMoves: number
+  readonly stateRankingHeuristic: (desk: IDesk) => number
 }
 
 export function makeMove(game: IGame, options: IBotOptions): IGame {
