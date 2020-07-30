@@ -58,5 +58,9 @@ module.exports = {
       template: './ui/seznam.cz-2020/index.html',
       chunks: ['main'],
     })
-  ] : []
+  ] : [],
+
+  performance: {
+    hints: false,
+  },
 }
