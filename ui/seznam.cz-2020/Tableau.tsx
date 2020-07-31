@@ -36,6 +36,7 @@ export default function Tableau({tableau, hint, onRevealCard, onTransferCardToFo
                             isHinted={hint ? cardsAreEqual(card, hint) : false}
                             withShadow={!!cardIndex}
                             onDoubleClick={cardIndex === length - 1 ? onTransferCardToFoundation : null}
+                            onSecondaryClick={cardIndex === length - 1 ? onTransferCardToFoundation : null}
                           />
                         </Draggable>
                       :

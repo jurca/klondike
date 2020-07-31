@@ -102,6 +102,7 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
                             isHinted={hint ? cardsAreEqual(card, hint) : false}
                             withShadow={length - cardIndex < Math.min(3, length)}
                             onDoubleClick={onTransferWasteCardToFoundation}
+                            onSecondaryClick={onTransferWasteCardToFoundation}
                           />
                         </Draggable>
                       :

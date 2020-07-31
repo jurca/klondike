@@ -209,7 +209,7 @@ function onMouseDown(
   setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.MouseEvent<HTMLDivElement>,
 ): void {
-  if (!(event.target instanceof Element)) {
+  if (!(event.target instanceof Element) || event.button !== 0) {
     return
   }
 
