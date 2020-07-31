@@ -122,8 +122,8 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
   )
 
   const onMouseDownListener = React.useMemo(
-    () => onMouseDown.bind(null, contextValue, setDragNDropState),
-    [contextValue, setDragNDropState],
+    () => onMouseDown.bind(null, contextValue, dragNDropState, setDragNDropState),
+    [contextValue, dragNDropState, setDragNDropState],
   )
   const onTouchStartListener = React.useMemo(
     () => onTouchStart.bind(null, contextValue, setDragNDropState),
@@ -206,6 +206,7 @@ function onTouchStart(
 
 function onMouseDown(
   currentContextValue: IDragNDropContextValue,
+  dragNDropState: IDragNDropState,
   setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.MouseEvent<HTMLDivElement>,
 ): void {
@@ -218,6 +219,10 @@ function onMouseDown(
     onDragStart(currentContextValue, setState, dragContainer, {
       x: event.pageX,
       y: event.pageY,
+    })
+  } else if (dragNDropState.selected && !event.target.closest('drop-area')) {
+    setState({
+      selected: null,
     })
   }
 }
