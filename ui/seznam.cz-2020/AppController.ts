@@ -192,6 +192,14 @@ export default class AppController {
     }
   }
 
+  private onBotMove = (): void => {
+    this.updateUI({
+      game: makeMove(this.uiState.game, this.botOption),
+      hint: null,
+    })
+    this.updateAutomaticHintTimer()
+  }
+
   private onDeskStyleChange = (newDeskStyle: string): void => {
     if (newDeskStyle in DESK_SKINS) {
       const deskSkin = DESK_SKINS[newDeskStyle as keyof typeof DESK_SKINS]
@@ -224,12 +232,6 @@ export default class AppController {
     this.updateAutomaticHintTimer()
   }
 
-  private onBotMove = (): void => {
-    this.updateUI({
-      game: makeMove(this.uiState.game, this.botOption),
-    })
-  }
-
   private onImport = (): void => {
     const state = prompt('Exportovaný stav hry:') || ''
     this.updateUI({
@@ -243,10 +245,10 @@ export default class AppController {
       this.automaticHintTimeoutId = null
     }
 
-    if (this.uiState.automaticHintDelay) {
+    if (this.uiState.automaticHintDelay && !isVictory(this.uiState.game.state)) {
       this.automaticHintTimeoutId = window.setTimeout(() => {
         this.automaticHintTimeoutId = null
-        if (!this.uiState.hint) {
+        if (!this.uiState.hint && !isVictory(this.uiState.game.state)) {
           this.onShowHint()
         }
       }, this.uiState.automaticHintDelay)
