@@ -9,6 +9,7 @@ import Desk from './Desk'
 import {GREEN_S, GREEN_S_TILES, IDeskSkin, RED_S_TILES, TEAL_COLORS} from './deskSkins'
 import GameStats from './GameStats'
 import SettingsContext from './settingsContext'
+import {StockPosition} from './storage/SettingsStorage'
 
 interface IProps {
   game: IGame
@@ -16,6 +17,7 @@ interface IProps {
   cardBackFace: CardBackfaceStyle
   deskSkin: IDeskSkin
   automaticHintDelay: number,
+  stockPosition: StockPosition,
   onMove: (move: Move) => void
   onUndo: () => void
   onRedo: () => void
@@ -25,11 +27,14 @@ interface IProps {
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
   onAutomaticHintDelayChange: (newAutomaticHintDelay: number) => void
+  onStockPositionChange: (newStockPosition: StockPosition) => void
   onBotMove: () => void
   onImport: () => void
 }
 
-export default function App({game, cardBackFace, deskSkin, hint, automaticHintDelay, ...callbacks}: IProps) {
+export default function App(
+  {game, cardBackFace, deskSkin, hint, automaticHintDelay, stockPosition, ...callbacks}: IProps,
+) {
   const {onMove, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const deskStyleName = React.useMemo(() => {
@@ -61,6 +66,12 @@ export default function App({game, cardBackFace, deskSkin, hint, automaticHintDe
       parseInt(event.target.value, 10) * 1_000,
     ),
     [callbacks.onAutomaticHintDelayChange],
+  )
+  const stockPositionChangeListener = React.useMemo(
+    () => (event: React.ChangeEvent<HTMLInputElement>) => callbacks.onStockPositionChange(
+      event.target.checked ? StockPosition.RIGHT : StockPosition.LEFT,
+    ),
+    [callbacks.onStockPositionChange],
   )
 
   return (
@@ -97,13 +108,22 @@ export default function App({game, cardBackFace, deskSkin, hint, automaticHintDe
           onChange={automaticHintDelayChangeListener}
         />
         {automaticHintDelay ? `${automaticHintDelay / 1_000} s` : 'vypnuto'}
+        <label>
+          <input
+            type='checkbox'
+            value='1'
+            checked={stockPosition === StockPosition.RIGHT}
+            onChange={stockPositionChangeListener}
+          />
+          Balíček vpravo
+        </label>
         &nbsp;|&nbsp;
         <button onClick={callbacks.onBotMove}>bot</button>
         <button onClick={onExport}>export</button>
         <button onClick={onImport}>import</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
-        <Desk deskState={game.state} gameRules={game.rules} hint={hint} onMove={onMove}/>
+        <Desk deskState={game.state} gameRules={game.rules} hint={hint} stockPosition={stockPosition} onMove={onMove}/>
       </SettingsContext.Provider>
     </div>
   )
@@ -116,6 +136,6 @@ export default function App({game, cardBackFace, deskSkin, hint, automaticHintDe
   }
 
   function onExport(): void {
-    console.log(serialize(game))
+    console.log(serialize(game)) // tslint:disable-line:no-console
   }
 }

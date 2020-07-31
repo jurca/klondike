@@ -1,3 +1,4 @@
+import clasnames from 'classnames'
 import * as React from 'react'
 import {Color, equals as cardsAreEqual, ICard} from '../../game/Card'
 import {Desk} from '../../game/Desk'
@@ -7,6 +8,7 @@ import DropArea from './DropArea'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
 import settingsContext from './settingsContext'
+import {StockPosition} from './storage/SettingsStorage'
 import style from './topBar.css'
 
 interface IProps {
@@ -14,6 +16,7 @@ interface IProps {
   waste: readonly ICard[]
   foundation: Desk['foundation']
   hint: null | ICard
+  stockPosition: StockPosition,
   foundationRefs: Map<Color, React.RefObject<Element>>
   onDraw(): void
   onRedeal(): void
@@ -21,11 +24,15 @@ interface IProps {
 }
 
 export default function TopBar(props: IProps) {
-  const {foundation, foundationRefs, hint, stock, waste, onDraw, onRedeal, onTransferWasteCardToFoundation} = props
+  const {foundation, foundationRefs, hint, stock, waste, stockPosition, ...callbacks} = props
+  const {onDraw, onRedeal, onTransferWasteCardToFoundation} = callbacks
   const settings = React.useContext(settingsContext)
 
   return (
-    <div className={style.topBar} style={{background: settings.deskColor.topBar}}>
+    <div
+      className={clasnames(style.topBar, stockPosition === StockPosition.RIGHT && style.topBarWithStockOnRightSide)}
+      style={{background: settings.deskColor.topBar}}
+    >
       <div className={style.topBarContent}>
         <div className={`${style.stock} ${style.topBarItem}`}>
           <div className={style.cardHolder} onClick={stock.length ? onDraw : onRedeal}>

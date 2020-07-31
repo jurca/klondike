@@ -13,6 +13,7 @@ import Spades from './deskBackground/spades.svg'
 import DeskStyle from './DeskStyle'
 import DragNDrop from './DragNDrop'
 import settingsContext from './settingsContext'
+import {StockPosition} from './storage/SettingsStorage'
 import Tableau from './Tableau'
 import TopBar from './TopBar'
 import VictoryScreen from './VictoryScreen'
@@ -21,6 +22,7 @@ interface IProps {
   deskState: IDesk
   gameRules: IGame['rules']
   hint: null | ICard
+  stockPosition: StockPosition,
   onMove(move: Move): void
 }
 
@@ -36,7 +38,7 @@ const VICTORY_SCREEN_OPTIONS = {
   timeDeltaCap: 100,
 }
 
-export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
+export default function Desk({deskState, gameRules, hint, stockPosition, onMove}: IProps) {
   const settings = React.useContext(settingsContext)
   const {deskStyle} = settings
 
@@ -75,6 +77,7 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
             waste={deskState.waste.cards}
             foundation={deskState.foundation}
             hint={hint}
+            stockPosition={stockPosition}
             foundationRefs={foundationRefs}
             onDraw={onDraw}
             onRedeal={onRedeal}

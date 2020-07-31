@@ -12,16 +12,19 @@ import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {DESK_SKINS, IDeskSkin} from './deskSkins'
 import HighScoresStorage from './storage/HighScoresStorage'
-import SettingsStorage from './storage/SettingsStorage'
+import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
 interface IUIState {
   game: IGame
   hint: null | ICard
   deskSkin: IDeskSkin
-  automaticHintDelay: number,
   cardBackFaceStyle: CardBackfaceStyle
+  automaticHintDelay: number,
+  stockPosition: StockPosition,
 }
+
+const DEFAULT_DRAWN_CARDS = 1
 
 export default class AppController {
   private readonly uiState: Readonly<IUIState>
@@ -34,6 +37,7 @@ export default class AppController {
     deskSkin: IDeskSkin,
     cardBackFaceStyle: CardBackfaceStyle,
     automaticHintDelay: number,
+    stockPosition: StockPosition,
     private readonly settingsStorage: SettingsStorage,
     private readonly highScoresStorage: HighScoresStorage,
     private readonly newGameOptions: INewGameRules,
@@ -43,8 +47,9 @@ export default class AppController {
       automaticHintDelay,
       cardBackFaceStyle,
       deskSkin,
-      game: this.createNewGame(1),
+      game: this.createNewGame(DEFAULT_DRAWN_CARDS),
       hint: null,
+      stockPosition,
     }
   }
 
@@ -77,6 +82,7 @@ export default class AppController {
           deskSkin: this.uiState.deskSkin,
           cardBackFace: this.uiState.cardBackFaceStyle,
           automaticHintDelay: this.uiState.automaticHintDelay,
+          stockPosition: this.uiState.stockPosition,
           onMove: this.onMove,
           onUndo: this.onUndo,
           onRedo: this.onRedo,
@@ -86,6 +92,7 @@ export default class AppController {
           onDeskStyleChange: this.onDeskStyleChange,
           onCardStyleChange: this.onCardBackStyleChange,
           onAutomaticHintDelayChange: this.onAutomaticHintDelayChange,
+          onStockPositionChange: this.onStockPositionChange,
           onBotMove: this.onBotMove,
           onImport: this.onImport,
         },
@@ -234,6 +241,16 @@ export default class AppController {
       (error) => console.error('Failed to save the automatic hint delay settings', error),
     )
     this.updateAutomaticHintTimer()
+  }
+
+  private onStockPositionChange = (newStockPosition: StockPosition): void => {
+    this.updateUI({
+      stockPosition: newStockPosition,
+    })
+
+    this.settingsStorage.setStockPosition(newStockPosition).catch(
+      (error) => console.error('Failed to save the stock position', error), // tslint:disable-line:no-console
+    )
   }
 
   private onImport = (): void => {

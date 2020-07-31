@@ -9,6 +9,7 @@ interface CssExports {
   'topBar': string;
   'topBarContent': string;
   'topBarItem': string;
+  'topBarWithStockOnRightSide': string;
   'waste': string;
 }
 export const cssExports: CssExports;
