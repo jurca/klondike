@@ -22,10 +22,10 @@ export interface IDesk {
 }
 
 interface IFoundation {
-  [Color.DIAMONDS]: IPile
-  [Color.HEARTHS]: IPile
-  [Color.CLUBS]: IPile
-  [Color.SPADES]: IPile
+  readonly [Color.DIAMONDS]: IPile
+  readonly [Color.HEARTHS]: IPile
+  readonly [Color.CLUBS]: IPile
+  readonly [Color.SPADES]: IPile
 }
 
 export class Desk implements IDesk {
