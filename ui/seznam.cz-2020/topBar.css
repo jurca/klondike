@@ -20,7 +20,7 @@
   display: flex;
 
   width: 100%;
-  max-width: calc(7 * (1em + 0.4em));
+  max-width: calc(7 * (1em + 0.4em) + 0.2em);
   height: 100%;
 }
 
