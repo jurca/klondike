@@ -10,7 +10,8 @@ const settingsStorage = new SettingsStorage(primaryStorageFactory('settings'))
 Promise.all([
   settingsStorage.getDeskSkin(),
   settingsStorage.getCardBackFaceStyle(),
-]).then(([deskSkin, cardBackFaceStyle]) => {
+  settingsStorage.getAutomaticHintDelay(),
+]).then(([deskSkin, cardBackFaceStyle, automaticHintDelay]) => {
   const uiRoot = document.getElementById('app')!
   const winnableGamesProvider = new WinnableGamesProvider()
   const appController = new AppController(
@@ -18,6 +19,7 @@ Promise.all([
     winnableGamesProvider,
     deskSkin,
     cardBackFaceStyle,
+    automaticHintDelay,
     settingsStorage,
     highScoresStorage,
     DEFAULT_NEW_GAME_OPTIONS,

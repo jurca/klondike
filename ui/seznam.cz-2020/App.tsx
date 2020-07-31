@@ -15,19 +15,21 @@ interface IProps {
   hint: null | ICard
   cardBackFace: CardBackfaceStyle
   deskSkin: IDeskSkin
+  automaticHintDelay: number,
   onMove: (move: Move) => void
-  onUndo: () => void
+  onUndo: () => void
   onRedo: () => void
   onReset: () => void
   onNewWinnableGame: (drawnCards: 1 | 3) => void
   onShowHint: () => void
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
+  onAutomaticHintDelayChange: (newAutomaticHintDelay: number) => void
   onBotMove: () => void
   onImport: () => void
 }
 
-export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: IProps) {
+export default function App({game, cardBackFace, deskSkin, hint, automaticHintDelay, ...callbacks}: IProps) {
   const {onMove, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const deskStyleName = React.useMemo(() => {
@@ -54,6 +56,12 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
     ),
     [callbacks.onCardStyleChange],
   )
+  const automaticHintDelayChangeListener = React.useMemo(
+    () => (event: React.ChangeEvent<HTMLInputElement>) => callbacks.onAutomaticHintDelayChange(
+      parseInt(event.target.value, 10) * 1_000,
+    ),
+    [callbacks.onAutomaticHintDelayChange],
+  )
 
   return (
     <div className={style.app}>
@@ -79,6 +87,16 @@ export default function App({game, cardBackFace, deskSkin, hint, ...callbacks}: 
           <option value={CardBackfaceStyle.Dog}>Krasty</option>
           <option value={CardBackfaceStyle.Colors}>Symboly</option>
         </select>
+        Automatická nápověda:
+        <input
+          type='range'
+          min='0'
+          max='180'
+          step='1'
+          value={automaticHintDelay / 1_000}
+          onChange={automaticHintDelayChangeListener}
+        />
+        {automaticHintDelay ? `${automaticHintDelay / 1_000} s` : 'vypnuto'}
         &nbsp;|&nbsp;
         <button onClick={callbacks.onBotMove}>bot</button>
         <button onClick={onExport}>export</button>

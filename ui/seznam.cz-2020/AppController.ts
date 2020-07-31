@@ -19,24 +19,28 @@ interface IUIState {
   game: IGame
   hint: null | ICard
   deskSkin: IDeskSkin
+  automaticHintDelay: number,
   cardBackFaceStyle: CardBackfaceStyle
 }
 
 export default class AppController {
   private readonly uiState: Readonly<IUIState>
   private gameAddedToHighScores: boolean = false
+  private automaticHintTimeoutId: null | number = null
 
   constructor(
     private readonly uiRoot: HTMLElement,
     private readonly newGameProvider: WinnableGamesProvider,
     deskSkin: IDeskSkin,
     cardBackFaceStyle: CardBackfaceStyle,
+    automaticHintDelay: number,
     private readonly settingsStorage: SettingsStorage,
     private readonly highScoresStorage: HighScoresStorage,
     private readonly newGameOptions: INewGameRules,
     private readonly botOption: IBotOptions,
   ) {
     this.uiState = {
+      automaticHintDelay,
       cardBackFaceStyle,
       deskSkin,
       game: this.createNewGame(1),
@@ -46,10 +50,15 @@ export default class AppController {
 
   public start(): void {
     this.renderUI()
+    this.updateAutomaticHintTimer()
   }
 
   public stop(): void {
     unmountComponentAtNode(this.uiRoot)
+    if (this.automaticHintTimeoutId) {
+      clearTimeout(this.automaticHintTimeoutId)
+      this.automaticHintTimeoutId = null
+    }
   }
 
   private updateUI(statePatch: Partial<IUIState>): void {
@@ -67,6 +76,7 @@ export default class AppController {
           hint: this.uiState.hint,
           deskSkin: this.uiState.deskSkin,
           cardBackFace: this.uiState.cardBackFaceStyle,
+          automaticHintDelay: this.uiState.automaticHintDelay,
           onMove: this.onMove,
           onUndo: this.onUndo,
           onRedo: this.onRedo,
@@ -75,6 +85,7 @@ export default class AppController {
           onShowHint: this.onShowHint,
           onDeskStyleChange: this.onDeskStyleChange,
           onCardStyleChange: this.onCardBackStyleChange,
+          onAutomaticHintDelayChange: this.onAutomaticHintDelayChange,
           onBotMove: this.onBotMove,
           onImport: this.onImport,
         },
@@ -114,6 +125,7 @@ export default class AppController {
     }
 
     this.updateUI(statePatch)
+    this.updateAutomaticHintTimer()
   }
 
   private onUndo = (): void => {
@@ -127,6 +139,7 @@ export default class AppController {
     statePatch.game = undoLastMove(statePatch.game || this.uiState.game)
     statePatch.hint = null
     this.updateUI(statePatch)
+    this.updateAutomaticHintTimer()
   }
 
   private onRedo = (): void => {
@@ -137,6 +150,7 @@ export default class AppController {
     }
     statePatch.hint = null
     this.updateUI(statePatch)
+    this.updateAutomaticHintTimer()
   }
 
   private onReset = (): void => {
@@ -144,6 +158,7 @@ export default class AppController {
       game: resetGame(this.uiState.game),
       hint: null,
     })
+    this.updateAutomaticHintTimer()
   }
 
   private onNewWinnableGame = (drawnCards: 1 | 3): void => {
@@ -152,6 +167,7 @@ export default class AppController {
     statePatch.hint = null
     this.gameAddedToHighScores = false
     this.updateUI(statePatch)
+    this.updateAutomaticHintTimer()
   }
 
   private onShowHint = (): void => {
@@ -199,6 +215,15 @@ export default class AppController {
     })
   }
 
+  private onAutomaticHintDelayChange = (newAutomaticHintDelay: number): void => {
+    this.updateUI({
+      automaticHintDelay: newAutomaticHintDelay,
+      hint: null,
+    })
+
+    this.updateAutomaticHintTimer()
+  }
+
   private onBotMove = (): void => {
     this.updateUI({
       game: makeMove(this.uiState.game, this.botOption),
@@ -210,6 +235,22 @@ export default class AppController {
     this.updateUI({
       game: deserialize(state),
     })
+  }
+
+  private updateAutomaticHintTimer(): void {
+    if (this.automaticHintTimeoutId) {
+      clearTimeout(this.automaticHintTimeoutId)
+      this.automaticHintTimeoutId = null
+    }
+
+    if (this.uiState.automaticHintDelay) {
+      this.automaticHintTimeoutId = window.setTimeout(() => {
+        this.automaticHintTimeoutId = null
+        if (!this.uiState.hint) {
+          this.onShowHint()
+        }
+      }, this.uiState.automaticHintDelay)
+    }
   }
 
   private createNewGame(drawnCards: 1 | 3): IGame {
