@@ -19,6 +19,7 @@ interface CssExports {
   'tealColors': string;
   'tealColorsGroup': string;
   'topBar': string;
+  'topBarContent': string;
   'topBarItem': string;
   'waste': string;
 }

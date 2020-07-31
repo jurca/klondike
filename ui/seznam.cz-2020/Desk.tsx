@@ -75,58 +75,33 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
           <div className={style.topBar} style={{background: settings.deskColor.topBar}}>
-            <div className={`${style.stock} ${style.topBarItem}`}>
-              <div className={style.cardHolder} onClick={deskState.stock.cards.length ? onDraw : onRedeal}>
-                <EmptyPilePlaceholder/>
-                {deskState.stock.cards.map((card, cardIndex, {length}) =>
-                  <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
-                    <Card
-                      card={card}
-                      isHinted={hint ? cardsAreEqual(card, hint) : false}
-                      withShadow={length - cardIndex < Math.min(3, length)}
-                    />
-                  </div>,
-                )}
-              </div>
-            </div>
-            <div className={`${style.waste} ${style.topBarItem}`}>
-              <div className={style.cardHolder}>
-                <EmptyPilePlaceholder/>
-                {deskState.waste.cards.map((card, cardIndex, {length}) =>
-                  <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
-                    {cardIndex === length - 1 ?
-                      <Draggable entity={card}>
-                        <Card
-                          card={card}
-                          isHinted={hint ? cardsAreEqual(card, hint) : false}
-                          withShadow={length - cardIndex < Math.min(3, length)}
-                          onDoubleClick={onTransferWasteCardToFoundation}
-                        />
-                      </Draggable>
-                    :
+            <div className={style.topBarContent}>
+              <div className={`${style.stock} ${style.topBarItem}`}>
+                <div className={style.cardHolder} onClick={deskState.stock.cards.length ? onDraw : onRedeal}>
+                  <EmptyPilePlaceholder/>
+                  {deskState.stock.cards.map((card, cardIndex, {length}) =>
+                    <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       <Card
                         card={card}
                         isHinted={hint ? cardsAreEqual(card, hint) : false}
                         withShadow={length - cardIndex < Math.min(3, length)}
                       />
-                    }
-                  </div>,
-                )}
+                    </div>,
+                  )}
+                </div>
               </div>
-            </div>
-            <div className={style.separator}/>
-            <div className={`${style.foundationPile} ${style.topBarItem}`}>
-              <div className={style.cardHolder}>
-                <DropArea areaId={Color.SPADES}>
-                  <FoundationPile color={Color.SPADES} ref={foundationRefs.get(Color.SPADES)}/>
-                  {deskState.foundation[Color.SPADES].cards.map((card, cardIndex, {length}) =>
+              <div className={`${style.waste} ${style.topBarItem}`}>
+                <div className={style.cardHolder}>
+                  <EmptyPilePlaceholder/>
+                  {deskState.waste.cards.map((card, cardIndex, {length}) =>
                     <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                       {cardIndex === length - 1 ?
                         <Draggable entity={card}>
                           <Card
                             card={card}
                             isHinted={hint ? cardsAreEqual(card, hint) : false}
-                            withShadow={length > 1}
+                            withShadow={length - cardIndex < Math.min(3, length)}
+                            onDoubleClick={onTransferWasteCardToFoundation}
                           />
                         </Draggable>
                       :
@@ -138,85 +113,112 @@ export default function Desk({deskState, gameRules, hint, onMove}: IProps) {
                       }
                     </div>,
                   )}
-                </DropArea>
+                </div>
               </div>
-            </div>
-            <div className={`${style.foundationPile} ${style.topBarItem}`}>
-              <div className={style.cardHolder}>
-                <DropArea areaId={Color.HEARTHS}>
-                  <FoundationPile color={Color.HEARTHS} ref={foundationRefs.get(Color.HEARTHS)}/>
-                  {deskState.foundation[Color.HEARTHS].cards.map((card, cardIndex, {length}) =>
-                    <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
-                      {cardIndex === length - 1 ?
-                        <Draggable entity={card}>
+              <div className={style.separator}/>
+              <div className={`${style.foundationPile} ${style.topBarItem}`}>
+                <div className={style.cardHolder}>
+                  <DropArea areaId={Color.SPADES}>
+                    <FoundationPile color={Color.SPADES} ref={foundationRefs.get(Color.SPADES)}/>
+                    {deskState.foundation[Color.SPADES].cards.map((card, cardIndex, {length}) =>
+                      <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
+                        {cardIndex === length - 1 ?
+                          <Draggable entity={card}>
+                            <Card
+                              card={card}
+                              isHinted={hint ? cardsAreEqual(card, hint) : false}
+                              withShadow={length > 1}
+                            />
+                          </Draggable>
+                        :
                           <Card
                             card={card}
                             isHinted={hint ? cardsAreEqual(card, hint) : false}
-                            withShadow={length > 1}
+                            withShadow={length - cardIndex < Math.min(3, length)}
                           />
-                        </Draggable>
-                      :
-                        <Card
-                          card={card}
-                          isHinted={hint ? cardsAreEqual(card, hint) : false}
-                          withShadow={length - cardIndex < Math.min(3, length)}
-                        />
-                      }
-                    </div>,
-                  )}
-                </DropArea>
+                        }
+                      </div>,
+                    )}
+                  </DropArea>
+                </div>
               </div>
-            </div>
-            <div className={`${style.foundationPile} ${style.topBarItem}`}>
-              <div className={style.cardHolder}>
-                <DropArea areaId={Color.CLUBS}>
-                  <FoundationPile color={Color.CLUBS} ref={foundationRefs.get(Color.CLUBS)}/>
-                  {deskState.foundation[Color.CLUBS].cards.map((card, cardIndex, {length}) =>
-                    <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
-                      {cardIndex === length - 1 ?
-                        <Draggable entity={card}>
+              <div className={`${style.foundationPile} ${style.topBarItem}`}>
+                <div className={style.cardHolder}>
+                  <DropArea areaId={Color.HEARTHS}>
+                    <FoundationPile color={Color.HEARTHS} ref={foundationRefs.get(Color.HEARTHS)}/>
+                    {deskState.foundation[Color.HEARTHS].cards.map((card, cardIndex, {length}) =>
+                      <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
+                        {cardIndex === length - 1 ?
+                          <Draggable entity={card}>
+                            <Card
+                              card={card}
+                              isHinted={hint ? cardsAreEqual(card, hint) : false}
+                              withShadow={length > 1}
+                            />
+                          </Draggable>
+                        :
                           <Card
                             card={card}
                             isHinted={hint ? cardsAreEqual(card, hint) : false}
-                            withShadow={length > 1}
+                            withShadow={length - cardIndex < Math.min(3, length)}
                           />
-                        </Draggable>
-                      :
-                        <Card
-                          card={card}
-                          isHinted={hint ? cardsAreEqual(card, hint) : false}
-                          withShadow={length - cardIndex < Math.min(3, length)}
-                        />
-                      }
-                    </div>,
-                  )}
-                </DropArea>
+                        }
+                      </div>,
+                    )}
+                  </DropArea>
+                </div>
               </div>
-            </div>
-            <div className={`${style.foundationPile} ${style.topBarItem}`}>
-              <div className={style.cardHolder}>
-                <DropArea areaId={Color.DIAMONDS}>
-                  <FoundationPile color={Color.DIAMONDS} ref={foundationRefs.get(Color.DIAMONDS)}/>
-                  {deskState.foundation[Color.DIAMONDS].cards.map((card, cardIndex, {length}) =>
-                    <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
-                      {cardIndex === length - 1 ?
-                        <Draggable entity={card}>
+              <div className={`${style.foundationPile} ${style.topBarItem}`}>
+                <div className={style.cardHolder}>
+                  <DropArea areaId={Color.CLUBS}>
+                    <FoundationPile color={Color.CLUBS} ref={foundationRefs.get(Color.CLUBS)}/>
+                    {deskState.foundation[Color.CLUBS].cards.map((card, cardIndex, {length}) =>
+                      <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
+                        {cardIndex === length - 1 ?
+                          <Draggable entity={card}>
+                            <Card
+                              card={card}
+                              isHinted={hint ? cardsAreEqual(card, hint) : false}
+                              withShadow={length > 1}
+                            />
+                          </Draggable>
+                        :
                           <Card
                             card={card}
                             isHinted={hint ? cardsAreEqual(card, hint) : false}
-                            withShadow={length > 1}
+                            withShadow={length - cardIndex < Math.min(3, length)}
                           />
-                        </Draggable>
-                      :
-                        <Card
-                          card={card}
-                          isHinted={hint ? cardsAreEqual(card, hint) : false}
-                          withShadow={length - cardIndex < Math.min(3, length)}
-                        />
-                      }
-                    </div>,
-                  )}
-                </DropArea>
+                        }
+                      </div>,
+                    )}
+                  </DropArea>
+                </div>
+              </div>
+              <div className={`${style.foundationPile} ${style.topBarItem}`}>
+                <div className={style.cardHolder}>
+                  <DropArea areaId={Color.DIAMONDS}>
+                    <FoundationPile color={Color.DIAMONDS} ref={foundationRefs.get(Color.DIAMONDS)}/>
+                    {deskState.foundation[Color.DIAMONDS].cards.map((card, cardIndex, {length}) =>
+                      <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
+                        {cardIndex === length - 1 ?
+                          <Draggable entity={card}>
+                            <Card
+                              card={card}
+                              isHinted={hint ? cardsAreEqual(card, hint) : false}
+                              withShadow={length > 1}
+                            />
+                          </Draggable>
+                        :
+                          <Card
+                            card={card}
+                            isHinted={hint ? cardsAreEqual(card, hint) : false}
+                            withShadow={length - cardIndex < Math.min(3, length)}
+                          />
+                        }
+                      </div>,
+                    )}
+                  </DropArea>
+                </div>
               </div>
             </div>
           </div>
