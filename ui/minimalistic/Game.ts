@@ -60,7 +60,7 @@ define(
       })
     }
 
-    private onCardSelected = (card: ICard, pile: IPile): void => {
+    private onCardSelected = (card: ICard, pile: IPile): void => {
       if (this.selectedcard) {
         if (card !== this.selectedcard[0]) {
           this.executeTableauMove(this.selectedcard[0], this.selectedcard[1], pile)

@@ -237,7 +237,7 @@ export default class AppController {
   }
 
   private onImport = (): void => {
-    const state = prompt('Exportovaný stav hry:') || ''
+    const state = prompt('Exportovaný stav hry:') || ''
     this.updateUI({
       game: deserialize(state),
     })

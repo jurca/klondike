@@ -195,7 +195,7 @@ function onTouchStart(
   }
 
   currentlyTrackedTouchId = currentTouch.identifier
-  const dragContainer = currentTouch.target.closest('ui-draggable') as null | HTMLElement
+  const dragContainer = currentTouch.target.closest('ui-draggable') as null | HTMLElement
   if (dragContainer) {
     onDragStart(currentContextValue, setState, dragContainer, {
       x: currentTouch.pageX,

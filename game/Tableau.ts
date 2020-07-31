@@ -25,7 +25,7 @@ export function addCardToPile(tableau: ITableau, pile: IPile, card: ICard): ITab
 
 export function removeTopCardFromPile(tableau: ITableau, pile: IPile): [ITableau, ICard] {
   const pileIndex = tableau.piles.indexOf(pile)
-  if (pileIndex === -1) {
+  if (pileIndex === -1) {
     throw new Error('The specified pile is not present in the specified tableau')
   }
   if (!pile.cards.length) {
