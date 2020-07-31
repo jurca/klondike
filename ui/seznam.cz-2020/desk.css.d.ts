@@ -2,26 +2,17 @@
 // Please do not change this file!
 interface CssExports {
   'background': string;
-  'cardHolder': string;
   'desk': string;
   'deskContent': string;
-  'foundationPile': string;
   'greenSImage': string;
   'greenSImageWrapper': string;
   'greenSInnerImageWrapper': string;
   'greenSTiles': string;
   'main': string;
   'redSTiles': string;
-  'separator': string;
-  'stackedCard': string;
-  'stock': string;
   'tableau': string;
   'tealColors': string;
   'tealColorsGroup': string;
-  'topBar': string;
-  'topBarContent': string;
-  'topBarItem': string;
-  'waste': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

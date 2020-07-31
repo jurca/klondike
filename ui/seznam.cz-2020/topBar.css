@@ -1,0 +1,70 @@
+:local(.topBar) {
+  display: flex;
+
+  box-sizing: border-box;
+  padding: 1vmin;
+  width: 100%;
+  height: 50vw;
+  max-height: 20vh;
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  justify-content: center;
+
+  box-shadow: 0 0 12px #000;
+
+  z-index: 1;
+}
+
+:local(.topBarContent) {
+  display: flex;
+
+  width: 100%;
+  max-width: calc(7 * (1em + 0.4em));
+  height: 100%;
+}
+
+:local(.topBarItem) {
+  display: flex;
+
+  align-items: center;
+}
+
+:local(.cardHolder) {
+  position: relative;
+
+  width: 1em;
+  height: calc(1em * 1.5 /* 40:60 aspect ratio */);
+}
+
+:local(.stackedCard) {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+:local(.stock) {
+  margin-right: 3vmin;
+
+  cursor: pointer;
+}
+
+:local(.waste) :local(.stackedCard):nth-last-child(2) ~ :local(.stackedCard):nth-last-child(1) {
+  left: 0.45em;
+}
+
+:local(.waste) :local(.stackedCard):nth-last-child(3) ~ :local(.stackedCard):nth-last-child(2) {
+  left: 0.45em;
+}
+
+:local(.waste) :local(.stackedCard):nth-last-child(3) ~ :local(.stackedCard):nth-last-child(1) {
+  left: 0.9em;
+}
+
+:local(.separator) {
+  flex-grow: 1;
+}
+
+:local(.foundationPile) {
+  margin-left: 3vmin;
+}
