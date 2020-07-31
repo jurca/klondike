@@ -229,6 +229,10 @@ export default class AppController {
       hint: null,
     })
 
+    this.settingsStorage.setAutomaticHintDelay(newAutomaticHintDelay).catch(
+      // tslint:disable-next-line:no-console
+      (error) => console.error('Failed to save the automatic hint delay settings', error),
+    )
     this.updateAutomaticHintTimer()
   }
 
