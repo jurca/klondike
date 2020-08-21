@@ -17,9 +17,8 @@
 :local(.topBarContent) {
   display: flex;
 
-  margin-right: -0.15em;
   width: 100%;
-  max-width: calc(7 * (1em + 0.4em) + 0.2em);
+  max-width: calc(7 * (1em + 0.4em));
   height: 100%;
 }
 
@@ -70,9 +69,12 @@
   margin: 0 0.15em;
 }
 
+:local(.foundationPile):last-child {
+  margin-right: 0;
+}
+
 :local(.topBarWithStockOnRightSide) :local(.topBarContent) {
   flex-direction: row-reverse;
-  margin: 0 0 0 -0.15em;
 }
 
 :local(.topBarWithStockOnRightSide) :local(.waste) :local(.stackedCard):nth-last-child(2) ~ :local(.stackedCard):nth-last-child(1) {
@@ -88,4 +90,9 @@
 :local(.topBarWithStockOnRightSide) :local(.waste) :local(.stackedCard):nth-last-child(3) ~ :local(.stackedCard):nth-last-child(1) {
   left: auto;
   right: 0.9em;
+}
+
+:local(.topBarWithStockOnRightSide) :local(.foundationPile):last-child {
+  margin-right: 0.15em;
+  margin-left: 0;
 }
