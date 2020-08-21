@@ -11,6 +11,7 @@ interface CssExports {
   'main': string;
   'redSTiles': string;
   'tableau': string;
+  'tableauBackground': string;
   'tealColors': string;
   'tealColorsGroup': string;
 }

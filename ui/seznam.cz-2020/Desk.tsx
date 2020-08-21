@@ -13,9 +13,9 @@ import Spades from './deskBackground/spades.svg'
 import DeskStyle from './DeskStyle'
 import DragNDrop from './DragNDrop'
 import settingsContext from './settingsContext'
+import StocksBar from './StocksBar'
 import {StockPosition} from './storage/SettingsStorage'
 import Tableau from './Tableau'
-import TopBar from './TopBar'
 import VictoryScreen from './VictoryScreen'
 
 interface IProps {
@@ -69,10 +69,18 @@ export default function Desk({deskState, gameRules, hint, stockPosition, onMove}
   }, [])
 
   return (
-    <div className={style.desk}>
+    <div className={style.desk} style={{background: deskSkin.background}}>
+      <div className={style.background}>
+        {deskSkin.style === DeskStyle.GREEN_S_TILES &&
+          <div className={style.greenSTiles}/>
+        }
+        {deskSkin.style === DeskStyle.RED_S_TILES &&
+          <div className={style.redSTiles}/>
+        }
+      </div>
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
-          <TopBar
+          <StocksBar
             stock={deskState.stock.cards}
             waste={deskState.waste.cards}
             foundation={deskState.foundation}
@@ -85,7 +93,7 @@ export default function Desk({deskState, gameRules, hint, stockPosition, onMove}
           />
 
           <div className={style.main}>
-            <div className={style.background} style={{background: deskSkin.background}}>
+            <div className={style.tableauBackground}>
               {deskSkin.style === DeskStyle.GREEN_S &&
                 <div className={style.greenSImageWrapper}>
                   <div className={style.greenSInnerImageWrapper}>
@@ -106,12 +114,6 @@ export default function Desk({deskState, gameRules, hint, stockPosition, onMove}
                     <Clubs/>
                   </div>
                 </div>
-              }
-              {deskSkin.style === DeskStyle.GREEN_S_TILES &&
-                <div className={style.greenSTiles}/>
-              }
-              {deskSkin.style === DeskStyle.RED_S_TILES &&
-                <div className={style.redSTiles}/>
               }
             </div>
 

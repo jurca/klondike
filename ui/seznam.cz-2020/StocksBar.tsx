@@ -8,8 +8,8 @@ import DropArea from './DropArea'
 import EmptyPilePlaceholder from './EmptyPilePlaceholder'
 import FoundationPile from './FoundationPile'
 import settingsContext from './settingsContext'
+import style from './stocksBar.css'
 import {StockPosition} from './storage/SettingsStorage'
-import style from './topBar.css'
 
 interface IProps {
   stock: readonly ICard[]
@@ -23,7 +23,7 @@ interface IProps {
   onTransferWasteCardToFoundation(): void
 }
 
-export default function TopBar(props: IProps) {
+export default function StocksBar(props: IProps) {
   const {foundation, foundationRefs, hint, stock, waste, stockPosition, ...callbacks} = props
   const {onDraw, onRedeal, onTransferWasteCardToFoundation} = callbacks
   const {desk: deskSkin} = React.useContext(settingsContext)
@@ -31,7 +31,7 @@ export default function TopBar(props: IProps) {
   return (
     <div
       className={clasnames(style.topBar, stockPosition === StockPosition.RIGHT && style.topBarWithStockOnRightSide)}
-      style={{background: deskSkin.topBarBackground, boxShadow: deskSkin.topBarShadow}}
+      style={{background: deskSkin.stocksBarBackground, boxShadow: deskSkin.stocksBarShadow}}
     >
       <div className={style.topBarContent}>
         <div className={`${style.stock} ${style.topBarItem}`}>
