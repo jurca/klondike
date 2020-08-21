@@ -26,12 +26,12 @@ interface IProps {
 export default function TopBar(props: IProps) {
   const {foundation, foundationRefs, hint, stock, waste, stockPosition, ...callbacks} = props
   const {onDraw, onRedeal, onTransferWasteCardToFoundation} = callbacks
-  const settings = React.useContext(settingsContext)
+  const {desk: deskSkin} = React.useContext(settingsContext)
 
   return (
     <div
       className={clasnames(style.topBar, stockPosition === StockPosition.RIGHT && style.topBarWithStockOnRightSide)}
-      style={{background: settings.deskColor.topBar}}
+      style={{background: deskSkin.topBarBackground, boxShadow: deskSkin.topBarShadow}}
     >
       <div className={style.topBarContent}>
         <div className={`${style.stock} ${style.topBarItem}`}>

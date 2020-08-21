@@ -40,7 +40,7 @@ const VICTORY_SCREEN_OPTIONS = {
 
 export default function Desk({deskState, gameRules, hint, stockPosition, onMove}: IProps) {
   const settings = React.useContext(settingsContext)
-  const {deskStyle} = settings
+  const {desk: deskSkin} = settings
 
   const [spadesFoundationRef, hearthsFoundationRef, clubsFoundationRef, diamondsFoundationRef] = [
     React.useRef<Element>(null),
@@ -85,8 +85,8 @@ export default function Desk({deskState, gameRules, hint, stockPosition, onMove}
           />
 
           <div className={style.main}>
-            <div className={style.background} style={{background: settings.deskColor.background}}>
-              {deskStyle === DeskStyle.GREEN_S &&
+            <div className={style.background} style={{background: deskSkin.background}}>
+              {deskSkin.style === DeskStyle.GREEN_S &&
                 <div className={style.greenSImageWrapper}>
                   <div className={style.greenSInnerImageWrapper}>
                     <div className={style.greenSImage}>
@@ -95,7 +95,7 @@ export default function Desk({deskState, gameRules, hint, stockPosition, onMove}
                   </div>
                 </div>
               }
-              {deskStyle === DeskStyle.TEAL_COLORS &&
+              {deskSkin.style === DeskStyle.TEAL_COLORS &&
                 <div className={style.tealColors}>
                   <div className={style.tealColorsGroup}>
                     <Hearths/>
@@ -107,10 +107,10 @@ export default function Desk({deskState, gameRules, hint, stockPosition, onMove}
                   </div>
                 </div>
               }
-              {deskStyle === DeskStyle.GREEN_S_TILES &&
+              {deskSkin.style === DeskStyle.GREEN_S_TILES &&
                 <div className={style.greenSTiles}/>
               }
-              {deskStyle === DeskStyle.RED_S_TILES &&
+              {deskSkin.style === DeskStyle.RED_S_TILES &&
                 <div className={style.redSTiles}/>
               }
             </div>
