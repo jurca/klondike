@@ -4,6 +4,7 @@ import {isVictory} from '../../game/Desk'
 import {IGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {lastItemOrNull} from '../../game/util'
+import BottomBar from './BottomBar'
 import style from './desk.css'
 import Clubs from './deskBackground/clubs.svg'
 import Diamonds from './deskBackground/diamonds.svg'
@@ -82,6 +83,7 @@ export default function Desk({game, hint, stockPosition, onMove}: IProps) {
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
           <TopBar game={game}/>
+
           <StocksBar
             stock={deskState.stock.cards}
             waste={deskState.waste.cards}
@@ -128,6 +130,8 @@ export default function Desk({game, hint, stockPosition, onMove}: IProps) {
               />
             </div>
           </div>
+
+          <BottomBar/>
         </div>
       </DragNDrop>
       {isVictory(deskState) &&

@@ -1,0 +1,89 @@
+:local(.bottomBar) {
+  height: 0.6em;
+
+  color: #ffffff;
+
+  background: rgba(0, 0, 0, 0.1);
+}
+
+:local(.contentWrapper) {
+  margin: auto;
+  width: 100%;
+  height: 100%;
+  max-width: calc(7 * (1em + 0.4em));
+}
+
+:local(.content) {
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 0.2em;
+}
+
+
+@media (max-width: 800px) or (max-height: 800px) {
+  :local(.content) {
+    font-size: 0.22em;
+  }
+}
+
+@media (max-width: 600px) or (max-height: 300px) {
+  :local(.content) {
+    font-size: 0.28em;
+  }
+}
+
+:local(.buttonWrapper) {
+  display: flex;
+
+  flex: 0 0 10em;
+
+  justify-content: right;
+}
+
+:local(.buttonWrapper):first-child {
+  flex-grow: 1;
+
+  justify-content: left;
+}
+
+@media (max-width: 600px) or (max-height: 300px) {
+  :local(.buttonWrapper) {
+    flex-basis: 8em;
+  }
+}
+
+:local(.button) {
+  display: flex;
+
+  border: none;
+  padding: 0;
+
+  align-items: center;
+
+  font-size: 1em;
+  color: currentColor;
+  text-transform: uppercase;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+:local(.icon) {
+  display: inline-block;
+
+  margin-right: 0.5em;
+  width: 1em;
+  height: 1em;
+}
+
+:local(.icon) svg {
+  width: 100%;
+  height: 100%;
+}
