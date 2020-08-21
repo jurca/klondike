@@ -31,7 +31,7 @@ export default class SettingsStorage {
       (deskSkinName) => deskSkinName && deskSkinName in DESK_SKINS ?
         DESK_SKINS[deskSkinName as keyof typeof DESK_SKINS] as IDeskSkin
       :
-        DESK_SKINS.GREEN_S,
+        DESK_SKINS.GREEN_S_TILES,
     )
   }
 
