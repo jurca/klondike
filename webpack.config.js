@@ -33,7 +33,7 @@ module.exports = {
         oneOf: [
           {
             test: /(?:green|red)-s-tile\.svg$/i,
-            use: 'file-loader',
+            use: 'url-loader',
           },
           {
             test: /\.svg$/i,
