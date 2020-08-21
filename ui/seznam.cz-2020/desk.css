@@ -66,7 +66,7 @@
   display: flex;
 
   width: 100%;
-  max-width: 80vh;
+  max-width: 8em;
 
   flex-grow: 1;
 }
@@ -106,13 +106,13 @@
 :local(.tealColorsGroup) {
   display: flex;
 
-  margin: 3vh 0;
-  width: 60vw;
-  height: 30vh;
+  margin: 0.3em 0;
+  width: 6em;
+  height: 3em;
 }
 
 :local(.tealColorsGroup) svg {
-  margin: 0 3vw;
+  margin: 0 0.3em;
   height: 100%;
 }
 
@@ -122,8 +122,8 @@
   }
 
   :local(.tealColorsGroup) {
-    width: 30vw;
-    height: 30vh;
+    width: 3em;
+    height: 3em;
   }
 }
 
