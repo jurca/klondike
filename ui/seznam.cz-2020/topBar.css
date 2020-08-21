@@ -98,7 +98,7 @@
 :local(.icon) {
   display: inline-block;
 
-  margin-right: 0.1em;
+  margin-right: 0.5em;
   width: 1em;
   height: 1em;
 }
