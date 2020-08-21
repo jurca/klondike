@@ -123,7 +123,7 @@ export default function App(
         <button onClick={onImport}>import</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
-        <Desk deskState={game.state} gameRules={game.rules} hint={hint} stockPosition={stockPosition} onMove={onMove}/>
+        <Desk game={game} hint={hint} stockPosition={stockPosition} onMove={onMove}/>
       </SettingsContext.Provider>
     </div>
   )

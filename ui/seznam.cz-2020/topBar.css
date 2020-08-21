@@ -1,0 +1,109 @@
+:local(.topBar) {
+  height: 0.6em;
+
+  color: #ffffff;
+
+  background: rgba(0, 0, 0, 0.1);
+}
+
+:local(.content) {
+  display: flex;
+
+  margin: auto;
+  width: 100%;
+  max-width: calc(7 * (1em + 0.4em));
+  height: 100%;
+
+  align-items: center;
+  justify-content: space-between;
+
+  text-transform: uppercase;
+}
+
+:local(.sideContent) {
+  flex: 0 0 15em;
+}
+
+:local(.sideContent):last-child {
+  justify-content: right;
+}
+
+:local(.textContent) {
+  display: flex;
+
+  align-items: center;
+
+  font-size: 0.2em;
+}
+
+@media (max-width: 800px) or (max-height: 800px) {
+  :local(.textContent) {
+    flex-basis: 14em;
+
+    font-size: 0.22em;
+  }
+}
+
+@media (max-width: 600px) or (max-height: 300px) {
+  :local(.textContent) {
+    font-size: 0.28em;
+  }
+}
+
+:local(.dynamicInfo) {
+  margin-left: 0.3em;
+
+  font-weight: bold;
+}
+
+:local(.divider) {
+  width: 0.7em;
+}
+
+:local(.title) {
+  flex: 0 0;
+
+  font-size: 0.3em;
+  font-weight: bold;
+}
+
+@media (max-width: 800px) or (max-height: 800px) {
+  :local(.title) {
+    font-size: 0.33em;
+  }
+}
+
+@media (max-width: 600px) or (max-height: 300px) {
+  :local(.title) {
+    display: none;
+  }
+}
+
+:local(.settings) {
+  display: flex;
+
+  border: none;
+  padding: 0;
+
+  align-items: center;
+
+  font-size: 1em;
+  color: currentColor;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+:local(.icon) {
+  display: inline-block;
+
+  margin-right: 0.1em;
+  width: 1em;
+  height: 1em;
+}
+
+:local(.icon) svg {
+  width: 100%;
+  height: 100%;
+}

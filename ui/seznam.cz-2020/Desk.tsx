@@ -1,6 +1,6 @@
 import * as React from 'react'
 import {Color, ICard, Rank, Side} from '../../game/Card'
-import {IDesk, isVictory} from '../../game/Desk'
+import {isVictory} from '../../game/Desk'
 import {IGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {lastItemOrNull} from '../../game/util'
@@ -16,13 +16,13 @@ import settingsContext from './settingsContext'
 import StocksBar from './StocksBar'
 import {StockPosition} from './storage/SettingsStorage'
 import Tableau from './Tableau'
+import TopBar from './TopBar'
 import VictoryScreen from './VictoryScreen'
 
 interface IProps {
-  deskState: IDesk
-  gameRules: IGame['rules']
+  game: IGame
   hint: null | ICard
-  stockPosition: StockPosition,
+  stockPosition: StockPosition
   onMove(move: Move): void
 }
 
@@ -38,7 +38,8 @@ const VICTORY_SCREEN_OPTIONS = {
   timeDeltaCap: 100,
 }
 
-export default function Desk({deskState, gameRules, hint, stockPosition, onMove}: IProps) {
+export default function Desk({game, hint, stockPosition, onMove}: IProps) {
+  const {state: deskState, rules: gameRules} = game
   const settings = React.useContext(settingsContext)
   const {desk: deskSkin} = settings
 
@@ -80,6 +81,7 @@ export default function Desk({deskState, gameRules, hint, stockPosition, onMove}
       </div>
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
+          <TopBar game={game}/>
           <StocksBar
             stock={deskState.stock.cards}
             waste={deskState.waste.cards}
