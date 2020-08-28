@@ -7,6 +7,7 @@ import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import {GREEN_S, GREEN_S_TILES, IDeskSkin, RED_S_TILES, TEAL_COLORS} from './deskSkins'
+import MobilePhoneHeader from './MobilePhoneHeader'
 import SettingsContext from './settingsContext'
 import {StockPosition} from './storage/SettingsStorage'
 
@@ -117,6 +118,7 @@ export default function App(
         <button onClick={onExport}>export</button>
         <button onClick={onImport}>import</button>
       </div>
+      <MobilePhoneHeader onLeave={() => alert('Zatím není implementováno')} onShowSettings={onShowSettings}/>
       <SettingsContext.Provider value={settingsContextValue}>
         <Desk
           game={game}
@@ -126,12 +128,16 @@ export default function App(
           onNewGame={onStartNewWinnableGame}
           onPauseGame={() => alert('Zatím není implementováno')}
           onShowHelp={() => alert('Zatím není implementováno')}
-          onShowSettings={() => alert('Zatím není implementováno')}
+          onShowSettings={onShowSettings}
           onUndo={onUndo}
         />
       </SettingsContext.Provider>
     </div>
   )
+
+  function onShowSettings() {
+    alert('Zatím není implementováno')
+  }
 
   function onStartNewWinnableGame(): void {
     const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
