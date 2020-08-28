@@ -1,0 +1,39 @@
+:local(.fullscreenToggle) {
+  display: none;
+
+  position: absolute;
+  right: 0.2em;
+  bottom: 1.5em;
+
+  border: none;
+  border-radius: 100%;
+  width: 0.8em;
+  height: 0.8em;
+  padding: 0;
+
+  font-size: 1em;
+  color: #ffffff;
+
+  background: rgba(0, 0, 0, 0.1);
+
+  cursor: pointer;
+}
+
+@media (max-width: 500px) or (max-height: 500px) {
+  :local(.fullscreenToggle) {
+    display: block;
+  }
+}
+
+:local(.active) {
+  bottom: 0.2em;
+}
+
+:local(.fullscreenToggle) svg {
+  position: absolute;
+  left: 23%;
+  top: 23%;
+
+  width: 54%;
+  height: 54%;
+}

@@ -13,6 +13,7 @@ import GreenS from './deskBackground/s.svg'
 import Spades from './deskBackground/spades.svg'
 import DeskStyle from './DeskStyle'
 import DragNDrop from './DragNDrop'
+import FullscreenToggle from './FullscreenToggle'
 import settingsContext from './settingsContext'
 import StocksBar from './StocksBar'
 import {StockPosition} from './storage/SettingsStorage'
@@ -68,10 +69,16 @@ export default function Desk(
     clubsFoundationRef,
     diamondsFoundationRef,
   ])
+
+  const [isFullscreenActive, setFullscreen] = React.useState(false)
+  const onToggleFullscreen = React.useMemo(
+    () => () => setFullscreen(!isFullscreenActive),
+    [isFullscreenActive, setFullscreen],
+  )
+
   const victoryScreenActors = React.useMemo(() => new Map(Array.from(foundationRefs).map(
     ([color, ref]) => [ref, {color, rank: Rank.KING, side: Side.FACE}],
   )), [foundationRefs])
-
   const [, setShowVictory] = React.useState(false)
   React.useEffect(() => {
     setShowVictory(true)
@@ -89,7 +96,9 @@ export default function Desk(
       </div>
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
-          <TopBar game={game} onShowSettings={onShowSettings}/>
+          {!isFullscreenActive &&
+            <TopBar game={game} onShowSettings={onShowSettings}/>
+          }
 
           <StocksBar
             stock={deskState.stock.cards}
@@ -138,7 +147,11 @@ export default function Desk(
             </div>
           </div>
 
-          <BottomBar onNewGame={onNewGame} onPauseGame={onPauseGame} onShowHelp={onShowHelp} onUndo={onUndo}/>
+          <FullscreenToggle isFullscreenModeActive={isFullscreenActive} onToggleFullscreen={onToggleFullscreen}/>
+
+          {!isFullscreenActive &&
+            <BottomBar onNewGame={onNewGame} onPauseGame={onPauseGame} onShowHelp={onShowHelp} onUndo={onUndo}/>
+          }
         </div>
       </DragNDrop>
       {isVictory(deskState) &&
