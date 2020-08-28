@@ -44,7 +44,7 @@
   }
 }
 
-@media (max-width: 600px) or (max-height: 300px) {
+@media (max-width: 600px) or (max-height: 600px) {
   :local(.textContent) {
     font-size: 0.28em;
   }
@@ -73,7 +73,7 @@
   }
 }
 
-@media (max-width: 600px) or (max-height: 300px) {
+@media (max-width: 600px) or (max-height: 600px) {
   :local(.title) {
     display: none;
   }
