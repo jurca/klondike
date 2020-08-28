@@ -25,6 +25,10 @@ interface IProps {
   hint: null | ICard
   stockPosition: StockPosition
   onMove(move: Move): void
+  onNewGame(): void
+  onPauseGame(): void
+  onUndo(): void
+  onShowHelp(): void
 }
 
 const VICTORY_SCREEN_OPTIONS = {
@@ -39,7 +43,7 @@ const VICTORY_SCREEN_OPTIONS = {
   timeDeltaCap: 100,
 }
 
-export default function Desk({game, hint, stockPosition, onMove}: IProps) {
+export default function Desk({game, hint, stockPosition, onMove, onNewGame, onPauseGame, onShowHelp, onUndo}: IProps) {
   const {state: deskState, rules: gameRules} = game
   const settings = React.useContext(settingsContext)
   const {desk: deskSkin} = settings
@@ -131,7 +135,7 @@ export default function Desk({game, hint, stockPosition, onMove}: IProps) {
             </div>
           </div>
 
-          <BottomBar/>
+          <BottomBar onNewGame={onNewGame} onPauseGame={onPauseGame} onShowHelp={onShowHelp} onUndo={onUndo}/>
         </div>
       </DragNDrop>
       {isVictory(deskState) &&

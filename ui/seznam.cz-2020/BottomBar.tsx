@@ -5,13 +5,20 @@ import Pause from './icon/pause.svg'
 import SquirclePlus from './icon/squircle-plus.svg'
 import SquircleQuestion from './icon/squircle-question.svg'
 
-export default function BottomBar(): React.ReactElement {
+interface IProps {
+  onNewGame(): void
+  onPauseGame(): void
+  onUndo(): void
+  onShowHelp(): void
+}
+
+export default function BottomBar({onNewGame, onPauseGame, onShowHelp, onUndo}: IProps): React.ReactElement {
   return (
     <div className={style.bottomBar}>
       <div className={style.contentWrapper}>
         <div className={style.content}>
           <div className={style.buttonWrapper}>
-            <button className={style.button}>
+            <button className={style.button} onClick={onNewGame}>
               <span className={style.icon}>
                 <SquirclePlus/>
               </span>
@@ -19,7 +26,7 @@ export default function BottomBar(): React.ReactElement {
             </button>
           </div>
           <div className={style.buttonWrapper}>
-            <button className={style.button}>
+            <button className={style.button} onClick={onPauseGame}>
               <span className={style.icon}>
                 <Pause/>
               </span>
@@ -27,7 +34,7 @@ export default function BottomBar(): React.ReactElement {
             </button>
           </div>
           <div className={style.buttonWrapper}>
-            <button className={style.button}>
+            <button className={style.button} onClick={onUndo}>
               <span className={style.icon}>
                 <Back/>
               </span>
@@ -35,7 +42,7 @@ export default function BottomBar(): React.ReactElement {
             </button>
           </div>
           <div className={style.buttonWrapper}>
-            <button className={style.button}>
+            <button className={style.button} onClick={onShowHelp}>
               <span className={style.icon}>
                 <SquircleQuestion/>
               </span>

@@ -123,7 +123,16 @@ export default function App(
         <button onClick={onImport}>import</button>
       </div>
       <SettingsContext.Provider value={settingsContextValue}>
-        <Desk game={game} hint={hint} stockPosition={stockPosition} onMove={onMove}/>
+        <Desk
+          game={game}
+          hint={hint}
+          stockPosition={stockPosition}
+          onMove={onMove}
+          onNewGame={onStartNewWinnableGame}
+          onPauseGame={() => alert('Zatím není implementováno')}
+          onShowHelp={() => alert('Zatím není implementováno')}
+          onUndo={onUndo}
+        />
       </SettingsContext.Provider>
     </div>
   )
