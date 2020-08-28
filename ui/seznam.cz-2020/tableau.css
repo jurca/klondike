@@ -21,7 +21,7 @@
   position: relative;
 
   width: 1em;
-  border-bottom: solid 0.8em transparent;
+  border-bottom: solid 1em transparent;
   box-sizing: border-box;
 
   flex-shrink: 0;
