@@ -6,6 +6,12 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
+@media (max-width: 500px) or (max-height: 500px) {
+  :local(.bottomBar) {
+    height: 1.3em;
+  }
+}
+
 :local(.contentWrapper) {
   margin: auto;
   width: 100%;
@@ -58,6 +64,15 @@
   }
 }
 
+@media (max-width: 500px) or (max-height: 500px) {
+  :local(.buttonWrapper),
+  :local(.buttonWrapper):first-child {
+    flex-grow: 1;
+
+    justify-content: center;
+  }
+}
+
 :local(.button) {
   display: flex;
 
@@ -75,12 +90,26 @@
   cursor: pointer;
 }
 
+@media (max-width: 500px) or (max-height: 500px) {
+  :local(.button) {
+    flex-direction: column;
+  }
+}
+
 :local(.icon) {
-  display: inline-block;
+  display: block;
 
   margin-right: 0.5em;
   width: 1em;
   height: 1em;
+}
+
+@media (max-width: 500px) or (max-height: 500px) {
+  :local(.icon) {
+    margin: 0 0 0.4em;
+    width: 1.8em;
+    height: 1.8em;
+  }
 }
 
 :local(.icon) svg {
