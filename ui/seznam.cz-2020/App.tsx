@@ -7,7 +7,6 @@ import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import {GREEN_S, GREEN_S_TILES, IDeskSkin, RED_S_TILES, TEAL_COLORS} from './deskSkins'
-import GameStats from './GameStats'
 import SettingsContext from './settingsContext'
 import {StockPosition} from './storage/SettingsStorage'
 
@@ -77,12 +76,8 @@ export default function App(
   return (
     <div className={style.app}>
       <div className={style.toolbar}>
-        <button onClick={onStartNewWinnableGame}>nová hra</button>
-        <button onClick={onUndo}>&lt;-</button>
         <button onClick={onRedo}>-&gt;</button>
         <button onClick={onReset}>reset</button>
-        &nbsp;|&nbsp;
-        <GameStats game={game}/>
         &nbsp;|&nbsp;
         <button onClick={onShowHint}>poradit tah</button>
         &nbsp;|&nbsp;
