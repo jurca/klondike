@@ -5,8 +5,11 @@ interface CssExports {
   'divider': string;
   'dynamicInfo': string;
   'icon': string;
+  'isPhoneOrTablet': string;
   'settings': string;
+  'settingsPane': string;
   'sideContent': string;
+  'statsPane': string;
   'textContent': string;
   'title': string;
   'topBar': string;

@@ -50,6 +50,12 @@
   }
 }
 
+@media (max-width: 500px) or (max-height: 500px) {
+  :local(.textContent) {
+    font-size: 0.34em;
+  }
+}
+
 :local(.dynamicInfo) {
   margin-left: 0.3em;
 
@@ -106,4 +112,20 @@
 :local(.icon) svg {
   width: 100%;
   height: 100%;
+}
+
+@media (max-width: 500px) or (max-height: 500px) {
+  :local(.isPhoneOrTablet) :local(.statsPane) {
+    display: flex;
+
+    flex-grow: 1;
+  }
+
+  :local(.isPhoneOrTablet) :local(.statsPane) :local(.divider) {
+    flex-grow: 1;
+  }
+
+  :local(.isPhoneOrTablet) :local(.settingsPane) {
+    display: none;
+  }
 }

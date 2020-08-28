@@ -8,9 +8,10 @@ import style from './topBar.css'
 
 interface IProps {
   game: IGame
+  onShowSettings(): void
 }
 
-export default function TopBar({game}: IProps): React.ReactElement {
+export default function TopBar({game, onShowSettings}: IProps): React.ReactElement {
   const [, tick] = React.useState()
   const gameplayDuration = (
     (isVictory(game) ? lastItem(game.history)[1].logicalTimestamp : performance.now()) - game.startTime.logicalTimestamp
@@ -24,10 +25,16 @@ export default function TopBar({game}: IProps): React.ReactElement {
   const preformattedGameplayDuration = [Math.floor(gameplayDurationSeconds / 60), gameplayDurationSeconds % 60]
   const moveCount = game.history.filter((record) => record[1].move !== MoveType.REVEAL_TABLEAU_CARD).length
 
+  const isMobilePhoneOrAndroidTablet = (
+    typeof navigator === 'object' &&
+    navigator &&
+    /(?: iPhone | Android )/.test(navigator.userAgent)
+  )
+
   return (
-    <div className={style.topBar}>
+    <div className={classnames(style.topBar, isMobilePhoneOrAndroidTablet && style.isPhoneOrTablet)}>
       <div className={style.content}>
-        <div className={classnames(style.sideContent, style.textContent)}>
+        <div className={classnames(style.sideContent, style.textContent, style.statsPane)}>
           Čas <span className={style.dynamicInfo}>
             {preformattedGameplayDuration.map((part) => `${part}`.padStart(2, '0')).join(':')}
           </span>
@@ -37,8 +44,8 @@ export default function TopBar({game}: IProps): React.ReactElement {
         <div className={style.title}>
           Solitaire
         </div>
-        <div className={classnames(style.sideContent, style.textContent)}>
-          <button className={style.settings}>
+        <div className={classnames(style.sideContent, style.textContent, style.settingsPane)}>
+          <button className={style.settings} onClick={onShowSettings}>
             <span className={style.icon}>
               <Gear/>
             </span>

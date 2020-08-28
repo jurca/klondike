@@ -131,6 +131,7 @@ export default function App(
           onNewGame={onStartNewWinnableGame}
           onPauseGame={() => alert('Zatím není implementováno')}
           onShowHelp={() => alert('Zatím není implementováno')}
+          onShowSettings={() => alert('Zatím není implementováno')}
           onUndo={onUndo}
         />
       </SettingsContext.Provider>
