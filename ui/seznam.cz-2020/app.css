@@ -18,3 +18,9 @@
 
   align-items: center;
 }
+
+:local(.primaryContent) {
+  position: relative;
+
+  flex-grow: 1;
+}

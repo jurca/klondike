@@ -119,19 +119,21 @@ export default function App(
         <button onClick={onImport}>import</button>
       </div>
       <MobilePhoneHeader onLeave={() => alert('Zatím není implementováno')} onShowSettings={onShowSettings}/>
-      <SettingsContext.Provider value={settingsContextValue}>
-        <Desk
-          game={game}
-          hint={hint}
-          stockPosition={stockPosition}
-          onMove={onMove}
-          onNewGame={onStartNewWinnableGame}
-          onPauseGame={() => alert('Zatím není implementováno')}
-          onShowHelp={() => alert('Zatím není implementováno')}
-          onShowSettings={onShowSettings}
-          onUndo={onUndo}
-        />
-      </SettingsContext.Provider>
+      <div className={style.primaryContent}>
+        <SettingsContext.Provider value={settingsContextValue}>
+          <Desk
+            game={game}
+            hint={hint}
+            stockPosition={stockPosition}
+            onMove={onMove}
+            onNewGame={onStartNewWinnableGame}
+            onPauseGame={() => alert('Zatím není implementováno')}
+            onShowHelp={() => alert('Zatím není implementováno')}
+            onShowSettings={onShowSettings}
+            onUndo={onUndo}
+          />
+        </SettingsContext.Provider>
+      </div>
     </div>
   )
 
