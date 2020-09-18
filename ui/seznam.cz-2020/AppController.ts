@@ -16,15 +16,13 @@ import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
 interface IUIState {
-  game: IGame
+  game: null | IGame
   hint: null | ICard
   deskSkin: IDeskSkin
   cardBackFaceStyle: CardBackfaceStyle
   automaticHintDelay: number,
   stockPosition: StockPosition,
 }
-
-const DEFAULT_DRAWN_CARDS = 1
 
 export default class AppController {
   private readonly uiState: Readonly<IUIState>
@@ -47,7 +45,7 @@ export default class AppController {
       automaticHintDelay,
       cardBackFaceStyle,
       deskSkin,
-      game: this.createNewGame(DEFAULT_DRAWN_CARDS),
+      game: null,
       hint: null,
       stockPosition,
     }
@@ -104,6 +102,10 @@ export default class AppController {
   }
 
   private onMove = (move: Move): void => {
+    if (!this.uiState.game) {
+      return
+    }
+
     const statePatch: Partial<IUIState> = {}
     try {
       statePatch.game = executeMove(this.uiState.game, move)
@@ -137,6 +139,10 @@ export default class AppController {
   }
 
   private onUndo = (): void => {
+    if (!this.uiState.game) {
+      return
+    }
+
     const statePatch: Partial<IUIState> = {}
     if (
       this.uiState.game.history.length &&
@@ -151,6 +157,10 @@ export default class AppController {
   }
 
   private onRedo = (): void => {
+    if (!this.uiState.game) {
+      return
+    }
+
     const statePatch: Partial<IUIState> = {}
     statePatch.game = redoNextMove(this.uiState.game)
     if (statePatch.game.future.length && statePatch.game.future[0][1].move === MoveType.REVEAL_TABLEAU_CARD) {
@@ -162,6 +172,10 @@ export default class AppController {
   }
 
   private onReset = (): void => {
+    if (!this.uiState.game) {
+      return
+    }
+
     this.updateUI({
       game: resetGame(this.uiState.game),
       hint: null,
@@ -179,6 +193,10 @@ export default class AppController {
   }
 
   private onShowHint = (): void => {
+    if (!this.uiState.game) {
+      return
+    }
+
     if (this.uiState.hint) {
       this.updateUI({
         hint: null,
@@ -201,6 +219,10 @@ export default class AppController {
   }
 
   private onBotMove = (): void => {
+    if (!this.uiState.game) {
+      return
+    }
+
     this.updateUI({
       game: makeMove(this.uiState.game, this.botOptions),
       hint: null,
@@ -262,15 +284,20 @@ export default class AppController {
   }
 
   private updateAutomaticHintTimer(): void {
+    const {game} = this.uiState
+    if (!game) {
+      return
+    }
+
     if (this.automaticHintTimeoutId) {
       clearTimeout(this.automaticHintTimeoutId)
       this.automaticHintTimeoutId = null
     }
 
-    if (this.uiState.automaticHintDelay && !isVictory(this.uiState.game.state)) {
+    if (this.uiState.automaticHintDelay && !isVictory(game.state)) {
       this.automaticHintTimeoutId = window.setTimeout(() => {
         this.automaticHintTimeoutId = null
-        if (!this.uiState.hint && !isVictory(this.uiState.game.state)) {
+        if (!this.uiState.hint && !isVictory(game.state)) {
           this.onShowHint()
         }
       }, this.uiState.automaticHintDelay)
