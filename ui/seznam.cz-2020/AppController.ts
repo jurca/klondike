@@ -41,7 +41,7 @@ export default class AppController {
     private readonly settingsStorage: SettingsStorage,
     private readonly highScoresStorage: HighScoresStorage,
     private readonly newGameOptions: INewGameRules,
-    private readonly botOption: IBotOptions,
+    private readonly botOptions: IBotOptions,
   ) {
     this.uiState = {
       automaticHintDelay,
@@ -202,7 +202,7 @@ export default class AppController {
 
   private onBotMove = (): void => {
     this.updateUI({
-      game: makeMove(this.uiState.game, this.botOption),
+      game: makeMove(this.uiState.game, this.botOptions),
       hint: null,
     })
     this.updateAutomaticHintTimer()
