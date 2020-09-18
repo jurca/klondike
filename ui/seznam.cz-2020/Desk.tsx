@@ -22,7 +22,8 @@ import TopBar from './TopBar'
 import VictoryScreen from './VictoryScreen'
 
 interface IProps {
-  game: IGame
+  defaultTableauPiles: number
+  game: null | IGame
   hint: null | ICard
   stockPosition: StockPosition
   onMove(move: Move): void
@@ -46,9 +47,20 @@ const VICTORY_SCREEN_OPTIONS = {
 }
 
 export default function Desk(
-  {game, hint, stockPosition, onMove, onNewGame, onPauseGame, onShowHelp, onShowSettings, onUndo}: IProps,
+  {
+    defaultTableauPiles,
+    game,
+    hint,
+    stockPosition,
+    onMove,
+    onNewGame,
+    onPauseGame,
+    onShowHelp,
+    onShowSettings,
+    onUndo,
+  }: IProps,
 ) {
-  const {state: deskState, rules: gameRules} = game
+  const {state: deskState, rules: gameRules} = game || {}
   const settings = React.useContext(settingsContext)
   const {desk: deskSkin} = settings
 
@@ -101,9 +113,9 @@ export default function Desk(
           }
 
           <StocksBar
-            stock={deskState.stock.cards}
-            waste={deskState.waste.cards}
-            foundation={deskState.foundation}
+            stock={deskState?.stock.cards ?? []}
+            waste={deskState?.waste.cards ?? []}
+            foundation={deskState?.foundation ?? null}
             hint={hint}
             stockPosition={stockPosition}
             foundationRefs={foundationRefs}
@@ -139,7 +151,8 @@ export default function Desk(
 
             <div className={style.tableau}>
               <Tableau
-                tableau={deskState.tableau}
+                defaultTableauPiles={defaultTableauPiles}
+                tableau={deskState?.tableau ?? null}
                 hint={hint}
                 onRevealCard={onRevealCard}
                 onTransferCardToFoundation={onTransferTableauCardToFoundation}
@@ -154,7 +167,7 @@ export default function Desk(
           }
         </div>
       </DragNDrop>
-      {isVictory(deskState) &&
+      {deskState && isVictory(deskState) &&
         <VictoryScreen
           {...VICTORY_SCREEN_OPTIONS}
           actors={victoryScreenActors}
@@ -164,10 +177,12 @@ export default function Desk(
   )
 
   function onDraw() {
-    onMove({
-      drawnCards: gameRules.drawnCards,
-      move: MoveType.DRAW_CARDS,
-    })
+    if (gameRules) {
+      onMove({
+        drawnCards: gameRules.drawnCards,
+        move: MoveType.DRAW_CARDS,
+      })
+    }
   }
 
   function onRedeal() {
@@ -177,6 +192,10 @@ export default function Desk(
   }
 
   function onElementDragged(draggedEntity: unknown, rawDropAreaId: unknown): void {
+    if (!deskState) {
+      return
+    }
+
     const draggedCard = draggedEntity as ICard
     const dropAreaId = rawDropAreaId as (Color | {pileIndex: number})
 
@@ -222,10 +241,12 @@ export default function Desk(
   }
 
   function onRevealCard(card: ICard): void {
-    onMove({
-      move: MoveType.REVEAL_TABLEAU_CARD,
-      pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
-    })
+    if (deskState) {
+      onMove({
+        move: MoveType.REVEAL_TABLEAU_CARD,
+        pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
+      })
+    }
   }
 
   function onTransferWasteCardToFoundation(): void {
@@ -235,9 +256,11 @@ export default function Desk(
   }
 
   function onTransferTableauCardToFoundation(card: ICard): void {
-    onMove({
-      move: MoveType.TABLEAU_TO_FOUNDATION,
-      pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
-    })
+    if (deskState) {
+      onMove({
+        move: MoveType.TABLEAU_TO_FOUNDATION,
+        pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
+      })
+    }
   }
 }

@@ -7,23 +7,31 @@ import Gear from './icon/gear.svg'
 import style from './topBar.css'
 
 interface IProps {
-  game: IGame
+  game: null | IGame
   onShowSettings(): void
 }
 
 export default function TopBar({game, onShowSettings}: IProps): React.ReactElement {
   const [, tick] = React.useState()
-  const gameplayDuration = (
+  const gameplayDuration = game ? (
     (isVictory(game) ? lastItem(game.history)[1].logicalTimestamp : performance.now()) - game.startTime.logicalTimestamp
-  )
+  ) :
+    null
   React.useEffect(() => {
-    const timeoutId = setTimeout(tick, 1_000 - (gameplayDuration % 1_000), gameplayDuration)
-    return () => clearTimeout(timeoutId)
+    if (gameplayDuration) {
+      const timeoutId = setTimeout(tick, 1_000 - (gameplayDuration % 1_000), gameplayDuration)
+      return () => clearTimeout(timeoutId)
+    }
+
+    return () => undefined
   })
 
-  const gameplayDurationSeconds = Math.floor(gameplayDuration / 1_000)
-  const preformattedGameplayDuration = [Math.floor(gameplayDurationSeconds / 60), gameplayDurationSeconds % 60]
-  const moveCount = game.history.filter((record) => record[1].move !== MoveType.REVEAL_TABLEAU_CARD).length
+  const gameplayDurationSeconds = gameplayDuration !== null ? Math.floor(gameplayDuration / 1_000) : null
+  const preformattedGameplayDuration: Array<number | string> = gameplayDurationSeconds !== null ?
+    [Math.floor(gameplayDurationSeconds / 60), gameplayDurationSeconds % 60]
+  :
+    ['--', '--']
+  const moveCount = game?.history.filter((record) => record[1].move !== MoveType.REVEAL_TABLEAU_CARD).length ?? 0
 
   const isMobilePhoneOrAndroidTablet = (
     typeof navigator === 'object' &&

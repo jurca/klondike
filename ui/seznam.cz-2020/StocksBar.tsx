@@ -14,7 +14,7 @@ import {StockPosition} from './storage/SettingsStorage'
 interface IProps {
   stock: readonly ICard[]
   waste: readonly ICard[]
-  foundation: Desk['foundation']
+  foundation: null | Desk['foundation']
   hint: null | ICard
   stockPosition: StockPosition,
   foundationRefs: Map<Color, React.RefObject<Element>>
@@ -79,7 +79,7 @@ export default function StocksBar(props: IProps) {
           <div className={style.cardHolder}>
             <DropArea areaId={Color.SPADES}>
               <FoundationPile color={Color.SPADES} ref={foundationRefs.get(Color.SPADES)}/>
-              {foundation[Color.SPADES].cards.map((card, cardIndex, {length}) =>
+              {foundation && foundation[Color.SPADES].cards.map((card, cardIndex, {length}) =>
                 <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                   {cardIndex === length - 1 ?
                     <Draggable entity={card}>
@@ -105,7 +105,7 @@ export default function StocksBar(props: IProps) {
           <div className={style.cardHolder}>
             <DropArea areaId={Color.HEARTHS}>
               <FoundationPile color={Color.HEARTHS} ref={foundationRefs.get(Color.HEARTHS)}/>
-              {foundation[Color.HEARTHS].cards.map((card, cardIndex, {length}) =>
+              {foundation && foundation[Color.HEARTHS].cards.map((card, cardIndex, {length}) =>
                 <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                   {cardIndex === length - 1 ?
                     <Draggable entity={card}>
@@ -131,7 +131,7 @@ export default function StocksBar(props: IProps) {
           <div className={style.cardHolder}>
             <DropArea areaId={Color.CLUBS}>
               <FoundationPile color={Color.CLUBS} ref={foundationRefs.get(Color.CLUBS)}/>
-              {foundation[Color.CLUBS].cards.map((card, cardIndex, {length}) =>
+              {foundation && foundation[Color.CLUBS].cards.map((card, cardIndex, {length}) =>
                 <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                   {cardIndex === length - 1 ?
                     <Draggable entity={card}>
@@ -157,7 +157,7 @@ export default function StocksBar(props: IProps) {
           <div className={style.cardHolder}>
             <DropArea areaId={Color.DIAMONDS}>
               <FoundationPile color={Color.DIAMONDS} ref={foundationRefs.get(Color.DIAMONDS)}/>
-              {foundation[Color.DIAMONDS].cards.map((card, cardIndex, {length}) =>
+              {foundation && foundation[Color.DIAMONDS].cards.map((card, cardIndex, {length}) =>
                 <div key={`${card.rank}:${card.color}`} className={style.stackedCard}>
                   {cardIndex === length - 1 ?
                     <Draggable entity={card}>

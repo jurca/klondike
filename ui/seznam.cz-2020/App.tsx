@@ -12,7 +12,8 @@ import SettingsContext from './settingsContext'
 import {StockPosition} from './storage/SettingsStorage'
 
 interface IProps {
-  game: IGame
+  defaultTableauPiles: number
+  game: null | IGame
   hint: null | ICard
   cardBackFace: CardBackfaceStyle
   deskSkin: IDeskSkin
@@ -33,7 +34,7 @@ interface IProps {
 }
 
 export default function App(
-  {game, cardBackFace, deskSkin, hint, automaticHintDelay, stockPosition, ...callbacks}: IProps,
+  {defaultTableauPiles, game, cardBackFace, deskSkin, hint, automaticHintDelay, stockPosition, ...callbacks}: IProps,
 ) {
   const {onMove, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
@@ -122,6 +123,7 @@ export default function App(
       <div className={style.primaryContent}>
         <SettingsContext.Provider value={settingsContextValue}>
           <Desk
+            defaultTableauPiles={defaultTableauPiles}
             game={game}
             hint={hint}
             stockPosition={stockPosition}
@@ -149,6 +151,6 @@ export default function App(
   }
 
   function onExport(): void {
-    console.log(serialize(game)) // tslint:disable-line:no-console
+    console.log(game && serialize(game)) // tslint:disable-line:no-console
   }
 }

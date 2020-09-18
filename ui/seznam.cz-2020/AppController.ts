@@ -77,6 +77,7 @@ export default class AppController {
       createElement(
         App,
         {
+          defaultTableauPiles: this.newGameOptions.tableauPiles,
           game: this.uiState.game,
           hint: this.uiState.hint,
           deskSkin: this.uiState.deskSkin,
