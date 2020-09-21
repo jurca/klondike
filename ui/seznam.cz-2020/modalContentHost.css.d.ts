@@ -13,7 +13,6 @@ interface CssExports {
   'modalContentHost': string;
   'overlay': string;
   'ui': string;
-  'uiContainer': string;
   'uiWrapper': string;
 }
 export const cssExports: CssExports;

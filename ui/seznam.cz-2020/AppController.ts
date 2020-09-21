@@ -11,9 +11,14 @@ import {lastItem, lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {DESK_SKINS, IDeskSkin} from './deskSkins'
+import DeskStyle from './DeskStyle'
+import ModalContentComponent, {IModalContentComponentProps} from './modalContent/ModalContentComponent'
+import NewGame from './modalContent/NewGame'
 import HighScoresStorage from './storage/HighScoresStorage'
 import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
+
+const AUTOMATIC_HINT_DELAY = 15000
 
 interface IUIState {
   game: null | IGame
@@ -22,6 +27,7 @@ interface IUIState {
   cardBackFaceStyle: CardBackfaceStyle
   automaticHintDelay: number,
   stockPosition: StockPosition,
+  modalContentStack: readonly ModalContentComponent[]
 }
 
 export default class AppController {
@@ -47,6 +53,7 @@ export default class AppController {
       deskSkin,
       game: null,
       hint: null,
+      modalContentStack: [NewGame],
       stockPosition,
     }
   }
@@ -70,6 +77,8 @@ export default class AppController {
   }
 
   private renderUI(): void {
+    const currentModalContent = lastItemOrNull(this.uiState.modalContentStack)
+
     // tslint:disable:object-literal-sort-keys
     render(
       createElement(
@@ -82,11 +91,21 @@ export default class AppController {
           cardBackFace: this.uiState.cardBackFaceStyle,
           automaticHintDelay: this.uiState.automaticHintDelay,
           stockPosition: this.uiState.stockPosition,
+          modalContent: currentModalContent &&
+            Object.assign(
+              () => createElement(currentModalContent, this.modalContentProps),
+              {
+                title: currentModalContent.title,
+                type: currentModalContent.type,
+                displayName: `AppController(${currentModalContent.displayName || currentModalContent.name})`,
+              },
+            ),
+          isModalContentNested: this.uiState.modalContentStack.length > 1,
           onMove: this.onMove,
           onUndo: this.onUndo,
           onRedo: this.onRedo,
           onReset: this.onReset,
-          onNewWinnableGame: this.onNewWinnableGame,
+          onNewGame: this.onShowModalContent.bind(this, NewGame, false),
           onShowHint: this.onShowHint,
           onDeskStyleChange: this.onDeskStyleChange,
           onCardStyleChange: this.onCardBackStyleChange,
@@ -94,10 +113,90 @@ export default class AppController {
           onStockPositionChange: this.onStockPositionChange,
           onBotMove: this.onBotMove,
           onImport: this.onImport,
+          onCloseModalContent: this.onCloseModalContent,
+          onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
         },
       ),
       this.uiRoot,
     )
+    // tslint:enable:object-literal-sort-keys
+  }
+
+  private get modalContentProps(): IModalContentComponentProps {
+    // tslint:disable:object-literal-sort-keys
+    return {
+      gameplayStats: { // TODO
+        1: {
+          wonGamesCount: 0,
+          shortestWonGameDuration: 0,
+          longestWonGameDuration: 0,
+          leastMovesToVictory: 0,
+          mostMovesToVictory: 0,
+          gamesWonWithoutUndoCount: 0,
+        },
+        3: {
+          wonGamesCount: 0,
+          shortestWonGameDuration: 0,
+          longestWonGameDuration: 0,
+          leastMovesToVictory: 0,
+          mostMovesToVictory: 0,
+          gamesWonWithoutUndoCount: 0,
+        },
+      },
+      deskStyle: this.uiState.deskSkin.desk.style,
+      cardBackFaceStyle: this.uiState.cardBackFaceStyle,
+      stockPosition: this.uiState.stockPosition,
+      automaticHintEnabled: !!this.uiState.automaticHintDelay,
+      onNewGame: this.onNewWinnableGame,
+      onShowContent: this.onShowModalContent,
+      onResumePreviousGame: (): void => {
+        alert('Not yet implemented') // TODO
+      },
+      onSetDeskStyle: (newStyle: DeskStyle): void => {
+        const deskSkin = ((): IDeskSkin => {
+          switch (newStyle) {
+            case DeskStyle.GREEN_S:
+              return DESK_SKINS.GREEN_S
+            case DeskStyle.GREEN_S_TILES:
+              return DESK_SKINS.GREEN_S_TILES
+            case DeskStyle.RED_S_TILES:
+              return DESK_SKINS.RED_S_TILES
+            case DeskStyle.TEAL_COLORS:
+              return DESK_SKINS.TEAL_COLORS
+            default:
+              throw new Error(`Unknown desk style: ${newStyle}`)
+          }
+        })()
+        this.settingsStorage.setDeskSkin(deskSkin).catch((error) => {
+          // tslint:disable-next-line:no-console
+          console.error('Failed to save desk skin', error)
+        })
+        this.updateUI({
+          deskSkin,
+        })
+      },
+      setCardBackFaceStyle: (newBackFaceStyle: CardBackfaceStyle): void => {
+        this.settingsStorage.setCardBackFaceStyle(newBackFaceStyle).catch((error) => {
+          // tslint:disable-next-line:no-console
+          console.error('Failed to save card back face style', error)
+        })
+        this.updateUI({
+          cardBackFaceStyle: newBackFaceStyle,
+        })
+      },
+      setStockPosition: (newPosition: StockPosition): void => {
+        this.updateUI({
+          stockPosition: newPosition,
+        })
+
+        this.settingsStorage.setStockPosition(newPosition).catch(
+          (error) => console.error('Failed to save the stock position', error), // tslint:disable-line:no-console
+        )
+      },
+      setAutomaticHintEnabled: (): void => {
+        this.onAutomaticHintDelayChange(AUTOMATIC_HINT_DELAY)
+      },
+    }
     // tslint:enable:object-literal-sort-keys
   }
 
@@ -187,6 +286,7 @@ export default class AppController {
     const statePatch: Partial<IUIState> = {}
     statePatch.game = this.createNewGame(drawnCards)
     statePatch.hint = null
+    statePatch.modalContentStack = []
     this.gameAddedToHighScores = false
     this.updateUI(statePatch)
     this.updateAutomaticHintTimer()
@@ -280,6 +380,24 @@ export default class AppController {
     const state = prompt('Exportovaný stav hry:') || ''
     this.updateUI({
       game: deserialize(state),
+    })
+  }
+
+  private onShowModalContent = (newContent: ModalContentComponent, stack: boolean): void => {
+    this.updateUI({
+      modalContentStack: stack ? this.uiState.modalContentStack.concat(newContent) : [newContent],
+    })
+  }
+
+  private onCloseModalContent = (): void => {
+    this.updateUI({
+      modalContentStack: [],
+    })
+  }
+
+  private onLeaveCurrentModalContent = (): void => {
+    this.updateUI({
+      modalContentStack: this.uiState.modalContentStack.slice(0, -1),
     })
   }
 

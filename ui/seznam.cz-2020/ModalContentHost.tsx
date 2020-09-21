@@ -64,28 +64,26 @@ export default function ModalContentHost(props: IProps): null | React.ReactEleme
       )}
       onTransitionEnd={onTransitionEnd}
     >
-      <button className={styles.overlay} onClick={props.onClose}/>
       <div className={styles.uiWrapper}>
-        <div className={styles.uiContainer}>
-          <div className={styles.ui}>
-            <div className={styles.header}>
-              <div className={styles.headerButtonContainer}>
-                <button className={styles.headerButton} onClick={props.isNested ? props.onReturn : props.onClose}>
-                  {props.isNested ?
-                    <BackIcon/>
-                  :
-                    <CloseIcon/>
-                  }
-                </button>
-              </div>
-              <div className={styles.headerTitle}>
-                {props.header}
-              </div>
-              <div className={styles.headerButtonContainer}/>
+        <button className={styles.overlay} onClick={props.onClose}/>
+        <div className={styles.ui}>
+          <div className={styles.header}>
+            <div className={styles.headerButtonContainer}>
+              <button className={styles.headerButton} onClick={props.isNested ? props.onReturn : props.onClose}>
+                {props.isNested ?
+                  <BackIcon/>
+                :
+                  <CloseIcon/>
+                }
+              </button>
             </div>
-            <div className={styles.content}>
-              {props.children}
+            <div className={styles.headerTitle}>
+              {props.header}
             </div>
+            <div className={styles.headerButtonContainer}/>
+          </div>
+          <div className={styles.content}>
+            {props.children}
           </div>
         </div>
       </div>

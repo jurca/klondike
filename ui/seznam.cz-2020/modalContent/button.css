@@ -1,0 +1,14 @@
+:local(.button) {
+  border: none;
+  border-radius: 4px;
+  padding: 0 24px;
+
+  font-size: 100%;
+  font-weight: bold;
+  line-height: 48px;
+  color: #ffffff;
+
+  background: #cc0000;
+
+  cursor: pointer;
+}

@@ -8,6 +8,8 @@ import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import {GREEN_S, GREEN_S_TILES, IDeskSkin, RED_S_TILES, TEAL_COLORS} from './deskSkins'
 import MobilePhoneHeader from './MobilePhoneHeader'
+import {Type} from './modalContent/ModalContentComponent'
+import ModalContentHost, {State} from './ModalContentHost'
 import SettingsContext from './settingsContext'
 import {StockPosition} from './storage/SettingsStorage'
 
@@ -19,11 +21,16 @@ interface IProps {
   deskSkin: IDeskSkin
   automaticHintDelay: number,
   stockPosition: StockPosition,
+  modalContent: null | React.ComponentType & {
+    readonly title: null | string,
+    readonly type: Type,
+  },
+  isModalContentNested: boolean,
   onMove: (move: Move) => void
   onUndo: () => void
   onRedo: () => void
   onReset: () => void
-  onNewWinnableGame: (drawnCards: 1 | 3) => void
+  onNewGame: () => void
   onShowHint: () => void
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
@@ -31,12 +38,25 @@ interface IProps {
   onStockPositionChange: (newStockPosition: StockPosition) => void
   onBotMove: () => void
   onImport: () => void
+  onLeaveCurrentModalContent: () => void
+  onCloseModalContent: () => void
 }
 
 export default function App(
-  {defaultTableauPiles, game, cardBackFace, deskSkin, hint, automaticHintDelay, stockPosition, ...callbacks}: IProps,
+  {
+    defaultTableauPiles,
+    game,
+    cardBackFace,
+    deskSkin,
+    hint,
+    automaticHintDelay,
+    stockPosition,
+    modalContent,
+    isModalContentNested,
+    ...callbacks
+  }: IProps,
 ) {
-  const {onMove, onNewWinnableGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
+  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const deskStyleName = React.useMemo(() => {
     switch (deskSkin) {
@@ -74,6 +94,10 @@ export default function App(
     ),
     [callbacks.onStockPositionChange],
   )
+  const modalContentState = modalContent ?
+    (modalContent.type === Type.DRAWER ? State.DRAWER : State.FLOATING)
+  :
+    State.CLOSED
 
   return (
     <div className={style.app}>
@@ -128,12 +152,21 @@ export default function App(
             hint={hint}
             stockPosition={stockPosition}
             onMove={onMove}
-            onNewGame={onStartNewWinnableGame}
+            onNewGame={onNewGame}
             onPauseGame={() => alert('Zatím není implementováno')}
             onShowHelp={() => alert('Zatím není implementováno')}
             onShowSettings={onShowSettings}
             onUndo={onUndo}
           />
+          <ModalContentHost
+            state={modalContentState}
+            isNested={isModalContentNested}
+            header={modalContent?.title ?? null}
+            onClose={callbacks.onCloseModalContent}
+            onReturn={callbacks.onLeaveCurrentModalContent}
+          >
+            {React.createElement(modalContent || 'div')}
+          </ModalContentHost>
         </SettingsContext.Provider>
       </div>
     </div>
@@ -141,13 +174,6 @@ export default function App(
 
   function onShowSettings() {
     alert('Zatím není implementováno')
-  }
-
-  function onStartNewWinnableGame(): void {
-    const drawnCards = parseInt(prompt('Počet karet lízaných z balíčku (1 nebo 3):', '1') || '', 10)
-    if (drawnCards === 1 || drawnCards === 3) {
-      onNewWinnableGame(drawnCards)
-    }
   }
 
   function onExport(): void {

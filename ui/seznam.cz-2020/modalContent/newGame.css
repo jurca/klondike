@@ -1,0 +1,36 @@
+:local(.newGame) {
+  display: flex;
+
+  padding: 24px 32px;
+  min-height: 100%;
+  box-sizing: border-box;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:local(.titleImage) {
+  width: 100%;
+  height: auto;
+}
+
+:local(.title) {
+  margin: 40px 0 24px;
+
+  font-size: 140%;
+}
+
+:local(.drawnCardsChoiceLabel) {
+  margin: 0 0 24px;
+
+  font-size: 90%;
+}
+
+:local(.buttons) {
+  display: flex;
+
+  width: 100%;
+
+  justify-content: space-between;
+}
