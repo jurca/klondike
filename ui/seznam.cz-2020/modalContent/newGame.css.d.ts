@@ -6,6 +6,7 @@ interface CssExports {
   'newGame': string;
   'title': string;
   'titleImage': string;
+  'titleImageWrapper': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

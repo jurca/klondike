@@ -10,7 +10,21 @@
   align-items: center;
 }
 
+:local(.titleImageWrapper) {
+  width: 100%;
+  max-width: 380px;
+}
+
+@media (min-aspect-ratio: 1.001/1) and (max-height: 470px) {
+  :local(.titleImageWrapper) {
+    display: none;
+  }
+}
+
 :local(.titleImage) {
+  display: block;
+
+  margin: auto;
   width: 100%;
   max-width: 44vmin;
   height: auto;
@@ -20,6 +34,12 @@
   margin: 40px 0 24px;
 
   font-size: 140%;
+}
+
+@media (min-aspect-ratio: 1.001/1) and (max-height: 470px) {
+  :local(.title) {
+    margin-top: 0;
+  }
 }
 
 :local(.drawnCardsChoiceLabel) {
