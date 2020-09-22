@@ -29,21 +29,6 @@
 
   justify-content: center;
   align-items: center;
-
-  transition: transform .2s ease-out;
-  transform: translateY(0);
-}
-
-:local(.isOpen) :local(.uiWrapper) {
-  transition-timing-function: ease-in;
-}
-
-:local(.isDrawer) :local(.uiWrapper) {
-  transform: translateY(calc(100vh / 2 + 50%));
-}
-
-:local(.isDrawer):local(.isOpen) :local(.uiWrapper) {
-  transform: translateY(0);
 }
 
 :local(.overlay) {
@@ -80,6 +65,21 @@
   flex-direction: column;
 
   background: #ffffff;
+
+  transition: transform .2s ease-out;
+  transform: translateY(0);
+}
+
+:local(.isOpen) :local(.ui) {
+  transition-timing-function: ease-in;
+}
+
+:local(.isDrawer) :local(.ui) {
+  transform: translateY(calc(100vh / 2 + 50%));
+}
+
+:local(.isDrawer):local(.isOpen) :local(.ui) {
+  transform: translateY(0);
 }
 
 @media all and (max-width: 666.666px) {
