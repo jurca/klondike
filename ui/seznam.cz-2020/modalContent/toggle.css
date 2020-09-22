@@ -17,6 +17,8 @@
   border-radius: calc(51px * 0.6);
   width: 100%;
   height: calc(51px * 0.6);
+
+  cursor: pointer;
 }
 
 :local(.ui)::before,
