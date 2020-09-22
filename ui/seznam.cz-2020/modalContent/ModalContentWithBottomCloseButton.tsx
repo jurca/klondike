@@ -4,7 +4,7 @@ import {IModalContentComponentProps} from './ModalContentComponent'
 import styles from './modalContentWithBottomCloseButton.css'
 
 interface IProps extends IModalContentComponentProps {
-  children: React.ReactChild
+  children: React.ReactChild | React.ReactChild[]
 }
 
 export default function ModalContentWithBottomCloseButton(props: IProps) {
