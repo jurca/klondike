@@ -11,7 +11,7 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
   const onToggleAutomaticHint = React.useMemo(
     () => () => props.setAutomaticHintEnabled(!props.automaticHintEnabled),
     [props.automaticHintEnabled, props.setAutomaticHintEnabled],
-    )
+  )
 
   return (
     <ModalContentWithBottomCloseButton {...props}>
@@ -25,7 +25,7 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
         onClick={() => alert('yay')}
       />
       <ListingItem
-        leftContent={'Změnit pozadí hry'}
+        leftContent='Změnit pozadí hry'
         rightContent={
           <span className={styles.rightIcon}>
             <RightIcon/>
@@ -33,7 +33,7 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
         }
       />
       <ListingItem
-        leftContent={'Změnit pozadí karet'}
+        leftContent='Změnit pozadí karet'
         rightContent={
           <span className={styles.rightIcon}>
             <RightIcon/>
@@ -41,7 +41,7 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
         }
       />
       <ListingItem
-        leftContent={'Automatická nápověda tahu'}
+        leftContent='Automatická nápověda tahu'
         rightContent={
           <Toggle
             defaultChecked={props.automaticHintEnabled}
