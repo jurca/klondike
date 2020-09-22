@@ -31,7 +31,6 @@ interface IProps {
   onShowHint: () => void
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
-  onStockPositionChange: (newStockPosition: StockPosition) => void
   onBotMove: () => void
   onImport: () => void
   onLeaveCurrentModalContent: () => void
@@ -79,12 +78,6 @@ export default function App(
     ),
     [callbacks.onCardStyleChange],
   )
-  const stockPositionChangeListener = React.useMemo(
-    () => (event: React.ChangeEvent<HTMLInputElement>) => callbacks.onStockPositionChange(
-      event.target.checked ? StockPosition.RIGHT : StockPosition.LEFT,
-    ),
-    [callbacks.onStockPositionChange],
-  )
   const previousModalContent = usePrevious(modalContent)
 
   return (
@@ -105,15 +98,6 @@ export default function App(
           <option value={CardBackfaceStyle.Dog}>Krasty</option>
           <option value={CardBackfaceStyle.Colors}>Symboly</option>
         </select>
-        <label>
-          <input
-            type='checkbox'
-            value='1'
-            checked={stockPosition === StockPosition.RIGHT}
-            onChange={stockPositionChangeListener}
-          />
-          Balíček vpravo
-        </label>
         &nbsp;|&nbsp;
         <button onClick={callbacks.onBotMove}>bot</button>
         <button onClick={onExport}>export</button>

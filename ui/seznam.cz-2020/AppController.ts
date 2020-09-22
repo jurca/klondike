@@ -104,7 +104,6 @@ export default class AppController {
           onShowHint: this.onShowHint,
           onDeskStyleChange: this.onDeskStyleChange,
           onCardStyleChange: this.onCardBackStyleChange,
-          onStockPositionChange: this.onStockPositionChange,
           onBotMove: this.onBotMove,
           onImport: this.onImport,
           onCloseModalContent: this.onCloseModalContent,
@@ -180,15 +179,7 @@ export default class AppController {
           cardBackFaceStyle: newBackFaceStyle,
         })
       },
-      onSetStockPosition: (newPosition: StockPosition): void => {
-        this.updateUI({
-          stockPosition: newPosition,
-        })
-
-        this.settingsStorage.setStockPosition(newPosition).catch(
-          (error) => console.error('Failed to save the stock position', error), // tslint:disable-line:no-console
-        )
-      },
+      onSetStockPosition: this.onStockPositionChange,
       onSetAutomaticHintEnabled: (enabled: boolean): void => {
         this.onAutomaticHintDelayChange(enabled ? AUTOMATIC_HINT_DELAY : 0)
       },
