@@ -6,8 +6,7 @@ import styles from './modalContentHost.css'
 
 export enum State {
   CLOSED = 'State.CLOSED',
-  FLOATING = 'State.FLOATING',
-  DRAWER = 'State.DRAWER',
+  OPEN = 'State.OPEN',
 }
 
 export enum Type {
@@ -17,6 +16,7 @@ export enum Type {
 
 interface IProps {
   state: State
+  type: Type
   isNested: boolean
   header: null | string
   children: React.ReactChild
@@ -63,7 +63,7 @@ export default function ModalContentHost(props: IProps): null | React.ReactEleme
       className={classnames(
         styles.modalContentHost,
         internalState === InternalState.OPEN && styles.isOpen,
-        props.state === State.DRAWER && styles.isDrawer,
+        props.type === Type.DRAWER && styles.isDrawer,
         props.header && styles.hasTitle,
         flipControls && styles.flipHeaderButtons,
       )}

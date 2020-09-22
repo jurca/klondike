@@ -93,10 +93,7 @@ export default function App(
     ),
     [callbacks.onStockPositionChange],
   )
-  const modalContentState = modalContent ?
-    (modalContent.type === Type.DRAWER ? State.DRAWER : State.FLOATING)
-  :
-    State.CLOSED
+  const previousModalContent = usePrevious(modalContent)
 
   return (
     <div className={style.app}>
@@ -158,13 +155,14 @@ export default function App(
             onUndo={onUndo}
           />
           <ModalContentHost
-            state={modalContentState}
+            state={modalContent ? State.OPEN : State.CLOSED}
+            type={modalContent?.type ?? previousModalContent?.type ?? Type.FLOATING}
             isNested={isModalContentNested}
             header={modalContent?.title ?? null}
             onClose={callbacks.onCloseModalContent}
             onReturn={callbacks.onLeaveCurrentModalContent}
           >
-            {React.createElement(modalContent || 'div')}
+            {React.createElement(modalContent || previousModalContent || 'div')}
           </ModalContentHost>
         </SettingsContext.Provider>
       </div>
@@ -178,4 +176,12 @@ export default function App(
   function onExport(): void {
     console.log(game && serialize(game)) // tslint:disable-line:no-console
   }
+}
+
+function usePrevious<T>(value: T): undefined | T {
+  const ref = React.useRef<T>()
+  React.useEffect(() => {
+    ref.current = value
+  })
+  return ref.current
 }
