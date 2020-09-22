@@ -149,7 +149,7 @@ export default function App(
             onMove={onMove}
             onNewGame={onNewGame}
             onPauseGame={() => alert('Zatím není implementováno')}
-            onShowHelp={() => alert('Zatím není implementováno')}
+            onShowHint={onShowHint}
             onShowSettings={onShowSettings}
             onUndo={onUndo}
           />

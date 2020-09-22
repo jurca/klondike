@@ -9,10 +9,10 @@ interface IProps {
   onNewGame(): void
   onPauseGame(): void
   onUndo(): void
-  onShowHelp(): void
+  onShowHint(): void
 }
 
-export default function BottomBar({onNewGame, onPauseGame, onShowHelp, onUndo}: IProps): React.ReactElement {
+export default function BottomBar({onNewGame, onPauseGame, onShowHint, onUndo}: IProps): React.ReactElement {
   return (
     <div className={style.bottomBar}>
       <div className={style.contentWrapper}>
@@ -42,7 +42,7 @@ export default function BottomBar({onNewGame, onPauseGame, onShowHelp, onUndo}: 
             </button>
           </div>
           <div className={style.buttonWrapper}>
-            <button className={style.button} onClick={onShowHelp}>
+            <button className={style.button} onClick={onShowHint}>
               <span className={style.icon}>
                 <SquircleQuestion/>
               </span>

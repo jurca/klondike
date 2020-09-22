@@ -30,7 +30,7 @@ interface IProps {
   onNewGame(): void
   onPauseGame(): void
   onUndo(): void
-  onShowHelp(): void
+  onShowHint(): void
   onShowSettings(): void
 }
 
@@ -55,7 +55,7 @@ export default function Desk(
     onMove,
     onNewGame,
     onPauseGame,
-    onShowHelp,
+    onShowHint,
     onShowSettings,
     onUndo,
   }: IProps,
@@ -163,7 +163,7 @@ export default function Desk(
           <FullscreenToggle isFullscreenModeActive={isFullscreenActive} onToggleFullscreen={onToggleFullscreen}/>
 
           {!isFullscreenActive &&
-            <BottomBar onNewGame={onNewGame} onPauseGame={onPauseGame} onShowHelp={onShowHelp} onUndo={onUndo}/>
+            <BottomBar onNewGame={onNewGame} onPauseGame={onPauseGame} onShowHint={onShowHint} onUndo={onUndo}/>
           }
         </div>
       </DragNDrop>
