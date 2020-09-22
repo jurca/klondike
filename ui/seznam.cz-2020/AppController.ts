@@ -104,7 +104,6 @@ export default class AppController {
           onShowHint: this.onShowHint,
           onDeskStyleChange: this.onDeskStyleChange,
           onCardStyleChange: this.onCardBackStyleChange,
-          onAutomaticHintDelayChange: this.onAutomaticHintDelayChange,
           onStockPositionChange: this.onStockPositionChange,
           onBotMove: this.onBotMove,
           onImport: this.onImport,

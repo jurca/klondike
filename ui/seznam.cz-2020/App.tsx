@@ -31,7 +31,6 @@ interface IProps {
   onShowHint: () => void
   onDeskStyleChange: (newDeskStyleName: string) => void
   onCardStyleChange: (newCardStyle: CardBackfaceStyle) => void
-  onAutomaticHintDelayChange: (newAutomaticHintDelay: number) => void
   onStockPositionChange: (newStockPosition: StockPosition) => void
   onBotMove: () => void
   onImport: () => void
@@ -80,12 +79,6 @@ export default function App(
     ),
     [callbacks.onCardStyleChange],
   )
-  const automaticHintDelayChangeListener = React.useMemo(
-    () => (event: React.ChangeEvent<HTMLInputElement>) => callbacks.onAutomaticHintDelayChange(
-      parseInt(event.target.value, 10) * 1_000,
-    ),
-    [callbacks.onAutomaticHintDelayChange],
-  )
   const stockPositionChangeListener = React.useMemo(
     () => (event: React.ChangeEvent<HTMLInputElement>) => callbacks.onStockPositionChange(
       event.target.checked ? StockPosition.RIGHT : StockPosition.LEFT,
@@ -100,8 +93,6 @@ export default function App(
         <button onClick={onRedo}>-&gt;</button>
         <button onClick={onReset}>reset</button>
         &nbsp;|&nbsp;
-        <button onClick={onShowHint}>poradit tah</button>
-        &nbsp;|&nbsp;
         Pozadí stolu: <select value={deskStyleName} onChange={deskStyleChangeListener}>
           <option value='GREEN_S'>zelené S</option>
           <option value='TEAL_COLORS'>tyrkysové symboly</option>
@@ -114,16 +105,6 @@ export default function App(
           <option value={CardBackfaceStyle.Dog}>Krasty</option>
           <option value={CardBackfaceStyle.Colors}>Symboly</option>
         </select>
-        Automatická nápověda:
-        <input
-          type='range'
-          min='0'
-          max='180'
-          step='1'
-          value={automaticHintDelay / 1_000}
-          onChange={automaticHintDelayChangeListener}
-        />
-        {automaticHintDelay ? `${automaticHintDelay / 1_000} s` : 'vypnuto'}
         <label>
           <input
             type='checkbox'
