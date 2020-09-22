@@ -12,6 +12,7 @@
 
 :local(.titleImage) {
   width: 100%;
+  max-width: 44vmin;
   height: auto;
 }
 
