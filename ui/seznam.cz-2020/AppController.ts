@@ -149,6 +149,7 @@ export default class AppController {
       automaticHintEnabled: !!this.uiState.automaticHintDelay,
       onNewGame: this.onNewWinnableGame,
       onShowContent: this.onShowModalContent,
+      onCloseModalContent: this.onCloseModalContent,
       onResumePreviousGame: (): void => {
         alert('Not yet implemented') // TODO
       },

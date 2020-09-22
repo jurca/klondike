@@ -33,6 +33,7 @@ export interface IModalContentComponentProps {
   automaticHintEnabled: boolean
   onNewGame(drawnCards: 1 | 3): void
   onShowContent(newContent: ModalContentComponent, stack: boolean): void
+  onCloseModalContent(): void
   onResumePreviousGame(): void
   onSetDeskStyle(newStyle: DeskStyle): void
   setCardBackFaceStyle(newBackFaceStyle: CardBackfaceStyle): void
