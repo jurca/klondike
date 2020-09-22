@@ -36,7 +36,9 @@
 
   width: 100%;
 
-  background: #cc0000;
+  background: #c0c0c0;
+
+  transition: background 0.1s ease-out;
 }
 
 :local(.ui)::after {
@@ -50,6 +52,11 @@
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.4);
   transform: translateX(0);
   transition: transform 0.1s ease-out;
+}
+
+:checked + :local(.ui)::before {
+  background: #cc0000;
+  transition-timing-function: ease-in;
 }
 
 :checked + :local(.ui)::after {
