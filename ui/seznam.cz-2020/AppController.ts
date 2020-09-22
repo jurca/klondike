@@ -12,8 +12,9 @@ import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {DESK_SKINS, IDeskSkin} from './deskSkins'
 import DeskStyle from './DeskStyle'
-import ModalContentComponent, {IModalContentComponentProps} from './modalContent/ModalContentComponent'
+import ModalContentComponent, {IModalContentComponentProps, IModalContentComponentStaticProps} from './modalContent/ModalContentComponent'
 import NewGame from './modalContent/NewGame'
+import Settings from './modalContent/Settings'
 import HighScoresStorage from './storage/HighScoresStorage'
 import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
@@ -34,6 +35,10 @@ export default class AppController {
   private readonly uiState: Readonly<IUIState>
   private gameAddedToHighScores: boolean = false
   private automaticHintTimeoutId: null | number = null
+  private readonly modalContentComponentCache = new WeakMap<
+    ModalContentComponent,
+    React.ComponentType & IModalContentComponentStaticProps
+  >()
 
   constructor(
     private readonly uiRoot: HTMLElement,
@@ -77,8 +82,6 @@ export default class AppController {
   }
 
   private renderUI(): void {
-    const currentModalContent = lastItemOrNull(this.uiState.modalContentStack)
-
     // tslint:disable:object-literal-sort-keys
     render(
       createElement(
@@ -91,15 +94,7 @@ export default class AppController {
           cardBackFace: this.uiState.cardBackFaceStyle,
           automaticHintDelay: this.uiState.automaticHintDelay,
           stockPosition: this.uiState.stockPosition,
-          modalContent: currentModalContent &&
-            Object.assign(
-              () => createElement(currentModalContent, this.modalContentProps),
-              {
-                title: currentModalContent.title,
-                type: currentModalContent.type,
-                displayName: `AppController(${currentModalContent.displayName || currentModalContent.name})`,
-              },
-            ),
+          modalContent: this.getModalContentComponent(),
           isModalContentNested: this.uiState.modalContentStack.length > 1,
           onMove: this.onMove,
           onUndo: this.onUndo,
@@ -115,6 +110,7 @@ export default class AppController {
           onImport: this.onImport,
           onCloseModalContent: this.onCloseModalContent,
           onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
+          onShowSettings: this.onShowModalContent.bind(this, Settings, false),
         },
       ),
       this.uiRoot,
@@ -194,11 +190,29 @@ export default class AppController {
           (error) => console.error('Failed to save the stock position', error), // tslint:disable-line:no-console
         )
       },
-      setAutomaticHintEnabled: (): void => {
-        this.onAutomaticHintDelayChange(AUTOMATIC_HINT_DELAY)
+      setAutomaticHintEnabled: (enabled: boolean): void => {
+        this.onAutomaticHintDelayChange(enabled ? AUTOMATIC_HINT_DELAY : 0)
       },
     }
     // tslint:enable:object-literal-sort-keys
+  }
+
+  private getModalContentComponent(): null | React.ComponentType & IModalContentComponentStaticProps {
+    const currentModalContent = lastItemOrNull(this.uiState.modalContentStack)
+    if (!currentModalContent) {
+      return null
+    }
+
+    const modalContentComponent = this.modalContentComponentCache.get(currentModalContent) || Object.assign(
+      () => createElement(currentModalContent, this.modalContentProps),
+      {
+        displayName: `AppController(${currentModalContent.displayName || currentModalContent.name})`,
+        title: currentModalContent.title,
+        type: currentModalContent.type,
+      },
+    )
+    this.modalContentComponentCache.set(currentModalContent, modalContentComponent)
+    return modalContentComponent
   }
 
   private onMove = (move: Move): void => {

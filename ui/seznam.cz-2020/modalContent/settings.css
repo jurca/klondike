@@ -1,0 +1,9 @@
+:local(.rightIcon) {
+  width: 8px;
+}
+
+:local(.rightIcon) svg {
+  width: 100%;
+
+  color: #404040;
+}

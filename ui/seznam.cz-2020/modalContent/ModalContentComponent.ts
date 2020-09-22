@@ -4,10 +4,12 @@ import DeskStyle from '../DeskStyle'
 import {Type} from '../ModalContentHost'
 import {StockPosition} from '../storage/SettingsStorage'
 
-type ModalContentComponent = React.ComponentType<IModalContentComponentProps> & {
+export interface IModalContentComponentStaticProps {
   readonly title: null | string,
   readonly type: Type,
 }
+
+type ModalContentComponent = React.ComponentType<IModalContentComponentProps> & IModalContentComponentStaticProps
 export default ModalContentComponent
 
 export interface IGameplayStats {

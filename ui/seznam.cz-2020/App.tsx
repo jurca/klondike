@@ -8,6 +8,7 @@ import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import {GREEN_S, GREEN_S_TILES, IDeskSkin, RED_S_TILES, TEAL_COLORS} from './deskSkins'
 import MobilePhoneHeader from './MobilePhoneHeader'
+import {IModalContentComponentStaticProps} from './modalContent/ModalContentComponent'
 import ModalContentHost, {State, Type} from './ModalContentHost'
 import SettingsContext from './settingsContext'
 import {StockPosition} from './storage/SettingsStorage'
@@ -20,10 +21,7 @@ interface IProps {
   deskSkin: IDeskSkin
   automaticHintDelay: number,
   stockPosition: StockPosition,
-  modalContent: null | React.ComponentType & {
-    readonly title: null | string,
-    readonly type: Type,
-  },
+  modalContent: null | React.ComponentType & IModalContentComponentStaticProps,
   isModalContentNested: boolean,
   onMove: (move: Move) => void
   onUndo: () => void
@@ -39,6 +37,7 @@ interface IProps {
   onImport: () => void
   onLeaveCurrentModalContent: () => void
   onCloseModalContent: () => void
+  onShowSettings: () => void
 }
 
 export default function App(
@@ -55,7 +54,7 @@ export default function App(
     ...callbacks
   }: IProps,
 ) {
-  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo, onImport} = callbacks
+  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo, onImport, onShowSettings} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const deskStyleName = React.useMemo(() => {
     switch (deskSkin) {
@@ -168,10 +167,6 @@ export default function App(
       </div>
     </div>
   )
-
-  function onShowSettings() {
-    alert('Zatím není implementováno')
-  }
 
   function onExport(): void {
     console.log(game && serialize(game)) // tslint:disable-line:no-console
