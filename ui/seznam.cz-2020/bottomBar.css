@@ -49,13 +49,13 @@
 
   flex: 0 0 10em;
 
-  justify-content: right;
+  justify-content: flex-end;
 }
 
 :local(.buttonWrapper):first-child {
   flex-grow: 1;
 
-  justify-content: left;
+  justify-content: flex-start;
 }
 
 @media (max-width: 600px) or (max-height: 600px) {
