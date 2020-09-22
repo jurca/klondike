@@ -34,13 +34,21 @@ enum InternalState {
 export default function ModalContentHost(props: IProps): null | React.ReactElement {
   const [internalState, setInternalState] = React.useState<InternalState>(InternalState.CLOSED)
   React.useEffect(() => {
+    let newInternalState: null | InternalState = null
     if (internalState === InternalState.CLOSED && props.state !== State.CLOSED) {
-      setInternalState(InternalState.OPENING)
+      newInternalState = InternalState.OPENING
     } else if (internalState !== InternalState.CLOSED && props.state === State.CLOSED) {
-      setInternalState(InternalState.CLOSING)
+      newInternalState = InternalState.CLOSING
     } else if (internalState === InternalState.OPENING) {
-      setInternalState(InternalState.OPEN)
+      newInternalState = InternalState.OPEN
     }
+
+    if (newInternalState) {
+      const requestId = requestAnimationFrame(() => setInternalState(newInternalState!))
+      return () => cancelAnimationFrame(requestId)
+    }
+
+    return undefined
   })
 
   const onTransitionEnd = React.useMemo(
