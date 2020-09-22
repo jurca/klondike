@@ -1,7 +1,8 @@
 import NEW_GAME_IMAGE from '!!raw-loader!./new-game.svg'
 import * as React from 'react'
+import {Type} from '../ModalContentHost'
 import Button from './Button'
-import ModalContentComponent, {IModalContentComponentProps, Type} from './ModalContentComponent'
+import ModalContentComponent, {IModalContentComponentProps} from './ModalContentComponent'
 import styles from './newGame.css'
 
 const NewGame: ModalContentComponent = Object.assign(function NewGameUI(props: IModalContentComponentProps) {

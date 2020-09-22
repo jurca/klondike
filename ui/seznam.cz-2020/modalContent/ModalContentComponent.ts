@@ -1,12 +1,8 @@
 import * as React from 'react'
 import CardBackfaceStyle from '../CardBackfaceStyle'
 import DeskStyle from '../DeskStyle'
+import {Type} from '../ModalContentHost'
 import {StockPosition} from '../storage/SettingsStorage'
-
-export enum Type {
-  FLOATING = 'Type.FLOATING',
-  DRAWER = 'Type.DRAWER',
-}
 
 type ModalContentComponent = React.ComponentType<IModalContentComponentProps> & {
   readonly title: null | string,

@@ -10,6 +10,11 @@ export enum State {
   DRAWER = 'State.DRAWER',
 }
 
+export enum Type {
+  FLOATING = 'Type.FLOATING',
+  DRAWER = 'Type.DRAWER',
+}
+
 interface IProps {
   state: State
   isNested: boolean
