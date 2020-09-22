@@ -9,8 +9,8 @@ import Toggle from './Toggle'
 
 const Settings: ModalContentComponent = Object.assign(function SettingsUI(props: IModalContentComponentProps) {
   const onToggleAutomaticHint = React.useMemo(
-    () => () => props.setAutomaticHintEnabled(!props.automaticHintEnabled),
-    [props.automaticHintEnabled, props.setAutomaticHintEnabled],
+    () => () => props.onSetAutomaticHintEnabled(!props.automaticHintEnabled),
+    [props.automaticHintEnabled, props.onSetAutomaticHintEnabled],
   )
 
   return (

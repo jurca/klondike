@@ -171,7 +171,7 @@ export default class AppController {
           deskSkin,
         })
       },
-      setCardBackFaceStyle: (newBackFaceStyle: CardBackfaceStyle): void => {
+      onSetCardBackFaceStyle: (newBackFaceStyle: CardBackfaceStyle): void => {
         this.settingsStorage.setCardBackFaceStyle(newBackFaceStyle).catch((error) => {
           // tslint:disable-next-line:no-console
           console.error('Failed to save card back face style', error)
@@ -180,7 +180,7 @@ export default class AppController {
           cardBackFaceStyle: newBackFaceStyle,
         })
       },
-      setStockPosition: (newPosition: StockPosition): void => {
+      onSetStockPosition: (newPosition: StockPosition): void => {
         this.updateUI({
           stockPosition: newPosition,
         })
@@ -189,7 +189,7 @@ export default class AppController {
           (error) => console.error('Failed to save the stock position', error), // tslint:disable-line:no-console
         )
       },
-      setAutomaticHintEnabled: (enabled: boolean): void => {
+      onSetAutomaticHintEnabled: (enabled: boolean): void => {
         this.onAutomaticHintDelayChange(enabled ? AUTOMATIC_HINT_DELAY : 0)
       },
     }

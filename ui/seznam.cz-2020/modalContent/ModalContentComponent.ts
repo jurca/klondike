@@ -34,7 +34,7 @@ export interface IModalContentComponentProps {
   onCloseModalContent(): void
   onResumePreviousGame(): void
   onSetDeskStyle(newStyle: DeskStyle): void
-  setCardBackFaceStyle(newBackFaceStyle: CardBackfaceStyle): void
-  setStockPosition(newPosition: StockPosition): void
-  setAutomaticHintEnabled(enabled: boolean): void
+  onSetCardBackFaceStyle(newBackFaceStyle: CardBackfaceStyle): void
+  onSetStockPosition(newPosition: StockPosition): void
+  onSetAutomaticHintEnabled(enabled: boolean): void
 }
