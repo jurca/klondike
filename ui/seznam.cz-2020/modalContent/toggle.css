@@ -1,0 +1,58 @@
+:local(.toggle) {
+  display: inline-block;
+  width: 51px;
+}
+
+:local(.input) {
+  display: none;
+}
+
+:local(.ui) {
+  display: block;
+
+  position: relative;
+
+  box-sizing: border-box;
+  border: 2px solid #cc0000;
+  border-radius: calc(51px * 0.6);
+  width: 100%;
+  height: calc(51px * 0.6);
+}
+
+:local(.ui)::before,
+:local(.ui)::after {
+  display: block;
+
+  border-radius: calc(51px * 0.6 - 4px);
+  height: 100%;
+
+  content: '';
+}
+
+:local(.ui)::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+
+  background: #cc0000;
+}
+
+:local(.ui)::after {
+  position: relative;
+
+  width: calc(51px * 0.6 - 4px);
+  height: calc(51px * 0.6 - 4px);
+
+  background: #ffffff;
+
+  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.4);
+  transform: translateX(0);
+  transition: transform 0.1s ease-out;
+}
+
+:checked + :local(.ui)::after {
+  transform: translateX(calc(51px - 4px - (51px * 0.6 - 4px)));
+  transition-timing-function: ease-in;
+}
