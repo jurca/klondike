@@ -5,8 +5,13 @@ import primaryStorageFactory from './storage/primaryStorageFactory'
 import SettingsStorage from './storage/SettingsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
-const highScoresStorage = new HighScoresStorage(primaryStorageFactory('highScores'), MAX_HIGH_SCORE_TABLE_ENTRIES)
-const settingsStorage = new SettingsStorage(primaryStorageFactory('settings'))
+const STORAGE_KEY_PREFIX = 'klondike-seznam.cz-2020'
+
+const highScoresStorage = new HighScoresStorage(
+  primaryStorageFactory(`${STORAGE_KEY_PREFIX}.highScores`),
+  MAX_HIGH_SCORE_TABLE_ENTRIES,
+)
+const settingsStorage = new SettingsStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.settings`))
 Promise.all([
   settingsStorage.getDeskSkin(),
   settingsStorage.getCardBackFaceStyle(),
