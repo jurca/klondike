@@ -11,13 +11,36 @@ import {Type} from '../ModalContentHost'
 import styles from './deskBackgroundSettings.css'
 import ModalContentComponent, {IModalContentComponentProps} from './ModalContentComponent'
 import ThemeChoice from './ThemeChoice'
+import {createThemePreviewFactory} from './ThemePreview'
 
 const DeskBackgroundSettings: ModalContentComponent = Object.assign(
   function DeskBackgroundSettingsUI(props: IModalContentComponentProps): React.ReactElement {
+    const themePreviewBaseFactory = React.useMemo(
+      () => createThemePreviewFactory(
+        props.defaultTableauPiles,
+        props.winnableGamesProvider,
+        'Změnit pozadí hry',
+        'Nastavit jako pozadí',
+      ),
+      [props.defaultTableauPiles, props.winnableGamesProvider],
+    )
+    const themePreviewFactory = React.useMemo(
+      () => (deskStyle: DeskStyle) => themePreviewBaseFactory(deskStyle, props.cardBackFaceStyle, () => {
+        props.onSetDeskStyle(deskStyle)
+        props.onLeaveCurrentModalContent()
+      }),
+      [themePreviewBaseFactory, props.cardBackFaceStyle, props.onSetDeskStyle, props.onLeaveCurrentModalContent],
+    )
+    const cachingThemePreviewFactory = React.useMemo(
+      () => (deskStyle: DeskStyle) => React.useMemo(() => themePreviewFactory(deskStyle), [deskStyle]),
+      [themePreviewFactory],
+    )
+
     return (
       <ThemeChoice {...props}>
         {[
           {
+            confirmationUI: cachingThemePreviewFactory(DeskStyle.GREEN_S_TILES),
             isSelected: props.deskStyle === DeskStyle.GREEN_S_TILES,
             ui: (
               <div className={styles.option} style={{background: DESK_SKINS.GREEN_S_TILES.desk.background}}>
@@ -26,6 +49,7 @@ const DeskBackgroundSettings: ModalContentComponent = Object.assign(
             ),
           },
           {
+            confirmationUI: cachingThemePreviewFactory(DeskStyle.RED_S_TILES),
             isSelected: props.deskStyle === DeskStyle.RED_S_TILES,
             ui: (
               <div className={styles.option} style={{background: DESK_SKINS.RED_S_TILES.desk.background}}>
@@ -34,6 +58,7 @@ const DeskBackgroundSettings: ModalContentComponent = Object.assign(
             ),
           },
           {
+            confirmationUI: cachingThemePreviewFactory(DeskStyle.TEAL_COLORS),
             isSelected: props.deskStyle === DeskStyle.TEAL_COLORS,
             ui: (
               <div className={styles.option} style={{background: DESK_SKINS.TEAL_COLORS.desk.background}}>
@@ -49,6 +74,7 @@ const DeskBackgroundSettings: ModalContentComponent = Object.assign(
             ),
           },
           {
+            confirmationUI: cachingThemePreviewFactory(DeskStyle.GREEN_S),
             isSelected: props.deskStyle === DeskStyle.GREEN_S,
             ui: (
               <div className={styles.option} style={{background: DESK_SKINS.GREEN_S.desk.background}}>

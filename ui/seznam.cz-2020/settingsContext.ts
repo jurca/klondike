@@ -2,7 +2,7 @@ import {createContext} from 'react'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {GREEN_S, IDeskSkin} from './deskSkins'
 
-interface ISettingsContext extends IDeskSkin {
+export interface ISettingsContext extends IDeskSkin {
   cardBackFace: CardBackfaceStyle
 }
 

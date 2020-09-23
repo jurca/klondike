@@ -111,6 +111,7 @@ export default function App(
             game={game}
             hint={hint}
             stockPosition={stockPosition}
+            previewMode={false}
             onMove={onMove}
             onNewGame={onNewGame}
             onPauseGame={() => alert('Zatím není implementováno')}

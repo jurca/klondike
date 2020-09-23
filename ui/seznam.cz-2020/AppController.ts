@@ -143,7 +143,10 @@ export default class AppController {
       automaticHintEnabled: !!this.uiState.automaticHintDelay,
       onNewGame: this.onNewWinnableGame,
       onShowContent: this.onShowModalContent,
+      onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
       onCloseModalContent: this.onCloseModalContent,
+      defaultTableauPiles: this.newGameOptions.tableauPiles,
+      winnableGamesProvider: this.newGameProvider,
       onResumePreviousGame: (): void => {
         alert('Not yet implemented') // TODO
       },

@@ -26,6 +26,7 @@ interface IProps {
   game: null | IGame
   hint: null | ICard
   stockPosition: StockPosition
+  previewMode: boolean
   onMove(move: Move): void
   onNewGame(): void
   onPauseGame(): void
@@ -52,6 +53,7 @@ export default function Desk(
     game,
     hint,
     stockPosition,
+    previewMode,
     onMove,
     onNewGame,
     onPauseGame,
@@ -108,7 +110,7 @@ export default function Desk(
       </div>
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
-          {!isFullscreenActive &&
+          {!isFullscreenActive && !previewMode &&
             <TopBar game={game} onShowSettings={onShowSettings}/>
           }
 
@@ -160,9 +162,11 @@ export default function Desk(
             </div>
           </div>
 
-          <FullscreenToggle isFullscreenModeActive={isFullscreenActive} onToggleFullscreen={onToggleFullscreen}/>
+          {!previewMode &&
+            <FullscreenToggle isFullscreenModeActive={isFullscreenActive} onToggleFullscreen={onToggleFullscreen}/>
+          }
 
-          {!isFullscreenActive &&
+          {!isFullscreenActive && !previewMode &&
             <BottomBar onNewGame={onNewGame} onPauseGame={onPauseGame} onShowHint={onShowHint} onUndo={onUndo}/>
           }
         </div>

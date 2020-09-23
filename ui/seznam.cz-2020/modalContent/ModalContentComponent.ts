@@ -3,6 +3,7 @@ import CardBackfaceStyle from '../CardBackfaceStyle'
 import DeskStyle from '../DeskStyle'
 import {Type} from '../ModalContentHost'
 import {StockPosition} from '../storage/SettingsStorage'
+import WinnableGamesProvider from '../WinnableGamesProvider'
 
 export interface IModalContentComponentStaticProps {
   readonly title: null | string,
@@ -29,8 +30,11 @@ export interface IModalContentComponentProps {
   cardBackFaceStyle: CardBackfaceStyle
   stockPosition: StockPosition
   automaticHintEnabled: boolean
+  defaultTableauPiles: number,
+  winnableGamesProvider: WinnableGamesProvider,
   onNewGame(drawnCards: 1 | 3): void
   onShowContent(newContent: ModalContentComponent, stack: boolean): void
+  onLeaveCurrentModalContent(): void
   onCloseModalContent(): void
   onResumePreviousGame(): void
   onSetDeskStyle(newStyle: DeskStyle): void
