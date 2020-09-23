@@ -2,6 +2,7 @@ import * as React from 'react'
 import RightIcon from '../icon/right.svg'
 import {Type} from '../ModalContentHost'
 import {StockPosition} from '../storage/SettingsStorage'
+import HowToPlay from './HowToPlay'
 import ListingItem from './ListingItem'
 import ModalContentComponent, {IModalContentComponentProps} from './ModalContentComponent'
 import ModalContentWithBottomCloseButton from './ModalContentWithBottomCloseButton'
@@ -19,6 +20,7 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
     ),
     [props.stockPosition, props.onSetStockPosition],
   )
+  const onShowHowTo = React.useMemo(() => props.onShowContent.bind(null, HowToPlay, true), [props.onShowContent])
 
   return (
     <ModalContentWithBottomCloseButton {...props}>
@@ -66,8 +68,9 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
         }
       />
       <ListingItem
-        leftContent={'Jak hrát Solitaire'}
-        rightContent={''}
+        leftContent='Jak hrát Solitaire'
+        rightContent=''
+        onClick={onShowHowTo}
       />
     </ModalContentWithBottomCloseButton>
   )
