@@ -32,7 +32,7 @@ module.exports = {
       {
         oneOf: [
           {
-            test: /(?:green|red)-s-tile\.svg$/i,
+            test: /(?:(?:green|red)-s-tile|game-icons-background)\.svg$/i,
             use: 'url-loader',
           },
           {

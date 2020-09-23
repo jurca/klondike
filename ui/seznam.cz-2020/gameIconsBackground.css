@@ -1,0 +1,24 @@
+:local(.background) {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: hidden;
+}
+
+:local(.background)::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 200vmax;
+  height: 200vmax;
+
+  content: '';
+
+  background: url('game-icons-background.svg') repeat transparent;
+
+  transform: translate(-50%, -50%) rotate(320deg);
+  transform-origin: center;
+}
