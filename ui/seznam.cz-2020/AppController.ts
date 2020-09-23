@@ -14,8 +14,10 @@ import {DESK_SKINS, IDeskSkin} from './deskSkins'
 import DeskStyle from './DeskStyle'
 import ModalContentComponent, {IModalContentComponentProps, IModalContentComponentStaticProps} from './modalContent/ModalContentComponent'
 import NewGame from './modalContent/NewGame'
+import PausedGame from './modalContent/PausedGame'
 import Settings from './modalContent/Settings'
 import HighScoresStorage from './storage/HighScoresStorage'
+import PausedGameStorage from './storage/PausedGameStorage'
 import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
@@ -29,6 +31,7 @@ interface IUIState {
   automaticHintDelay: number,
   stockPosition: StockPosition,
   modalContentStack: readonly ModalContentComponent[]
+  pausedGame: null | IGame
 }
 
 export default class AppController {
@@ -47,8 +50,10 @@ export default class AppController {
     cardBackFaceStyle: CardBackfaceStyle,
     automaticHintDelay: number,
     stockPosition: StockPosition,
+    pausedGame: null | IGame,
     private readonly settingsStorage: SettingsStorage,
     private readonly highScoresStorage: HighScoresStorage,
+    private readonly pausedGameStorage: PausedGameStorage,
     private readonly newGameOptions: INewGameRules,
     private readonly botOptions: IBotOptions,
   ) {
@@ -58,7 +63,8 @@ export default class AppController {
       deskSkin,
       game: null,
       hint: null,
-      modalContentStack: [NewGame],
+      modalContentStack: [pausedGame ? PausedGame : NewGame],
+      pausedGame,
       stockPosition,
     }
   }
@@ -102,6 +108,7 @@ export default class AppController {
           onNewGame: this.onShowModalContent.bind(this, NewGame, false),
           onShowHint: this.onShowHint,
           onBotMove: this.onBotMove,
+          onPauseGame: this.onPauseGame,
           onImport: this.onImport,
           onCloseModalContent: this.onCloseModalContent,
           onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
@@ -144,9 +151,7 @@ export default class AppController {
       onCloseModalContent: this.onCloseModalContent,
       defaultTableauPiles: this.newGameOptions.tableauPiles,
       winnableGamesProvider: this.newGameProvider,
-      onResumePreviousGame: (): void => {
-        alert('Not yet implemented') // TODO
-      },
+      onResumePreviousGame: this.onResumePreviousGame,
       onSetDeskStyle: this.onDeskStyleChange,
       onSetCardBackFaceStyle: this.onCardBackStyleChange,
       onSetStockPosition: this.onStockPositionChange,
@@ -301,6 +306,39 @@ export default class AppController {
       hint: null,
     })
     this.updateAutomaticHintTimer()
+  }
+
+  private onPauseGame = (): void => {
+    const {game} = this.uiState
+    if (!game) {
+      return
+    }
+
+    this.updateUI({
+      game: null,
+      modalContentStack: [PausedGame],
+      pausedGame: game,
+    })
+    this.pausedGameStorage.setPausedGame(game).catch((error) => {
+      // tslint:disable-next-line:no-console
+      console.error('Failed to save the paused game', error)
+    })
+  }
+
+  private onResumePreviousGame = (): void => {
+    if (!this.uiState.pausedGame) {
+      return
+    }
+
+    this.updateUI({
+      game: this.uiState.pausedGame,
+      modalContentStack: [],
+      pausedGame: null,
+    })
+    this.pausedGameStorage.deletePausedGame().catch((error) => {
+      // tslint:disable-next-line:no-console
+      console.error('Failed to clear the paused error storage', error)
+    })
   }
 
   private onDeskStyleChange = (newStyle: DeskStyle): void => {

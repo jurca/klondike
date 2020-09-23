@@ -29,6 +29,7 @@ interface IProps {
   onNewGame: () => void
   onShowHint: () => void
   onBotMove: () => void
+  onPauseGame: () => void
   onImport: () => void
   onLeaveCurrentModalContent: () => void
   onCloseModalContent: () => void
@@ -48,7 +49,7 @@ export default function App(
     ...callbacks
   }: IProps,
 ) {
-  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo, onImport, onShowSettings} = callbacks
+  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo, onImport, onPauseGame, onShowSettings} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const previousModalContent = usePrevious(modalContent)
 
@@ -73,7 +74,7 @@ export default function App(
             previewMode={false}
             onMove={onMove}
             onNewGame={onNewGame}
-            onPauseGame={() => alert('Zatím není implementováno')}
+            onPauseGame={onPauseGame}
             onShowHint={onShowHint}
             onShowSettings={onShowSettings}
             onUndo={onUndo}
