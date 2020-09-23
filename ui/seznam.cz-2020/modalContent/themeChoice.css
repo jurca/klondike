@@ -1,0 +1,56 @@
+:local(.themeChoice) {
+  display: flex;
+
+  box-sizing: border-box;
+  padding: 32px 16px 32px 40px;
+  width: 100%;
+
+  flex-wrap: wrap;
+}
+
+:local(.option) {
+  position: relative;
+
+  margin-right: 24px;
+  margin-bottom: 24px;
+  border-radius: 4px;
+  padding-top: 55%;
+  width: calc(50% - 24px);
+  height: 0;
+  overflow: hidden;
+
+  box-shadow: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+
+:local(.optionUiContainer) {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+:local(.selectedOptionOverlay) {
+  display: flex;
+
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(0, 0, 0, 0.2);
+}
+
+:local(.selectedOptionOverlay) svg {
+  width: 40px;
+  height: 40px;
+
+  color: rgba(248, 248, 248, 0.9);
+}
