@@ -3,6 +3,7 @@
 interface CssExports {
   'closeButton': string;
   'container': string;
+  'content': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

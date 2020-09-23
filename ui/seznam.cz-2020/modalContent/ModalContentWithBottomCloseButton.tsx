@@ -10,7 +10,9 @@ interface IProps extends IModalContentComponentProps {
 export default function ModalContentWithBottomCloseButton(props: IProps) {
   return (
     <div className={styles.container}>
-      {props.children}
+      <div className={styles.content}>
+        {props.children}
+      </div>
       <Button className={styles.closeButton} onClick={props.onCloseModalContent}>
         Zpět do hry
       </Button>
