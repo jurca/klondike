@@ -92,7 +92,6 @@ export default class AppController {
           hint: this.uiState.hint,
           deskSkin: this.uiState.deskSkin,
           cardBackFace: this.uiState.cardBackFaceStyle,
-          automaticHintDelay: this.uiState.automaticHintDelay,
           stockPosition: this.uiState.stockPosition,
           modalContent: this.getModalContentComponent(),
           isModalContentNested: this.uiState.modalContentStack.length > 1,
@@ -102,8 +101,6 @@ export default class AppController {
           onReset: this.onReset,
           onNewGame: this.onShowModalContent.bind(this, NewGame, false),
           onShowHint: this.onShowHint,
-          onDeskStyleChange: this.onDeskStyleChange,
-          onCardStyleChange: this.onCardBackStyleChange,
           onBotMove: this.onBotMove,
           onImport: this.onImport,
           onCloseModalContent: this.onCloseModalContent,
@@ -150,42 +147,10 @@ export default class AppController {
       onResumePreviousGame: (): void => {
         alert('Not yet implemented') // TODO
       },
-      onSetDeskStyle: (newStyle: DeskStyle): void => {
-        const deskSkin = ((): IDeskSkin => {
-          switch (newStyle) {
-            case DeskStyle.GREEN_S:
-              return DESK_SKINS.GREEN_S
-            case DeskStyle.GREEN_S_TILES:
-              return DESK_SKINS.GREEN_S_TILES
-            case DeskStyle.RED_S_TILES:
-              return DESK_SKINS.RED_S_TILES
-            case DeskStyle.TEAL_COLORS:
-              return DESK_SKINS.TEAL_COLORS
-            default:
-              throw new Error(`Unknown desk style: ${newStyle}`)
-          }
-        })()
-        this.settingsStorage.setDeskSkin(deskSkin).catch((error) => {
-          // tslint:disable-next-line:no-console
-          console.error('Failed to save desk skin', error)
-        })
-        this.updateUI({
-          deskSkin,
-        })
-      },
-      onSetCardBackFaceStyle: (newBackFaceStyle: CardBackfaceStyle): void => {
-        this.settingsStorage.setCardBackFaceStyle(newBackFaceStyle).catch((error) => {
-          // tslint:disable-next-line:no-console
-          console.error('Failed to save card back face style', error)
-        })
-        this.updateUI({
-          cardBackFaceStyle: newBackFaceStyle,
-        })
-      },
+      onSetDeskStyle: this.onDeskStyleChange,
+      onSetCardBackFaceStyle: this.onCardBackStyleChange,
       onSetStockPosition: this.onStockPositionChange,
-      onSetAutomaticHintEnabled: (enabled: boolean): void => {
-        this.onAutomaticHintDelayChange(enabled ? AUTOMATIC_HINT_DELAY : 0)
-      },
+      onSetAutomaticHintEnabled: this.onSetAutomaticHintEnabled,
     }
     // tslint:enable:object-literal-sort-keys
   }
@@ -338,17 +303,28 @@ export default class AppController {
     this.updateAutomaticHintTimer()
   }
 
-  private onDeskStyleChange = (newDeskStyle: string): void => {
-    if (newDeskStyle in DESK_SKINS) {
-      const deskSkin = DESK_SKINS[newDeskStyle as keyof typeof DESK_SKINS]
-      this.settingsStorage.setDeskSkin(deskSkin).catch((error) => {
-        // tslint:disable-next-line:no-console
-        console.error('Failed to save desk skin', error)
-      })
-      this.updateUI({
-        deskSkin,
-      })
-    }
+  private onDeskStyleChange = (newStyle: DeskStyle): void => {
+    const deskSkin = ((): IDeskSkin => {
+      switch (newStyle) {
+        case DeskStyle.GREEN_S:
+          return DESK_SKINS.GREEN_S
+        case DeskStyle.GREEN_S_TILES:
+          return DESK_SKINS.GREEN_S_TILES
+        case DeskStyle.RED_S_TILES:
+          return DESK_SKINS.RED_S_TILES
+        case DeskStyle.TEAL_COLORS:
+          return DESK_SKINS.TEAL_COLORS
+        default:
+          throw new Error(`Unknown desk style: ${newStyle}`)
+      }
+    })()
+    this.settingsStorage.setDeskSkin(deskSkin).catch((error) => {
+      // tslint:disable-next-line:no-console
+      console.error('Failed to save desk skin', error)
+    })
+    this.updateUI({
+      deskSkin,
+    })
   }
 
   private onCardBackStyleChange = (newCardBackStyle: CardBackfaceStyle): void => {
@@ -359,6 +335,10 @@ export default class AppController {
     this.updateUI({
       cardBackFaceStyle: newCardBackStyle,
     })
+  }
+
+  private onSetAutomaticHintEnabled = (enabled: boolean): void => {
+    this.onAutomaticHintDelayChange(enabled ? AUTOMATIC_HINT_DELAY : 0)
   }
 
   private onAutomaticHintDelayChange = (newAutomaticHintDelay: number): void => {
