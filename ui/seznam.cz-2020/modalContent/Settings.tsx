@@ -2,6 +2,7 @@ import * as React from 'react'
 import RightIcon from '../icon/right.svg'
 import {Type} from '../ModalContentHost'
 import {StockPosition} from '../storage/SettingsStorage'
+import CardBackFaceSettings from './CardBackFaceSettings'
 import DeskBackgroundSettings from './DeskBackgroundSettings'
 import HowToPlay from './HowToPlay'
 import ListingItem from './ListingItem'
@@ -13,6 +14,10 @@ import Toggle from './Toggle'
 const Settings: ModalContentComponent = Object.assign(function SettingsUI(props: IModalContentComponentProps) {
   const onShowDeskBackgroundSettings = React.useMemo(
     () => props.onShowContent.bind(null, DeskBackgroundSettings, true),
+    [props.onShowContent],
+  )
+  const onShowCardBackFaceSettings = React.useMemo(
+    () => props.onShowContent.bind(null, CardBackFaceSettings, true),
     [props.onShowContent],
   )
   const onToggleAutomaticHint = React.useMemo(
@@ -54,6 +59,7 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
             <RightIcon/>
           </span>
         }
+        onClick={onShowCardBackFaceSettings}
       />
       <ListingItem
         leftContent='Automatická nápověda tahu'
