@@ -96,6 +96,7 @@ export default class AppController {
           defaultTableauPiles: this.newGameOptions.tableauPiles,
           game: this.uiState.game,
           hint: this.uiState.hint,
+          isPaused: !this.uiState.game && !!this.uiState.pausedGame,
           deskSkin: this.uiState.deskSkin,
           cardBackFace: this.uiState.cardBackFaceStyle,
           stockPosition: this.uiState.stockPosition,

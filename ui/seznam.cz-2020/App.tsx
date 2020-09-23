@@ -7,6 +7,7 @@ import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import {IDeskSkin} from './deskSkins'
+import GameIconsBackground from './GameIconsBackground'
 import MobilePhoneHeader from './MobilePhoneHeader'
 import {IModalContentComponentStaticProps} from './modalContent/ModalContentComponent'
 import ModalContentHost, {State, Type} from './ModalContentHost'
@@ -17,6 +18,7 @@ interface IProps {
   defaultTableauPiles: number
   game: null | IGame
   hint: null | ICard
+  isPaused: boolean
   cardBackFace: CardBackfaceStyle
   deskSkin: IDeskSkin
   stockPosition: StockPosition,
@@ -43,6 +45,7 @@ export default function App(
     cardBackFace,
     deskSkin,
     hint,
+    isPaused,
     stockPosition,
     modalContent,
     isModalContentNested,
@@ -66,19 +69,23 @@ export default function App(
       <MobilePhoneHeader onLeave={() => alert('Zatím není implementováno')} onShowSettings={onShowSettings}/>
       <div className={style.primaryContent}>
         <SettingsContext.Provider value={settingsContextValue}>
-          <Desk
-            defaultTableauPiles={defaultTableauPiles}
-            game={game}
-            hint={hint}
-            stockPosition={stockPosition}
-            previewMode={false}
-            onMove={onMove}
-            onNewGame={onNewGame}
-            onPauseGame={onPauseGame}
-            onShowHint={onShowHint}
-            onShowSettings={onShowSettings}
-            onUndo={onUndo}
-          />
+          {isPaused ?
+            <GameIconsBackground/>
+          :
+            <Desk
+              defaultTableauPiles={defaultTableauPiles}
+              game={game}
+              hint={hint}
+              stockPosition={stockPosition}
+              previewMode={false}
+              onMove={onMove}
+              onNewGame={onNewGame}
+              onPauseGame={onPauseGame}
+              onShowHint={onShowHint}
+              onShowSettings={onShowSettings}
+              onUndo={onUndo}
+            />
+          }
           <ModalContentHost
             state={modalContent ? State.OPEN : State.CLOSED}
             type={modalContent?.type ?? previousModalContent?.type ?? Type.FLOATING}
