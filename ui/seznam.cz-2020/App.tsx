@@ -21,9 +21,9 @@ interface IProps {
   isPaused: boolean
   cardBackFace: CardBackfaceStyle
   deskSkin: IDeskSkin
-  stockPosition: StockPosition,
-  modalContent: null | React.ComponentType & IModalContentComponentStaticProps,
-  isModalContentNested: boolean,
+  stockPosition: StockPosition
+  modalContent: null | React.ComponentType & IModalContentComponentStaticProps
+  isModalContentNested: boolean
   onMove: (move: Move) => void
   onUndo: () => void
   onReset: () => void
