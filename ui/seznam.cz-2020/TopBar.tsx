@@ -1,8 +1,7 @@
 import classnames from 'classnames'
 import * as React from 'react'
-import {IGame, isVictory} from '../../game/Game'
+import {getGameplayDuration, IGame} from '../../game/Game'
 import {MoveType} from '../../game/Move'
-import {lastItem, lastItemOrNull} from '../../game/util'
 import Gear from './icon/gear.svg'
 import style from './topBar.css'
 
@@ -66,24 +65,4 @@ export default function TopBar({game, onShowSettings}: IProps): React.ReactEleme
       </div>
     </div>
   )
-}
-
-function getGameplayDuration(game: IGame): number {
-  const endTimestamp = isVictory(game) ? lastItem(game.history)[1].logicalTimestamp : performance.now()
-  const {previousTimestamp: lastTimestamp, sum} = game.history.reduce<{previousTimestamp: number, sum: number}>(
-    ({previousTimestamp, sum: partialSum}, [, move]) => {
-      const {move: moveType, logicalTimestamp} = move
-      const timeDelta = moveType === MoveType.RESUME ? 0 : logicalTimestamp - previousTimestamp
-      return {
-        previousTimestamp: logicalTimestamp,
-        sum: partialSum + timeDelta,
-      }
-    },
-    {
-      previousTimestamp: game.startTime.logicalTimestamp,
-      sum: 0,
-    },
-  )
-
-  return lastItemOrNull(game.history)?.[1].move !== MoveType.PAUSE ? sum + (endTimestamp - lastTimestamp) : sum
 }

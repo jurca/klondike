@@ -7,10 +7,10 @@ import {
   isVictory as isDeskInVictoryState,
   isVictoryGuaranteed as isDeskInVictoryGuaranteedState,
 } from './Desk'
-import {Move} from './Move'
+import {Move, MoveType} from './Move'
 import {draw, IPile, Pile, shuffle, turnCard} from './Pile'
 import {Tableau} from './Tableau'
-import {lastItem} from './util'
+import {lastItem, lastItemOrNull} from './util'
 
 type HistoryRecord = [IDesk, Move & IRecordTimestamp]
 
@@ -205,9 +205,21 @@ export function createNextGameState(game: IGame, nextState: IDesk, appliedMove: 
 }
 
 export function getGameplayDuration(game: IGame): number {
-  if (!game.history.length) {
-    return 0
-  }
+  const endTimestamp = isVictory(game) ? lastItem(game.history)[1].logicalTimestamp : performance.now()
+  const {previousTimestamp: lastTimestamp, sum} = game.history.reduce<{previousTimestamp: number, sum: number}>(
+    ({previousTimestamp, sum: partialSum}, [, move]) => {
+      const {move: moveType, logicalTimestamp} = move
+      const timeDelta = moveType === MoveType.RESUME ? 0 : logicalTimestamp - previousTimestamp
+      return {
+        previousTimestamp: logicalTimestamp,
+        sum: partialSum + timeDelta,
+      }
+    },
+    {
+      previousTimestamp: game.startTime.logicalTimestamp,
+      sum: 0,
+    },
+  )
 
-  return lastItem(game.history)[1].logicalTimestamp - game.startTime.logicalTimestamp
+  return lastItemOrNull(game.history)?.[1].move !== MoveType.PAUSE ? sum + (endTimestamp - lastTimestamp) : sum
 }
