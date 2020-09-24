@@ -129,7 +129,10 @@ export function createGameWithBotPredicate(
 }
 
 export function executeMove(game: IGame, move: Move): IGame {
-  const updatedDesk = executeMoveOnDesk(game.state, game.rules, move)
+  const updatedDesk = move.move === MoveType.UNDO ?
+    executeUndoMove(game)
+  :
+    executeMoveOnDesk(game.state, game.rules, move)
   return createNextGameState(game, updatedDesk, move)
 }
 
@@ -232,4 +235,32 @@ const MOVES_OMITTED_FROM_MOVE_COUNT: readonly MoveType[] = [
 
 export function getMoveCount(games: IGame): number {
   return games.history.filter((record) => !MOVES_OMITTED_FROM_MOVE_COUNT.includes(record[1].move)).length
+}
+
+function executeUndoMove(game: IGame): IDesk {
+  if (!game.history.length) {
+    throw new Error('The provided game has no moves in its history')
+  }
+
+  const filteredHistory: Array<IGame['history'][0]> = []
+  for (const historyRecord of game.history) {
+    if (MOVES_OMITTED_FROM_MOVE_COUNT.includes(historyRecord[1].move)) {
+      continue
+    }
+
+    if (historyRecord[1].move === MoveType.UNDO) {
+      if (!filteredHistory.length) {
+        throw new Error('The provided game has malformed history, there are too many undo moves in its history')
+      }
+      filteredHistory.pop()
+    } else {
+      filteredHistory.push(historyRecord)
+    }
+  }
+
+  if (!filteredHistory.length) {
+    throw new Error('The provided game has no moves in its history left to undo')
+  }
+
+  return lastItem(filteredHistory)[0]
 }

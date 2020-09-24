@@ -3,11 +3,11 @@ import {render, unmountComponentAtNode} from 'react-dom'
 import {IBotOptions, makeMove} from '../../game/Bot'
 import {ICard, Side} from '../../game/Card'
 import {isVictory} from '../../game/Desk'
-import {createNewGame, executeMove, IGame, INewGameRules, resetGame, undoLastMove} from '../../game/Game'
+import {createNewGame, executeMove, IGame, INewGameRules, resetGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
 import {deserialize} from '../../game/Serializer'
-import {lastItem, lastItemOrNull} from '../../game/util'
+import {lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {DESK_SKINS, IDeskSkin} from './deskSkins'
@@ -103,7 +103,6 @@ export default class AppController {
           modalContent: this.getModalContentComponent(),
           isModalContentNested: this.uiState.modalContentStack.length > 1,
           onMove: this.onMove,
-          onUndo: this.onUndo,
           onReset: this.onReset,
           onNewGame: this.onShowModalContent.bind(this, NewGame, false),
           onShowHint: this.onShowHint,
@@ -211,24 +210,6 @@ export default class AppController {
       })
     }
 
-    this.updateUI(statePatch)
-    this.updateAutomaticHintTimer()
-  }
-
-  private onUndo = (): void => {
-    if (!this.uiState.game) {
-      return
-    }
-
-    const statePatch: Partial<IUIState> = {}
-    if (
-      this.uiState.game.history.length &&
-      lastItem(this.uiState.game.history)[1].move === MoveType.REVEAL_TABLEAU_CARD
-    ) {
-      statePatch.game = undoLastMove(this.uiState.game)
-    }
-    statePatch.game = undoLastMove(statePatch.game || this.uiState.game)
-    statePatch.hint = null
     this.updateUI(statePatch)
     this.updateAutomaticHintTimer()
   }

@@ -30,7 +30,6 @@ interface IProps {
   onMove(move: Move): void
   onNewGame(): void
   onPauseGame(): void
-  onUndo(): void
   onShowHint(): void
   onShowSettings(): void
 }
@@ -59,7 +58,6 @@ export default function Desk(
     onPauseGame,
     onShowHint,
     onShowSettings,
-    onUndo,
   }: IProps,
 ) {
   const {state: deskState, rules: gameRules} = game || {}
@@ -266,5 +264,11 @@ export default function Desk(
         pileIndex: deskState.tableau.piles.findIndex((pile) => pile.cards.includes(card)),
       })
     }
+  }
+
+  function onUndo(): void {
+    onMove({
+      move: MoveType.UNDO,
+    })
   }
 }

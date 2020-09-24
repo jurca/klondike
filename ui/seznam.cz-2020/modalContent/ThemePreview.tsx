@@ -36,7 +36,6 @@ function ThemePreview(props: IProps) {
           onMove={NOOP}
           onNewGame={NOOP}
           onPauseGame={NOOP}
-          onUndo={NOOP}
           onShowHint={NOOP}
           onShowSettings={NOOP}
         />

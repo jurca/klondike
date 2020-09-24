@@ -1,13 +1,6 @@
 import {Color, DECK, ICard} from './Card'
 import {IDesk} from './Desk'
-import {
-  createNewGame,
-  executeMove,
-  IGame,
-  INewGameRules,
-  IRecordTimestamp,
-  redoNextMove,
-} from './Game'
+import {createNewGame, executeMove, IGame, INewGameRules, IRecordTimestamp, redoNextMove,} from './Game'
 import {Move, MoveType} from './Move'
 
 const SERIALIZER_VERSION = 2
@@ -111,7 +104,7 @@ function serializeHistory(
 function serializeMove(move: Move & IRecordTimestamp, previousMoveTimestamp: number) {
   return [
     Math.floor(move.logicalTimestamp - previousMoveTimestamp).toString(NUM_RADIX),
-    ',;:-=+*!?~'.charAt(MOVE_TYPES.indexOf(move.move)),
+    ',;:-=+*!?~('.charAt(MOVE_TYPES.indexOf(move.move)),
     serializeMoveData(),
   ].join('')
 
@@ -131,6 +124,7 @@ function serializeMove(move: Move & IRecordTimestamp, previousMoveTimestamp: num
         ).join('')
       case MoveType.REDEAL:
       case MoveType.WASTE_TO_FOUNDATION:
+      case MoveType.UNDO:
       case MoveType.PAUSE:
       case MoveType.RESUME:
         return ''
@@ -165,7 +159,7 @@ function deserializeHistory(
     let remainingSerializedHistory = serializedHistory.substring(currentMoveStartIndex)
     const logicalTimestampDiff = parseInt(remainingSerializedHistory, NUM_RADIX)
     const moveType = MOVE_TYPES[
-      ',;:-=+*!?~'.indexOf(remainingSerializedHistory.charAt(logicalTimestampDiff.toString(NUM_RADIX).length))
+      ',;:-=+*!?~('.indexOf(remainingSerializedHistory.charAt(logicalTimestampDiff.toString(NUM_RADIX).length))
     ]
 
     lastLogicalTimestamp += logicalTimestampDiff
@@ -230,6 +224,7 @@ function deserializeHistory(
 
       case MoveType.REDEAL:
       case MoveType.WASTE_TO_FOUNDATION:
+      case MoveType.UNDO:
       case MoveType.PAUSE:
       case MoveType.RESUME:
         move = {

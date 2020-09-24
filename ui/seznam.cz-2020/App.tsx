@@ -25,7 +25,6 @@ interface IProps {
   modalContent: null | React.ComponentType & IModalContentComponentStaticProps
   isModalContentNested: boolean
   onMove: (move: Move) => void
-  onUndo: () => void
   onReset: () => void
   onNewGame: () => void
   onShowHint: () => void
@@ -51,7 +50,7 @@ export default function App(
     ...callbacks
   }: IProps,
 ) {
-  const {onMove, onNewGame, onReset, onShowHint, onUndo, onImport, onPauseGame, onShowSettings} = callbacks
+  const {onMove, onNewGame, onReset, onShowHint, onImport, onPauseGame, onShowSettings} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const previousModalContent = usePrevious(modalContent)
 
@@ -82,7 +81,6 @@ export default function App(
               onPauseGame={onPauseGame}
               onShowHint={onShowHint}
               onShowSettings={onShowSettings}
-              onUndo={onUndo}
             />
           }
           <ModalContentHost

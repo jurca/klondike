@@ -62,6 +62,10 @@ export function executeMove(desk: IDesk, rules: IGameRules, move: Move): IDesk {
         desk.tableau.piles[move.sourcePileIndex].cards[move.topMovedCardIndex],
         desk.tableau.piles[move.targetPileIndex],
       )
+    case MoveType.UNDO:
+      throw new Error(
+        'The UNDO move must be executed on the game itself, since a Desk does not keep track of its state history',
+      )
     case MoveType.PAUSE:
     case MoveType.RESUME:
       return desk
