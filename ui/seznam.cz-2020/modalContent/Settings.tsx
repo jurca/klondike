@@ -4,6 +4,7 @@ import {Type} from '../ModalContentHost'
 import {StockPosition} from '../storage/SettingsStorage'
 import CardBackFaceSettings from './CardBackFaceSettings'
 import DeskBackgroundSettings from './DeskBackgroundSettings'
+import GameplayStatistics from './GameplayStatistics'
 import HowToPlay from './HowToPlay'
 import ListingItem from './ListingItem'
 import ModalContentComponent, {IModalContentComponentProps} from './ModalContentComponent'
@@ -12,6 +13,10 @@ import styles from './settings.css'
 import Toggle from './Toggle'
 
 const Settings: ModalContentComponent = Object.assign(function SettingsUI(props: IModalContentComponentProps) {
+  const onShowGameplayStatistics = React.useMemo(
+    () => props.onShowContent.bind(null, GameplayStatistics, true),
+    [props.onShowContent],
+  )
   const onShowDeskBackgroundSettings = React.useMemo(
     () => props.onShowContent.bind(null, DeskBackgroundSettings, true),
     [props.onShowContent],
@@ -41,7 +46,7 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
             <RightIcon/>
           </span>
         }
-        onClick={() => alert('yay')}
+        onClick={onShowGameplayStatistics}
       />
       <ListingItem
         leftContent='Změnit pozadí hry'

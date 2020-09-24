@@ -1,0 +1,73 @@
+:local(.gameplayStatistics) {
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+
+  flex-direction: column;
+}
+
+:local(.drawnCardsSwitchPanel) {
+  display: flex;
+
+  padding: 8px 0;
+  width: 100%;
+  flex-shrink: 0;
+
+  justify-content: center;
+
+  background: #f0f0f0;
+}
+
+:local(.drawnCardsSwitchButton) {
+  margin: 0 12px;
+  border: none;
+  border-radius: 16px;
+  padding: 0 16px;
+  height: 32px;
+
+  line-height: 32px;
+
+  cursor: pointer;
+
+  background: none;
+}
+
+:local(.activeDrawnCardsButton) {
+  background: #e0e0e0;
+}
+
+:local(.content) {
+  width: 100%;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+:local(.statisticWithIcon) {
+  display: flex;
+
+  height: 100%;
+
+  align-items: center;
+}
+
+:local(.victoryIcon) {
+  margin-right: 6px;
+  width: 24px;
+  height: 24px;
+}
+
+:local(.positiveStatistic) {
+  color: #187f00;
+}
+
+:local(.negativeStatistic) {
+  color: #cc0000;
+}
+
+:local(.separator) {
+  border: none;
+  border-top: 1px solid #e8e8e8;
+  width: 100%;
+  height: 0;
+}

@@ -3,6 +3,7 @@ import CardBackfaceStyle from '../CardBackfaceStyle'
 import DeskStyle from '../DeskStyle'
 import {Type} from '../ModalContentHost'
 import {StockPosition} from '../storage/SettingsStorage'
+import {Statistics} from '../storage/StatisticsStorage'
 import WinnableGamesProvider from '../WinnableGamesProvider'
 
 export interface IModalContentComponentStaticProps {
@@ -13,19 +14,8 @@ export interface IModalContentComponentStaticProps {
 type ModalContentComponent = React.ComponentType<IModalContentComponentProps> & IModalContentComponentStaticProps
 export default ModalContentComponent
 
-export interface IGameplayStats {
-  wonGamesCount: number
-  shortestWonGameDuration: number
-  longestWonGameDuration: number
-  leastMovesToVictory: number
-  mostMovesToVictory: number
-  gamesWonWithoutUndoCount: number
-}
-
 export interface IModalContentComponentProps {
-  gameplayStats: {
-    [drawnCards in 1 | 3]: IGameplayStats
-  }
+  gameplayStats: Statistics
   deskStyle: DeskStyle
   cardBackFaceStyle: CardBackfaceStyle
   stockPosition: StockPosition

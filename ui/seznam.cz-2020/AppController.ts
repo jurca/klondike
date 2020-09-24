@@ -19,6 +19,7 @@ import Settings from './modalContent/Settings'
 import HighScoresStorage from './storage/HighScoresStorage'
 import PausedGameStorage from './storage/PausedGameStorage'
 import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
+import StatisticsStorage, {Statistics} from './storage/StatisticsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
 const AUTOMATIC_HINT_DELAY = 15000
@@ -51,9 +52,11 @@ export default class AppController {
     automaticHintDelay: number,
     stockPosition: StockPosition,
     pausedGame: null | IGame,
+    private gameplayStatistics: Statistics,
     private readonly settingsStorage: SettingsStorage,
     private readonly highScoresStorage: HighScoresStorage,
     private readonly pausedGameStorage: PausedGameStorage,
+    private readonly statisticsStorage: StatisticsStorage,
     private readonly newGameOptions: INewGameRules,
     private readonly botOptions: IBotOptions,
   ) {
@@ -122,24 +125,7 @@ export default class AppController {
   private get modalContentProps(): IModalContentComponentProps {
     // tslint:disable:object-literal-sort-keys
     return {
-      gameplayStats: { // TODO
-        1: {
-          wonGamesCount: 0,
-          shortestWonGameDuration: 0,
-          longestWonGameDuration: 0,
-          leastMovesToVictory: 0,
-          mostMovesToVictory: 0,
-          gamesWonWithoutUndoCount: 0,
-        },
-        3: {
-          wonGamesCount: 0,
-          shortestWonGameDuration: 0,
-          longestWonGameDuration: 0,
-          leastMovesToVictory: 0,
-          mostMovesToVictory: 0,
-          gamesWonWithoutUndoCount: 0,
-        },
-      },
+      gameplayStats: this.gameplayStatistics,
       deskStyle: this.uiState.deskSkin.desk.style,
       cardBackFaceStyle: this.uiState.cardBackFaceStyle,
       stockPosition: this.uiState.stockPosition,
@@ -207,6 +193,12 @@ export default class AppController {
       this.highScoresStorage.addGame(statePatch.game).catch((error) => {
         // tslint:disable-next-line:no-console
         console.error('Failed to add the won game to the high scores table', error)
+      })
+      this.statisticsStorage.addGame(statePatch.game).then((statistics) => {
+        this.gameplayStatistics = statistics
+      }).catch((error) => {
+        // tslint:disable-next-line:no-console
+        console.error('Failed to add the won game to the gameplay statistics', error)
       })
     }
 
