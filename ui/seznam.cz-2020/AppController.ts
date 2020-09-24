@@ -3,7 +3,7 @@ import {render, unmountComponentAtNode} from 'react-dom'
 import {IBotOptions, makeMove} from '../../game/Bot'
 import {ICard, Side} from '../../game/Card'
 import {isVictory} from '../../game/Desk'
-import {createNewGame, executeMove, IGame, INewGameRules, redoNextMove, resetGame, undoLastMove} from '../../game/Game'
+import {createNewGame, executeMove, IGame, INewGameRules, resetGame, undoLastMove} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
 import {deserialize} from '../../game/Serializer'
@@ -104,7 +104,6 @@ export default class AppController {
           isModalContentNested: this.uiState.modalContentStack.length > 1,
           onMove: this.onMove,
           onUndo: this.onUndo,
-          onRedo: this.onRedo,
           onReset: this.onReset,
           onNewGame: this.onShowModalContent.bind(this, NewGame, false),
           onShowHint: this.onShowHint,
@@ -229,21 +228,6 @@ export default class AppController {
       statePatch.game = undoLastMove(this.uiState.game)
     }
     statePatch.game = undoLastMove(statePatch.game || this.uiState.game)
-    statePatch.hint = null
-    this.updateUI(statePatch)
-    this.updateAutomaticHintTimer()
-  }
-
-  private onRedo = (): void => {
-    if (!this.uiState.game) {
-      return
-    }
-
-    const statePatch: Partial<IUIState> = {}
-    statePatch.game = redoNextMove(this.uiState.game)
-    if (statePatch.game.future.length && statePatch.game.future[0][1].move === MoveType.REVEAL_TABLEAU_CARD) {
-      statePatch.game = redoNextMove(statePatch.game)
-    }
     statePatch.hint = null
     this.updateUI(statePatch)
     this.updateAutomaticHintTimer()

@@ -26,7 +26,6 @@ interface IProps {
   isModalContentNested: boolean,
   onMove: (move: Move) => void
   onUndo: () => void
-  onRedo: () => void
   onReset: () => void
   onNewGame: () => void
   onShowHint: () => void
@@ -52,20 +51,20 @@ export default function App(
     ...callbacks
   }: IProps,
 ) {
-  const {onMove, onNewGame, onRedo, onReset, onShowHint, onUndo, onImport, onPauseGame, onShowSettings} = callbacks
+  const {onMove, onNewGame, onReset, onShowHint, onUndo, onImport, onPauseGame, onShowSettings} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const previousModalContent = usePrevious(modalContent)
 
   return (
     <div className={style.app}>
-      <div className={style.toolbar}>
-        <button onClick={onRedo}>-&gt;</button>
-        <button onClick={onReset}>reset</button>
-        &nbsp;|&nbsp;
-        <button onClick={callbacks.onBotMove}>bot</button>
-        <button onClick={onExport}>export</button>
-        <button onClick={onImport}>import</button>
-      </div>
+      {process.env.NODE_ENV === 'development' &&
+        <div className={style.toolbar}>
+          <button onClick={onReset}>reset</button>
+          <button onClick={callbacks.onBotMove}>bot</button>
+          <button onClick={onExport}>export</button>
+          <button onClick={onImport}>import</button>
+        </div>
+      }
       <MobilePhoneHeader onLeave={() => alert('Zatím není implementováno')} onShowSettings={onShowSettings}/>
       <div className={style.primaryContent}>
         <SettingsContext.Provider value={settingsContextValue}>

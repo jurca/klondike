@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
@@ -53,12 +54,17 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
 
-  plugins: process.env.ENTRY_NAME === 'main' ? [
-    new HtmlWebpackPlugin({
-      template: './ui/seznam.cz-2020/index.html',
-      chunks: ['main'],
-    })
-  ] : [],
+  plugins: [
+    new webpack.EnvironmentPlugin([
+      'NODE_ENV',
+    ]),
+    ...(process.env.ENTRY_NAME === 'main' ? [
+      new HtmlWebpackPlugin({
+        template: './ui/seznam.cz-2020/index.html',
+        chunks: ['main'],
+      })
+    ] : []),
+  ],
 
   performance: {
     hints: false,
