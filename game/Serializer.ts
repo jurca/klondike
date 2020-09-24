@@ -111,7 +111,7 @@ function serializeHistory(
 function serializeMove(move: Move & IRecordTimestamp, previousMoveTimestamp: number) {
   return [
     Math.floor(move.logicalTimestamp - previousMoveTimestamp).toString(NUM_RADIX),
-    ',;:-=+*!'.charAt(MOVE_TYPES.indexOf(move.move)),
+    ',;:-=+*!?~'.charAt(MOVE_TYPES.indexOf(move.move)),
     serializeMoveData(),
   ].join('')
 
@@ -131,6 +131,8 @@ function serializeMove(move: Move & IRecordTimestamp, previousMoveTimestamp: num
         ).join('')
       case MoveType.REDEAL:
       case MoveType.WASTE_TO_FOUNDATION:
+      case MoveType.PAUSE:
+      case MoveType.RESUME:
         return ''
       default:
         throw new TypeError(`Unknown move type: ${(move as any).move}`)
@@ -163,7 +165,7 @@ function deserializeHistory(
     let remainingSerializedHistory = serializedHistory.substring(currentMoveStartIndex)
     const logicalTimestampDiff = parseInt(remainingSerializedHistory, NUM_RADIX)
     const moveType = MOVE_TYPES[
-      ',;:-=+*!'.indexOf(remainingSerializedHistory.charAt(logicalTimestampDiff.toString(NUM_RADIX).length))
+      ',;:-=+*!?~'.indexOf(remainingSerializedHistory.charAt(logicalTimestampDiff.toString(NUM_RADIX).length))
     ]
 
     lastLogicalTimestamp += logicalTimestampDiff
@@ -228,6 +230,8 @@ function deserializeHistory(
 
       case MoveType.REDEAL:
       case MoveType.WASTE_TO_FOUNDATION:
+      case MoveType.PAUSE:
+      case MoveType.RESUME:
         move = {
           logicalTimestamp: lastLogicalTimestamp,
           move: moveType as any, // Unfortunately the type check fails in this case, even though everything checks up.

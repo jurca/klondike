@@ -2,9 +2,15 @@ import classnames from 'classnames'
 import * as React from 'react'
 import {IGame, isVictory} from '../../game/Game'
 import {MoveType} from '../../game/Move'
-import {lastItem} from '../../game/util'
+import {lastItem, lastItemOrNull} from '../../game/util'
 import Gear from './icon/gear.svg'
 import style from './topBar.css'
+
+const IGNORED_MOVES = [
+  MoveType.REVEAL_TABLEAU_CARD,
+  MoveType.PAUSE,
+  MoveType.RESUME,
+]
 
 interface IProps {
   game: null | IGame
@@ -13,10 +19,7 @@ interface IProps {
 
 export default function TopBar({game, onShowSettings}: IProps): React.ReactElement {
   const [, tick] = React.useState()
-  const gameplayDuration = game ? (
-    (isVictory(game) ? lastItem(game.history)[1].logicalTimestamp : performance.now()) - game.startTime.logicalTimestamp
-  ) :
-    null
+  const gameplayDuration = game ? getGameplayDuration(game) : null
   React.useEffect(() => {
     if (gameplayDuration) {
       const timeoutId = setTimeout(tick, 1_000 - (gameplayDuration % 1_000), gameplayDuration)
@@ -31,7 +34,7 @@ export default function TopBar({game, onShowSettings}: IProps): React.ReactEleme
     [Math.floor(gameplayDurationSeconds / 60), gameplayDurationSeconds % 60]
   :
     ['--', '--']
-  const moveCount = game?.history.filter((record) => record[1].move !== MoveType.REVEAL_TABLEAU_CARD).length ?? 0
+  const moveCount = game?.history.filter((record) => !IGNORED_MOVES.includes(record[1].move)).length ?? 0
 
   const isMobilePhoneOrAndroidTablet = (
     typeof navigator === 'object' &&
@@ -63,4 +66,24 @@ export default function TopBar({game, onShowSettings}: IProps): React.ReactEleme
       </div>
     </div>
   )
+}
+
+function getGameplayDuration(game: IGame): number {
+  const endTimestamp = isVictory(game) ? lastItem(game.history)[1].logicalTimestamp : performance.now()
+  const {previousTimestamp: lastTimestamp, sum} = game.history.reduce<{previousTimestamp: number, sum: number}>(
+    ({previousTimestamp, sum: partialSum}, [, move]) => {
+      const {move: moveType, logicalTimestamp} = move
+      const timeDelta = moveType === MoveType.RESUME ? 0 : logicalTimestamp - previousTimestamp
+      return {
+        previousTimestamp: logicalTimestamp,
+        sum: partialSum + timeDelta,
+      }
+    },
+    {
+      previousTimestamp: game.startTime.logicalTimestamp,
+      sum: 0,
+    },
+  )
+
+  return lastItemOrNull(game.history)?.[1].move !== MoveType.PAUSE ? sum + (endTimestamp - lastTimestamp) : sum
 }

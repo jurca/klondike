@@ -311,14 +311,14 @@ export default class AppController {
 
   private onPauseGame = (): void => {
     const {game} = this.uiState
-    if (!game) {
+    if (!game || isVictory(game.state)) {
       return
     }
 
     this.updateUI({
       game: null,
       modalContentStack: [PausedGame],
-      pausedGame: game,
+      pausedGame: executeMove(game, {move: MoveType.PAUSE}),
     })
     this.pausedGameStorage.setPausedGame(game).catch((error) => {
       // tslint:disable-next-line:no-console
@@ -332,7 +332,7 @@ export default class AppController {
     }
 
     this.updateUI({
-      game: this.uiState.pausedGame,
+      game: executeMove(this.uiState.pausedGame, {move: MoveType.RESUME}),
       modalContentStack: [],
       pausedGame: null,
     })

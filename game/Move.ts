@@ -9,6 +9,8 @@ export enum MoveType {
   REVEAL_TABLEAU_CARD = 'MoveType.REVEAL_TABLEAU_CARD',
   FOUNDATION_TO_TABLEAU = 'MoveType.FOUNDATION_TO_TABLEAU',
   TABLEAU_TO_TABLEAU = 'MoveType.TABLEAU_TO_TABLEAU',
+  PAUSE = 'MoveType.PAUSE',
+  RESUME = 'MoveType.RESUME',
 }
 
 interface IMove<M extends MoveType> {
@@ -56,4 +58,6 @@ export type Move =
   ITableauToFoundationMove |
   IRevealTableauCardMove |
   IFoundationToTableauMove |
-  ITableauToTableauMove
+  ITableauToTableauMove |
+  IMove<MoveType.PAUSE> |
+  IMove<MoveType.RESUME>

@@ -62,6 +62,9 @@ export function executeMove(desk: IDesk, rules: IGameRules, move: Move): IDesk {
         desk.tableau.piles[move.sourcePileIndex].cards[move.topMovedCardIndex],
         desk.tableau.piles[move.targetPileIndex],
       )
+    case MoveType.PAUSE:
+    case MoveType.RESUME:
+      return desk
     default:
       throw new Error(`Unknown move type: ${move && (move as any).move}`)
   }
