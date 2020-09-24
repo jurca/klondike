@@ -46,7 +46,7 @@ export default function BottomBar({onNewGame, onPauseGame, onShowHint, onUndo}: 
               <span className={style.icon}>
                 <SquircleQuestion/>
               </span>
-              Nápověda
+              Poradit tah
             </button>
           </div>
         </div>
