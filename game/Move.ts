@@ -50,6 +50,12 @@ interface ITableauToTableauMove extends IMove<MoveType.TABLEAU_TO_TABLEAU> {
   targetPileIndex: number
 }
 
+interface IPauseMove extends IMove<MoveType.PAUSE> {
+}
+
+interface IResumeMove extends IMove<MoveType.RESUME> {
+}
+
 export type Move =
   IDrawCardsMove |
   IRedealMove |
@@ -59,5 +65,5 @@ export type Move =
   IRevealTableauCardMove |
   IFoundationToTableauMove |
   ITableauToTableauMove |
-  IMove<MoveType.PAUSE> |
-  IMove<MoveType.RESUME>
+  IPauseMove |
+  IResumeMove
