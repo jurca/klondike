@@ -55,9 +55,10 @@ module.exports = {
   },
 
   plugins: [
-    new webpack.EnvironmentPlugin([
-      'NODE_ENV',
-    ]),
+    new webpack.EnvironmentPlugin({
+      NODE_ENV: 'production',
+      ENABLE_FILE_SYSTEM_LOCAL_STORAGE: '',
+    }),
     ...(process.env.ENTRY_NAME === 'main' ? [
       new HtmlWebpackPlugin({
         template: './ui/seznam.cz-2020/index.html',
