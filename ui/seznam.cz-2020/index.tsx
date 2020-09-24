@@ -10,12 +10,12 @@ import WinnableGamesProvider from './WinnableGamesProvider'
 const STORAGE_KEY_PREFIX = 'klondike-seznam.cz-2020'
 
 const highScoresStorage = new HighScoresStorage(
-  primaryStorageFactory(`${STORAGE_KEY_PREFIX}.highScores`),
+  primaryStorageFactory(`${STORAGE_KEY_PREFIX}.highScores.`),
   MAX_HIGH_SCORE_TABLE_ENTRIES,
 )
-const settingsStorage = new SettingsStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.settings`))
-const pausedGameStorage = new PausedGameStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.pausedGame`))
-const statisticsStorage = new StatisticsStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.statistics`))
+const settingsStorage = new SettingsStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.settings.`))
+const pausedGameStorage = new PausedGameStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.pausedGame.`))
+const statisticsStorage = new StatisticsStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.statistics.`))
 
 Promise.all([
   settingsStorage.getDeskSkin(),
