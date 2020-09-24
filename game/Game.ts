@@ -223,3 +223,13 @@ export function getGameplayDuration(game: IGame): number {
 
   return lastItemOrNull(game.history)?.[1].move !== MoveType.PAUSE ? sum + (endTimestamp - lastTimestamp) : sum
 }
+
+const MOVES_OMITTED_FROM_MOVE_COUNT: readonly MoveType[] = [
+  MoveType.REVEAL_TABLEAU_CARD,
+  MoveType.PAUSE,
+  MoveType.RESUME,
+]
+
+export function getMoveCount(games: IGame): number {
+  return games.history.filter((record) => !MOVES_OMITTED_FROM_MOVE_COUNT.includes(record[1].move)).length
+}
