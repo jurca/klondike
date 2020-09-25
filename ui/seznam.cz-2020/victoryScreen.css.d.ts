@@ -3,6 +3,7 @@
 interface CssExports {
   'canvas': string;
   'victoryScreen': string;
+  'withBottomBar': string;
 }
 export const cssExports: CssExports;
 export default cssExports;

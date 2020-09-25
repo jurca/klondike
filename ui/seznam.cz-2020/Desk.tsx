@@ -173,6 +173,7 @@ export default function Desk(
         <VictoryScreen
           {...VICTORY_SCREEN_OPTIONS}
           actors={victoryScreenActors}
+          isBottomBarVisible={!isFullscreenActive && !previewMode}
         />
       }
     </div>

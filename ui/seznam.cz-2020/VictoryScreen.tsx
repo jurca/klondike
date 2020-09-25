@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { ICard } from '../../game/Card'
@@ -16,6 +17,7 @@ interface IProps {
   timeDeltaCap: number
   actors: ReadonlyMap<React.RefObject<Element>, ICard>
   nextActorStartDelay: number
+  isBottomBarVisible: boolean
 }
 
 export default function VictoryScreen(props: IProps) {
@@ -170,7 +172,7 @@ export default function VictoryScreen(props: IProps) {
   }, [actorsLoading])
 
   return (
-    <div className={style.victoryScreen}>
+    <div className={classnames(style.victoryScreen, props.isBottomBarVisible && style.withBottomBar)}>
       <canvas className={style.canvas} ref={canvasRef}/>
     </div>
   )
