@@ -2,6 +2,7 @@ import {createElement} from 'react'
 import {render, unmountComponentAtNode} from 'react-dom'
 import {IBotOptions, makeMove} from '../../game/Bot'
 import {ICard, Side} from '../../game/Card'
+import {expand} from '../../game/Compactor'
 import {isVictory} from '../../game/Desk'
 import {createNewGame, executeMove, IGame, INewGameRules, resetGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
@@ -111,10 +112,11 @@ export default class AppController {
           onShowHint: this.onShowHint,
           onBotMove: this.onBotMove,
           onPauseGame: this.onPauseGame,
-          onImport: this.onImport,
           onCloseModalContent: this.onCloseModalContent,
           onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
           onShowSettings: this.onShowModalContent.bind(this, Settings, false),
+          onImport: this.onImport,
+          onExpand: this.onExpand,
         },
       ),
       this.uiRoot,
@@ -364,6 +366,13 @@ export default class AppController {
     const state = prompt('Exportovaný stav hry:') || ''
     this.updateUI({
       game: deserialize(state),
+    })
+  }
+
+  private onExpand = (): void => {
+    const state = prompt('Exportovaný stav hry:') || ''
+    this.updateUI({
+      game: expand(JSON.parse(state)),
     })
   }
 

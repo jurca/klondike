@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {ICard} from '../../game/Card'
+import {compact} from '../../game/Compactor'
 import {IGame} from '../../game/Game'
 import {Move} from '../../game/Move'
 import {serialize} from '../../game/Serializer'
@@ -30,10 +31,11 @@ interface IProps {
   onShowHint: () => void
   onBotMove: () => void
   onPauseGame: () => void
-  onImport: () => void
   onLeaveCurrentModalContent: () => void
   onCloseModalContent: () => void
   onShowSettings: () => void
+  onImport: () => void
+  onExpand: () => void
 }
 
 export default function App(
@@ -50,7 +52,7 @@ export default function App(
     ...callbacks
   }: IProps,
 ) {
-  const {onMove, onNewGame, onReset, onShowHint, onImport, onPauseGame, onShowSettings} = callbacks
+  const {onMove, onNewGame, onReset, onShowHint, onPauseGame, onShowSettings, onImport, onExpand} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const previousModalContent = usePrevious(modalContent)
 
@@ -62,6 +64,8 @@ export default function App(
           <button onClick={callbacks.onBotMove}>bot</button>
           <button onClick={onExport}>export</button>
           <button onClick={onImport}>import</button>
+          <button onClick={onCompact}>compact</button>
+          <button onClick={onExpand}>expand</button>
         </div>
       }
       <MobilePhoneHeader onLeave={() => alert('Zatím není implementováno')} onShowSettings={onShowSettings}/>
@@ -100,6 +104,10 @@ export default function App(
 
   function onExport(): void {
     console.log(game && serialize(game)) // tslint:disable-line:no-console
+  }
+
+  function onCompact(): void {
+    console.log(game && JSON.stringify(compact(game))) // tslint:disable-line:no-console
   }
 }
 
