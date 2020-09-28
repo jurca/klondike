@@ -87,6 +87,10 @@ export function expandDeck(deck: readonly CompactCard[]): ICard[] {
     )
     const [reconstructedCard] = remainingDeckCards.splice(cardIndex, 1)
     reconstructedDeck.push(reconstructedCard)
+
+    if (!remainingDeckCards.length) { // The game uses multiple card decks
+      remainingDeckCards.splice(0, 0, ...DECK)
+    }
   }
   reconstructedDeck.push(...remainingDeckCards)
   return reconstructedDeck
