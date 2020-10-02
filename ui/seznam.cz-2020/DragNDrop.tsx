@@ -100,7 +100,7 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
           if (isNewDragNDrop) {
             dragged.setAttribute('is-dragged', '')
           }
-          dragged.style.transform = `translateX(${deltaX}px) translateY(${deltaY}px)`
+          dragged.style.transform = `translate(${deltaX}px, ${deltaY}px)`
         }
       }
     }
