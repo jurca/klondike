@@ -52,7 +52,7 @@ export function compact(game: IGame): ICompactGame {
   const initialState = game.history.length ? game.history[0][0] : game.state
   const cardsDeck = compactDeckFromDesk(initialState)
   const compactedHistoryRecords = compactHistoryRecords(game.history.concat(game.future).map(
-    (record, index, records) => compactHistoryRecord(
+    (record, index, records) => compactHistoryRecordTimestamp(
       record,
       records[index - 1]?.[1].logicalTimestamp ?? game.startTime.logicalTimestamp,
     ),
@@ -175,7 +175,10 @@ function compactHistoryRecords(records: readonly CompactTimeHistoryRecord[]): Co
   return compactedRecords
 }
 
-function compactHistoryRecord(record: IGame['history'][0], previousLogicalTimestamp: number): CompactTimeHistoryRecord {
+function compactHistoryRecordTimestamp(
+  record: IGame['history'][0],
+  previousLogicalTimestamp: number,
+): CompactTimeHistoryRecord {
   const {logicalTimestamp, ...move} = record[1]
   return {
     ...move,
@@ -223,7 +226,7 @@ function expandHistoryRecords(
 
   const historyRecords: Array<IGame['history'][0][1]> = []
   for (const record of expandedRecords) {
-    historyRecords.push(expandHistoryRecord(
+    historyRecords.push(expandHistoryRecordTimestamp(
       record,
       lastItemOrNull(historyRecords)?.logicalTimestamp ?? 0,
     ))
@@ -243,7 +246,7 @@ function expandHistoryRecords(
   return game
 }
 
-function expandHistoryRecord(
+function expandHistoryRecordTimestamp(
   record: CompactTimeHistoryRecord,
   previousLogicalTimestamp: number,
 ): IGame['history'][0][1] {
