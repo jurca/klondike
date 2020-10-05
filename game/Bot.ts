@@ -1,6 +1,6 @@
 import {Side} from './Card'
 import {executeMove as executeMoveOnDesk, IDesk, isVictory, isVictoryGuaranteed} from './Desk'
-import {createNextGameState, executeMove, IGame, IGameRules} from './Game'
+import {executeMove, IGame, IGameRules} from './Game'
 import {Move, MoveType} from './Move'
 import {getMoveHints, HintGeneratorMode, MOVE_CONFIDENCES, MoveConfidence, MoveHint} from './MoveHintGenerator'
 import {lastItemOrNull} from './util'
@@ -26,7 +26,7 @@ export function makeMove(game: IGame, options: IBotOptions): IGame {
   }
 
   const [hint] = bestMove
-  return executeMoveHint(game, hint, false)
+  return executeMoveHint(game, hint)
 }
 
 export function makeMoveOnDesk(desk: IDesk, rules: IGameRules, options: IBotOptions): IDesk {
@@ -118,42 +118,34 @@ function findBestMove(
   return [bestHint, bestRank]
 }
 
-function executeMoveHint(game: IGame, hint: MoveHint, autoDrawCards: boolean): IGame {
+function executeMoveHint(game: IGame, hint: MoveHint): IGame {
   const moveType = hint[0].move
-  if (!autoDrawCards || (moveType !== MoveType.WASTE_TO_FOUNDATION && moveType !== MoveType.WASTE_TO_TABLEAU)) {
-    return createNextGameState(game, executeMoveHintOnDesk(game.state, game.rules, hint, autoDrawCards), hint[0])
-  }
-
   const topWasteCard = lastItemOrNull(game.state.waste.cards)
-  if (topWasteCard?.rank === hint[1].rank && topWasteCard.color === hint[1].color) {
-    return createNextGameState(game, executeMoveHintOnDesk(game.state, game.rules, hint, autoDrawCards), hint[0])
-  }
+  const needsToDrawCards =
+    (moveType === MoveType.WASTE_TO_FOUNDATION || moveType === MoveType.WASTE_TO_TABLEAU) &&
+    (topWasteCard?.rank !== hint[1].rank || topWasteCard.color !== hint[1].color)
 
-  const stockCyclingMove: Move = game.state.stock.cards.length ?
-    {
-      drawnCards: game.rules.drawnCards,
-      move: MoveType.DRAW_CARDS,
-    }
-  :
-    {
-      move: MoveType.REDEAL,
-    }
-  const gameAfterDrawingACard = executeMove(game, stockCyclingMove)
-  return executeMoveHint(gameAfterDrawingACard, hint, autoDrawCards)
+  const moveToExecute = needsToDrawCards ? createStockCyclingMove(game.state, game.rules) : hint[0]
+  return executeMove(game, moveToExecute)
 }
 
 function executeMoveHintOnDesk(deskState: IDesk, rules: IGameRules, hint: MoveHint, autoDrawCards: boolean): IDesk {
   const moveType = hint[0].move
-  if (moveType !== MoveType.WASTE_TO_FOUNDATION && moveType !== MoveType.WASTE_TO_TABLEAU) {
-    return executeMoveOnDesk(deskState, rules, hint[0])
-  }
-
   const topWasteCard = lastItemOrNull(deskState.waste.cards)
-  if (topWasteCard?.rank === hint[1].rank && topWasteCard.color === hint[1].color) {
-    return executeMoveOnDesk(deskState, rules, hint[0])
-  }
+  const needsToDrawCards =
+    (moveType === MoveType.WASTE_TO_FOUNDATION || moveType === MoveType.WASTE_TO_TABLEAU) &&
+    (topWasteCard?.rank !== hint[1].rank || topWasteCard.color !== hint[1].color)
 
-  const stockCyclingMove: Move = deskState.stock.cards.length ?
+  const moveToExecute = needsToDrawCards ? createStockCyclingMove(deskState, rules) : hint[0]
+  const deskAfterExecutingMove = executeMoveOnDesk(deskState, rules, moveToExecute)
+  return autoDrawCards && needsToDrawCards ?
+    executeMoveHintOnDesk(deskAfterExecutingMove, rules, hint, autoDrawCards)
+  :
+    deskAfterExecutingMove
+}
+
+function createStockCyclingMove(desk: IDesk, rules: IGameRules): Move {
+  return desk.stock.cards.length ?
     {
       drawnCards: rules.drawnCards,
       move: MoveType.DRAW_CARDS,
@@ -162,10 +154,4 @@ function executeMoveHintOnDesk(deskState: IDesk, rules: IGameRules, hint: MoveHi
     {
       move: MoveType.REDEAL,
     }
-  const deskAfterDrawingACard = executeMoveOnDesk(deskState, rules, stockCyclingMove)
-  if (autoDrawCards) {
-    return executeMoveHintOnDesk(deskAfterDrawingACard, rules, hint, autoDrawCards)
-  }
-
-  return deskAfterDrawingACard
 }
