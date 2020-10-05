@@ -7,6 +7,7 @@ import SettingsStorage from './storage/SettingsStorage'
 import StatisticsStorage from './storage/StatisticsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
+const UI_CONTAINER_ID = 'app'
 const STORAGE_KEY_PREFIX = 'klondike-seznam.cz-2020'
 
 const highScoresStorage = new HighScoresStorage(
@@ -22,10 +23,17 @@ Promise.all([
   settingsStorage.getCardBackFaceStyle(),
   settingsStorage.getAutomaticHintDelay(),
   settingsStorage.getStockPosition(),
+  settingsStorage.getEnableAutomaticCompletion(),
   pausedGameStorage.getPausedGame(),
   statisticsStorage.getStatistics(),
-] as const).then(([deskSkin, cardBackFaceStyle, automaticHintDelay, stockPosition, pausedGame, statistics]) => {
-  const uiRoot = document.getElementById('app')!
+] as const).then(
+  ([deskSkin, cardBackFaceStyle, automaticHintDelay, stockPosition, automaticCompletionEnabled, pausedGame, statistics],
+) => {
+  const uiRoot = document.getElementById(UI_CONTAINER_ID)
+  if (!uiRoot) {
+    throw new Error(`Cannot find the app UI container element - an element with ${UI_CONTAINER_ID} ID`)
+  }
+
   const winnableGamesProvider = new WinnableGamesProvider()
   const appController = new AppController(
     uiRoot,
@@ -34,6 +42,7 @@ Promise.all([
     cardBackFaceStyle,
     automaticHintDelay,
     stockPosition,
+    automaticCompletionEnabled,
     pausedGame,
     statistics,
     settingsStorage,

@@ -12,6 +12,7 @@ enum StorageKey {
   CARD_BACK_FACE_STYLE = 'SettingsStorage.CARD_BACK_FACE_STYLE',
   DESK_SKIN = 'SettingsStorage.DESK_SKIN',
   STOCK_POSITION = 'SettingsStorage.STOCK_POSITION',
+  ENABLE_AUTOMATIC_COMPLETION = 'SettingsStorage.ENABLE_AUTOMATIC_COMPLETION',
 }
 
 export default class SettingsStorage {
@@ -68,5 +69,15 @@ export default class SettingsStorage {
 
   public setStockPosition(stockPosition: StockPosition): Promise<void> {
     return this.storage.set(StorageKey.STOCK_POSITION, stockPosition)
+  }
+
+  public getEnableAutomaticCompletion(): Promise<boolean> {
+    return this.storage.get(StorageKey.ENABLE_AUTOMATIC_COMPLETION).then(
+      (enableCompletion) => !!enableCompletion,
+    )
+  }
+
+  public setEnableAutomaticCompletion(enableAutomaticCompletion: boolean): Promise<void> {
+    return this.storage.set(StorageKey.ENABLE_AUTOMATIC_COMPLETION, enableAutomaticCompletion)
   }
 }

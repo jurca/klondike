@@ -20,6 +20,7 @@ export interface IModalContentComponentProps {
   cardBackFaceStyle: CardBackfaceStyle
   stockPosition: StockPosition
   automaticHintEnabled: boolean
+  automaticCompletionEnabled: boolean
   defaultTableauPiles: number,
   winnableGamesProvider: WinnableGamesProvider,
   onNewGame(drawnCards: 1 | 3): void
@@ -31,4 +32,5 @@ export interface IModalContentComponentProps {
   onSetCardBackFaceStyle(newBackFaceStyle: CardBackfaceStyle): void
   onSetStockPosition(newPosition: StockPosition): void
   onSetAutomaticHintEnabled(enabled: boolean): void
+  onSetAutomaticCompletionEnabled(enabled: boolean): void
 }

@@ -4,7 +4,7 @@ import {IBotOptions, makeMove} from '../../game/Bot'
 import {ICard, Side} from '../../game/Card'
 import {expand} from '../../game/Compactor'
 import {isVictory} from '../../game/Desk'
-import {createNewGame, executeMove, IGame, INewGameRules, resetGame} from '../../game/Game'
+import {createNewGame, executeMove, IGame, INewGameRules, isVictoryGuaranteed, resetGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
 import {deserialize} from '../../game/Serializer'
@@ -23,7 +23,8 @@ import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import StatisticsStorage, {Statistics} from './storage/StatisticsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
-const AUTOMATIC_HINT_DELAY = 15000
+const AUTOMATIC_HINT_DELAY = 15_000
+const AUTOMATIC_COMPLETION_MOVE_INTERVAL = 250
 
 interface IUIState {
   game: null | IGame
@@ -32,14 +33,17 @@ interface IUIState {
   cardBackFaceStyle: CardBackfaceStyle
   automaticHintDelay: number,
   stockPosition: StockPosition,
+  automaticCompletionEnabled: boolean,
   modalContentStack: readonly ModalContentComponent[]
   pausedGame: null | IGame
+  isAutoCompletingGame: boolean
 }
 
 export default class AppController {
   private readonly uiState: Readonly<IUIState>
   private gameAddedToHighScores: boolean = false
   private automaticHintTimeoutId: null | number = null
+  private automaticCompletionTimeoutId: null | number = null
   private readonly modalContentComponentCache = new WeakMap<
     ModalContentComponent,
     React.ComponentType & IModalContentComponentStaticProps
@@ -52,6 +56,7 @@ export default class AppController {
     cardBackFaceStyle: CardBackfaceStyle,
     automaticHintDelay: number,
     stockPosition: StockPosition,
+    automaticCompletionEnabled: boolean,
     pausedGame: null | IGame,
     private gameplayStatistics: Statistics,
     private readonly settingsStorage: SettingsStorage,
@@ -62,11 +67,13 @@ export default class AppController {
     private readonly botOptions: IBotOptions,
   ) {
     this.uiState = {
+      automaticCompletionEnabled,
       automaticHintDelay,
       cardBackFaceStyle,
       deskSkin,
       game: null,
       hint: null,
+      isAutoCompletingGame: false,
       modalContentStack: [pausedGame ? PausedGame : NewGame],
       pausedGame,
       stockPosition,
@@ -132,6 +139,7 @@ export default class AppController {
       cardBackFaceStyle: this.uiState.cardBackFaceStyle,
       stockPosition: this.uiState.stockPosition,
       automaticHintEnabled: !!this.uiState.automaticHintDelay,
+      automaticCompletionEnabled: this.uiState.automaticCompletionEnabled,
       onNewGame: this.onNewWinnableGame,
       onShowContent: this.onShowModalContent,
       onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
@@ -143,6 +151,7 @@ export default class AppController {
       onSetCardBackFaceStyle: this.onCardBackStyleChange,
       onSetStockPosition: this.onStockPositionChange,
       onSetAutomaticHintEnabled: this.onSetAutomaticHintEnabled,
+      onSetAutomaticCompletionEnabled: this.onSetAutomaticCompletionEnabled,
     }
     // tslint:enable:object-literal-sort-keys
   }
@@ -166,7 +175,7 @@ export default class AppController {
   }
 
   private onMove = (move: Move): void => {
-    if (!this.uiState.game) {
+    if (!this.uiState.game || this.uiState.isAutoCompletingGame) {
       return
     }
 
@@ -204,6 +213,17 @@ export default class AppController {
       })
     }
 
+    if (this.uiState.automaticCompletionEnabled && isVictoryGuaranteed(statePatch.game)) {
+      statePatch.isAutoCompletingGame = true
+      if (this.automaticCompletionTimeoutId) {
+        window.clearTimeout(this.automaticCompletionTimeoutId)
+      }
+      this.automaticCompletionTimeoutId = window.setTimeout(
+        this.executeAutoCompletionMove,
+        AUTOMATIC_COMPLETION_MOVE_INTERVAL,
+      )
+    }
+
     this.updateUI(statePatch)
     this.updateAutomaticHintTimer()
   }
@@ -216,6 +236,7 @@ export default class AppController {
     this.updateUI({
       game: resetGame(this.uiState.game),
       hint: null,
+      isAutoCompletingGame: false,
     })
     this.updateAutomaticHintTimer()
   }
@@ -224,6 +245,7 @@ export default class AppController {
     const statePatch: Partial<IUIState> = {}
     statePatch.game = this.createNewGame(drawnCards)
     statePatch.hint = null
+    statePatch.isAutoCompletingGame = false
     statePatch.modalContentStack = []
     this.gameAddedToHighScores = false
     this.updateUI(statePatch)
@@ -270,7 +292,7 @@ export default class AppController {
 
   private onPauseGame = (): void => {
     const {game} = this.uiState
-    if (!game || isVictory(game.state)) {
+    if (!game || isVictory(game.state) || this.uiState.isAutoCompletingGame) {
       return
     }
 
@@ -337,6 +359,16 @@ export default class AppController {
 
   private onSetAutomaticHintEnabled = (enabled: boolean): void => {
     this.onAutomaticHintDelayChange(enabled ? AUTOMATIC_HINT_DELAY : 0)
+  }
+
+  private onSetAutomaticCompletionEnabled = (enabled: boolean): void => {
+    this.settingsStorage.setEnableAutomaticCompletion(enabled).catch((error) => {
+      // tslint:disable-next-line:no-console
+      console.error('Failed to save automatic game completion preference', error)
+    })
+    this.updateUI({
+      automaticCompletionEnabled: enabled,
+    })
   }
 
   private onAutomaticHintDelayChange = (newAutomaticHintDelay: number): void => {
@@ -424,5 +456,26 @@ export default class AppController {
       },
       deck,
     )
+  }
+
+  private executeAutoCompletionMove = (): void => {
+    this.automaticCompletionTimeoutId = null
+    if (!this.uiState.game || !this.uiState.isAutoCompletingGame) {
+      return
+    }
+
+    const statePatch: Partial<IUIState> = {}
+    statePatch.game = makeMove(this.uiState.game, this.botOptions)
+
+    if (isVictory(statePatch.game.state)) {
+      statePatch.isAutoCompletingGame = false
+    } else {
+      this.automaticCompletionTimeoutId = window.setTimeout(
+        this.executeAutoCompletionMove,
+        AUTOMATIC_COMPLETION_MOVE_INTERVAL,
+      )
+    }
+
+    this.updateUI(statePatch)
   }
 }

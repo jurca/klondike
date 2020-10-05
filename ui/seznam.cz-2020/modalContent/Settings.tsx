@@ -35,6 +35,10 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
     ),
     [props.stockPosition, props.onSetStockPosition],
   )
+  const onToggleAutomaticCompletionEnabled = React.useMemo(
+    () => () => props.onSetAutomaticCompletionEnabled(!props.automaticCompletionEnabled),
+    [props.automaticCompletionEnabled, props.onSetAutomaticCompletionEnabled],
+  )
   const onShowHowTo = React.useMemo(() => props.onShowContent.bind(null, HowToPlay, true), [props.onShowContent])
 
   return (
@@ -81,6 +85,15 @@ const Settings: ModalContentComponent = Object.assign(function SettingsUI(props:
           <Toggle
             defaultChecked={props.stockPosition === StockPosition.RIGHT}
             onChange={onFlipStockPosition}
+          />
+        }
+      />
+      <ListingItem
+        leftContent='Automatické dokončení hry'
+        rightContent={
+          <Toggle
+            defaultChecked={props.automaticCompletionEnabled}
+            onChange={onToggleAutomaticCompletionEnabled}
           />
         }
       />
