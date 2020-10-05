@@ -50,14 +50,7 @@ interface IProps {
 }
 
 export default function DragNDrop({children, onEntityDragged}: IProps) {
-  const [contextValue, setContextValue] = React.useState<IDragNDropContextValue>(DRAG_N_DROP_CONTEXT_DEFAULT_VALUE)
-  const updateContextValue = React.useMemo(
-    () => (partialValue: Partial<IDragNDropContextValue>) => setContextValue({
-      ...contextValue,
-      ...partialValue,
-    }),
-    [contextValue, setContextValue],
-  )
+  const [contextValue] = React.useState<IDragNDropContextValue>(DRAG_N_DROP_CONTEXT_DEFAULT_VALUE)
 
   const dragNDropState = React.useMemo(() => ({
     ...DRAG_N_DROP_DEFAULT_STATE,
@@ -129,6 +122,10 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     () => onTouchStart.bind(null, contextValue, setDragNDropState),
     [contextValue, setDragNDropState],
   )
+  const onPointerDownListener = React.useMemo(
+    () => onPointerDown.bind(null, contextValue, setDragNDropState),
+    [contextValue, setDragNDropState],
+  )
   const onMouseMoveListener = React.useMemo(
     () => onMouseMove.bind(null, dragNDropState, setDragNDropState),
     [dragNDropState, setDragNDropState],
@@ -137,29 +134,47 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
     () => onTouchMove.bind(null, dragNDropState, setDragNDropState),
     [dragNDropState, setDragNDropState],
   )
+  const onPointerMoveListener = React.useMemo(
+    () => onPointerMove.bind(null, dragNDropState, setDragNDropState),
+    [dragNDropState, setDragNDropState],
+  )
 
   const onClickListener = React.useMemo(
     () => onClick.bind(null, dragNDropState, setDragNDropState, onElementDragged),
-    [updateContextValue, contextValue, onElementDragged],
+    [dragNDropState, setDragNDropState, onElementDragged],
   )
   const onMouseUpListener = React.useMemo(
     () => onMouseUp.bind(null, contextValue, dragNDropState, setDragNDropState, onElementDragged),
-    [updateContextValue, contextValue, onElementDragged],
+    [contextValue, dragNDropState, setDragNDropState, onElementDragged],
   )
   const onTouchEndListener = React.useMemo(
     () => onTouchEnd.bind(null, contextValue, dragNDropState, setDragNDropState, onElementDragged),
-    [updateContextValue, contextValue, onElementDragged],
-    )
+    [contextValue, dragNDropState, setDragNDropState, onElementDragged],
+  )
+  const onPointerUpListener = React.useMemo(
+    () => onPointerUp.bind(null, contextValue, dragNDropState, setDragNDropState, onElementDragged),
+    [contextValue, dragNDropState, setDragNDropState, onElementDragged],
+  )
+  const onPointerCancelListener = React.useMemo(
+    () => onPointerCancel.bind(null, dragNDropState, setDragNDropState),
+    [dragNDropState, setDragNDropState],
+  )
 
   React.useEffect(() => {
-    addEventListener('touchmove', onTouchMoveListener)
+    addEventListener('touchmove', onTouchMoveListener, {passive: false})
+    addEventListener('pointermove', onPointerMoveListener)
     addEventListener('mouseup', onMouseUpListener)
     addEventListener('touchend', onTouchEndListener)
+    addEventListener('pointerup', onPointerUpListener)
+    addEventListener('pointercancel', onPointerCancelListener)
 
     return () => {
-      removeEventListener('mouseup', onMouseUpListener)
+      removeEventListener('pointercancel', onPointerCancelListener)
+      removeEventListener('pointerup', onPointerUpListener)
       removeEventListener('touchend', onTouchEndListener)
-      addEventListener('touchmove', onTouchMoveListener)
+      removeEventListener('mouseup', onMouseUpListener)
+      removeEventListener('pointermove', onPointerMoveListener)
+      addEventListener('touchmove', onTouchMoveListener, {passive: false})
     }
   }, [onMouseUpListener, onTouchEndListener])
 
@@ -169,6 +184,7 @@ export default function DragNDrop({children, onEntityDragged}: IProps) {
       onMouseDown={onMouseDownListener}
       onMouseMove={onMouseMoveListener}
       onTouchStart={onTouchStartListener}
+      onPointerDown={onPointerDownListener}
       onClick={onClickListener}
     >
       <DRAG_N_DROP_CONTEXT.Provider value={contextValue}>
@@ -185,7 +201,7 @@ function onTouchStart(
   setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.TouchEvent,
 ): void {
-  if (currentlyTrackedTouchId) {
+  if (currentlyTrackedTouchId || currentlyTrackedPointerId !== null) {
     return
   }
 
@@ -197,6 +213,7 @@ function onTouchStart(
   currentlyTrackedTouchId = currentTouch.identifier
   const dragContainer = currentTouch.target.closest('ui-draggable') as null | HTMLElement
   if (dragContainer) {
+    event.preventDefault()
     onDragStart(currentContextValue, setState, dragContainer, {
       x: currentTouch.pageX,
       y: currentTouch.pageY,
@@ -210,7 +227,12 @@ function onMouseDown(
   setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.MouseEvent<HTMLDivElement>,
 ): void {
-  if (!(event.target instanceof Element) || event.button !== 0) {
+  if (
+    !(event.target instanceof Element) ||
+    event.button !== 0 ||
+    currentlyTrackedTouchId ||
+    currentlyTrackedPointerId !== null
+  ) {
     return
   }
 
@@ -223,6 +245,27 @@ function onMouseDown(
   } else if (dragNDropState.selected && !event.target.closest('drop-area')) {
     setState({
       selected: null,
+    })
+  }
+}
+
+let currentlyTrackedPointerId: null | number = null
+
+function onPointerDown(
+  currentContextValue: IDragNDropContextValue,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
+  event: React.PointerEvent<HTMLDivElement>,
+): void {
+  if (event.button !== 0 || !(event.target instanceof Element) || currentlyTrackedPointerId !== null) {
+    return
+  }
+
+  currentlyTrackedPointerId = event.pointerId
+  const dragContainer = event.target.closest('ui-draggable') as null | HTMLElement
+  if (dragContainer) {
+    onDragStart(currentContextValue, setState, dragContainer, {
+      x: event.pageX,
+      y: event.pageY,
     })
   }
 }
@@ -260,7 +303,7 @@ function onTouchMove(
   setState: (statePatch: Partial<IDragNDropState>) => void,
   event: TouchEvent,
 ): void {
-  if (!state.dragged) {
+  if (!state.dragged || currentlyTrackedPointerId !== null) {
     return
   }
 
@@ -279,6 +322,21 @@ function onMouseMove(
   state: IDragNDropState,
   setState: (statePatch: Partial<IDragNDropState>) => void,
   event: React.MouseEvent<HTMLElement>,
+): void {
+  if (!state.dragged || currentlyTrackedTouchId || currentlyTrackedPointerId !== null) {
+    return
+  }
+
+  onDrag(state, setState, {
+    x: event.pageX,
+    y: event.pageY,
+  })
+}
+
+function onPointerMove(
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
+  event: PointerEvent,
 ): void {
   if (!state.dragged) {
     return
@@ -311,7 +369,7 @@ function onTouchEnd(
   event: TouchEvent,
 ): void {
   const currentTouch = Array.from(event.changedTouches).find((touch) => touch.identifier === currentlyTrackedTouchId)
-  if (!currentTouch) {
+  if (!currentTouch || currentlyTrackedPointerId !== null) {
     return
   }
 
@@ -331,10 +389,49 @@ function onMouseUp(
   dragCallback: DragCallback,
   event: MouseEvent,
 ): void {
+  if (state.dragged && !currentlyTrackedTouchId && currentlyTrackedPointerId === null) {
+    onDragEnd(currentContextValue, state, setState, dragCallback, {
+      x: event.pageX,
+      y: event.pageY,
+    })
+  }
+}
+
+function onPointerUp(
+  currentContextValue: IDragNDropContextValue,
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
+  dragCallback: DragCallback,
+  event: PointerEvent,
+): void {
+  if (event.pointerId !== currentlyTrackedPointerId) {
+    return
+  }
+
+  currentlyTrackedPointerId = null
+
   if (state.dragged) {
     onDragEnd(currentContextValue, state, setState, dragCallback, {
       x: event.pageX,
       y: event.pageY,
+    })
+  }
+}
+
+function onPointerCancel(
+  state: IDragNDropState,
+  setState: (statePatch: Partial<IDragNDropState>) => void,
+  event: PointerEvent,
+): void {
+  if (event.pointerId !== currentlyTrackedPointerId) {
+    return
+  }
+
+  currentlyTrackedPointerId = null
+  if (state.dragged) {
+    setState({
+      dragged: null,
+      draggedEntities: [],
     })
   }
 }
