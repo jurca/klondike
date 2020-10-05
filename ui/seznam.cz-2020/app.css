@@ -20,6 +20,8 @@
 }
 
 :local(.primaryContent) {
+  display: contents; /* Safari layout fix */
+
   position: relative;
 
   flex-grow: 1;
