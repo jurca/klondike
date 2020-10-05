@@ -192,21 +192,6 @@ export function isVictoryGuaranteed({state}: IGame): boolean {
   return isDeskInVictoryGuaranteedState(state)
 }
 
-export function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
-  return {
-    ...game,
-    future: [],
-    history: game.history.concat([[
-      game.state,
-      {
-        ...appliedMove,
-        logicalTimestamp: performance.now(),
-      },
-    ]]),
-    state: nextState,
-  }
-}
-
 export function getGameplayDuration(game: IGame): number {
   const endTimestamp = isVictory(game) ? lastItem(game.history)[1].logicalTimestamp : performance.now()
   const {previousTimestamp: lastTimestamp, sum} = game.history.reduce<{previousTimestamp: number, sum: number}>(
@@ -225,6 +210,21 @@ export function getGameplayDuration(game: IGame): number {
   )
 
   return lastItemOrNull(game.history)?.[1].move !== MoveType.PAUSE ? sum + (endTimestamp - lastTimestamp) : sum
+}
+
+function createNextGameState(game: IGame, nextState: IDesk, appliedMove: Move): IGame {
+  return {
+    ...game,
+    future: [],
+    history: game.history.concat([[
+      game.state,
+      {
+        ...appliedMove,
+        logicalTimestamp: performance.now(),
+      },
+    ]]),
+    state: nextState,
+  }
 }
 
 const MOVES_OMITTED_FROM_MOVE_COUNT: readonly MoveType[] = [
