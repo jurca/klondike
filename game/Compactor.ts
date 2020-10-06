@@ -2,6 +2,7 @@ import {DECK, ICard} from './Card'
 import {IDesk} from './Desk'
 import {createNewGame, executeMove, IGame, INewGameRules, undoLastMove} from './Game'
 import {Move, MoveType} from './Move'
+import {ITableau} from './Tableau'
 import {lastItem, lastItemOrNull} from './util'
 
 export type CompactCard = Omit<ICard, 'side'>
@@ -10,6 +11,7 @@ export enum CompactMoveType {
   MULTIPLE_STOCK_MANIPULATIONS = 'CompactMoveType.MULTIPLE_STOCK_MANIPULATIONS',
   MULTIPLE_UNDO = 'CompactMoveType.MULTIPLE_UNDO',
   BREAK = 'CompactMoveType.BREAK',
+  TABLEAU_TO_TABLEAU = 'CompactMoveType.TABLEAU_TO_TABLEAU',
   CARD_REVEALING_TABLEAU_TO_FOUNDATION = 'CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION',
   CARD_REVEALING_TABLEAU_TO_TABLEAU = 'CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU',
 }
@@ -31,6 +33,13 @@ interface IBreakMove {
   readonly duration: number
 }
 
+interface ITableauToTableauMove {
+  readonly move: CompactMoveType.TABLEAU_TO_TABLEAU
+  readonly topMovedCard: CompactCard
+  readonly targetPileIndex: number
+  readonly timeDelta: number
+}
+
 interface ICardRevealingTableauToFoundationMove {
   readonly move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION
   readonly pileIndex: number
@@ -40,8 +49,7 @@ interface ICardRevealingTableauToFoundationMove {
 
 interface ICardRevealingTableauToTableauMove {
   readonly move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU
-  readonly sourcePileIndex: number
-  readonly topMovedCardIndex: number
+  readonly topMovedCard: CompactCard
   readonly targetPileIndex: number
   readonly timeDelta: number
   readonly cardRevealingTimeDelta: number
@@ -51,6 +59,7 @@ export type CompactMoveHistoryRecord =
   IMultipleStockManipulationsMove |
   IMultipleUndoMove |
   IBreakMove |
+  ITableauToTableauMove |
   ICardRevealingTableauToFoundationMove |
   ICardRevealingTableauToTableauMove
 
@@ -72,10 +81,13 @@ export function compact(game: IGame): ICompactGame {
   const initialState = game.history.length ? game.history[0][0] : game.state
   const cardsDeck = compactDeckFromDesk(initialState)
   const compactTimestampRecords = game.history.concat(game.future).map(
-    ([, moveHistoryRecord], i, records) => compactHistoryRecordTimestamp(
-      moveHistoryRecord,
-      records[i - 1]?.[1].logicalTimestamp ?? game.startTime.logicalTimestamp,
-    ),
+    ([deskState, moveHistoryRecord], i, records) => [
+      deskState,
+      compactHistoryRecordTimestamp(
+        moveHistoryRecord,
+        records[i - 1]?.[1].logicalTimestamp ?? game.startTime.logicalTimestamp,
+      ),
+    ] as [IDesk, CompactTimeHistoryRecord],
   )
   const compactedHistoryRecords = compactHistoryRecords(compactTimestampRecords)
 
@@ -135,16 +147,22 @@ export function expandDeck(deck: readonly CompactCard[]): ICard[] {
   return reconstructedDeck
 }
 
-function compactHistoryRecords(records: readonly CompactTimeHistoryRecord[]): CompactHistoryRecord[] {
+function compactHistoryRecords(
+  records: ReadonlyArray<readonly [IDesk, CompactTimeHistoryRecord]>,
+): CompactHistoryRecord[] {
   const compactedRecords: CompactHistoryRecord[] = []
   for (let i = 0; i < records.length; i++) {
-    const record = records[i]
+    const record = records[i][1]
     switch (true) {
       case [MoveType.REDEAL, MoveType.DRAW_CARDS].includes(record.move):
         let stockMovesCount = 0
         let drawnCards: null | number = null
-        for (let j = i; j < records.length && [MoveType.REDEAL, MoveType.DRAW_CARDS].includes(records[j].move); j++) {
-          const stockMove = records[j]
+        for (
+          let j = i;
+          j < records.length && [MoveType.REDEAL, MoveType.DRAW_CARDS].includes(records[j][1].move);
+          j++
+        ) {
+          const stockMove = records[j][1]
           if (stockMove.move === MoveType.DRAW_CARDS) {
             if (drawnCards === null) {
               drawnCards = stockMove.drawnCards
@@ -158,7 +176,7 @@ function compactHistoryRecords(records: readonly CompactTimeHistoryRecord[]): Co
           compactedRecords.push({
             drawnCards,
             move: CompactMoveType.MULTIPLE_STOCK_MANIPULATIONS,
-            timeDeltas: records.slice(i, i + stockMovesCount).map((recordToCompact) => recordToCompact.timeDelta),
+            timeDeltas: records.slice(i, i + stockMovesCount).map((recordToCompact) => recordToCompact[1].timeDelta),
           })
           i += stockMovesCount - 1
         } else {
@@ -167,22 +185,22 @@ function compactHistoryRecords(records: readonly CompactTimeHistoryRecord[]): Co
         break
       case record.move === MoveType.UNDO:
         let undoCount = 1
-        for (let j = i + 1; j < records.length && records[j].move === MoveType.UNDO; j++) {
+        for (let j = i + 1; j < records.length && records[j][1].move === MoveType.UNDO; j++) {
           undoCount++
         }
         if (undoCount > 2) {
           compactedRecords.push({
             move: CompactMoveType.MULTIPLE_UNDO,
-            timeDeltas: records.slice(i, i + undoCount).map((recordToCompact) => recordToCompact.timeDelta),
+            timeDeltas: records.slice(i, i + undoCount).map((recordToCompact) => recordToCompact[1].timeDelta),
           })
           i += undoCount - 1
         } else {
           compactedRecords.push(record)
         }
         break
-      case record.move === MoveType.PAUSE && i < records.length - 1 && records[i + 1].move === MoveType.RESUME:
+      case record.move === MoveType.PAUSE && i < records.length - 1 && records[i + 1][1].move === MoveType.RESUME:
         compactedRecords.push({
-          duration: records[i + 1].timeDelta,
+          duration: records[i + 1][1].timeDelta,
           move: CompactMoveType.BREAK,
           timeDelta: record.timeDelta,
         })
@@ -193,7 +211,7 @@ function compactHistoryRecords(records: readonly CompactTimeHistoryRecord[]): Co
           record.pileIndex
         :
           (record.move === MoveType.TABLEAU_TO_TABLEAU ? record.sourcePileIndex : null)
-        const nextRecord = records[i + 1]
+        const nextRecord = records[i + 1]?.[1]
         if (nextRecord?.move === MoveType.REVEAL_TABLEAU_CARD && nextRecord.pileIndex === sourcePileIndex) {
           if (record.move === MoveType.TABLEAU_TO_FOUNDATION) {
             compactedRecords.push({
@@ -203,16 +221,26 @@ function compactHistoryRecords(records: readonly CompactTimeHistoryRecord[]): Co
               timeDelta: record.timeDelta,
             })
           } else if (record.move === MoveType.TABLEAU_TO_TABLEAU) { // typecast
+            const pile = records[i][0].tableau.piles[record.sourcePileIndex]
+            const {side, ...topMovedCard} = pile.cards[record.topMovedCardIndex]
             compactedRecords.push({
               cardRevealingTimeDelta: nextRecord.timeDelta,
               move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU,
-              sourcePileIndex: record.sourcePileIndex,
               targetPileIndex: record.targetPileIndex,
               timeDelta: record.timeDelta,
-              topMovedCardIndex: record.topMovedCardIndex,
+              topMovedCard,
             })
           }
           i++
+        } else if (record.move === MoveType.TABLEAU_TO_TABLEAU) {
+          const pile = records[i][0].tableau.piles[record.sourcePileIndex]
+          const {side, ...topMovedCard} = pile.cards[record.topMovedCardIndex]
+          compactedRecords.push({
+            move: CompactMoveType.TABLEAU_TO_TABLEAU,
+            targetPileIndex: record.targetPileIndex,
+            timeDelta: record.timeDelta,
+            topMovedCard,
+          })
         } else {
           compactedRecords.push(record)
         }
@@ -240,24 +268,28 @@ function expandHistoryRecords(
   initialState: IGame,
   records: readonly CompactHistoryRecord[],
 ): IGame {
-  const expandedRecords: CompactTimeHistoryRecord[] = []
+  const historyRecords: Array<IGame['history'][0][1]> = []
+  let game = initialState
+
   for (const record of records) {
+    const pendingHistoryRecords: CompactTimeHistoryRecord[] = []
+
     switch (record.move) {
       case CompactMoveType.MULTIPLE_STOCK_MANIPULATIONS:
-        expandedRecords.push(...record.timeDeltas.map<CompactTimeHistoryRecord>((timeDelta) => ({
+        pendingHistoryRecords.push(...record.timeDeltas.map<CompactTimeHistoryRecord>((timeDelta) => ({
           drawnCards: record.drawnCards,
           move: MoveType.DRAW_CARDS, // Will be changed to REDEAL where needed when replaying history of the game
           timeDelta,
         })))
         break
       case CompactMoveType.MULTIPLE_UNDO:
-        expandedRecords.push(...record.timeDeltas.map<CompactTimeHistoryRecord>((timeDelta) => ({
+        pendingHistoryRecords.push(...record.timeDeltas.map<CompactTimeHistoryRecord>((timeDelta) => ({
           move: MoveType.UNDO,
           timeDelta,
         })))
         break
       case CompactMoveType.BREAK:
-        expandedRecords.push(
+        pendingHistoryRecords.push(
           {
             move: MoveType.PAUSE,
             timeDelta: record.timeDelta,
@@ -269,7 +301,7 @@ function expandHistoryRecords(
         )
         break
       case CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION:
-        expandedRecords.push(
+        pendingHistoryRecords.push(
           {
             move: MoveType.TABLEAU_TO_FOUNDATION,
             pileIndex: record.pileIndex,
@@ -283,46 +315,65 @@ function expandHistoryRecords(
         )
         break
       case CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU:
-        expandedRecords.push(
-          {
+        {
+          const {cardIndex: topMovedCardIndex, pileIndex: sourcePileIndex} = findCardInTableau(
+            record.topMovedCard,
+            game.state.tableau,
+          )
+          pendingHistoryRecords.push(
+            {
+              move: MoveType.TABLEAU_TO_TABLEAU,
+              sourcePileIndex,
+              targetPileIndex: record.targetPileIndex,
+              timeDelta: record.timeDelta,
+              topMovedCardIndex,
+            },
+            {
+              move: MoveType.REVEAL_TABLEAU_CARD,
+              pileIndex: sourcePileIndex,
+              timeDelta: record.cardRevealingTimeDelta,
+            },
+          )
+        }
+        break
+      case CompactMoveType.TABLEAU_TO_TABLEAU:
+        {
+          const {cardIndex: topMovedCardIndex, pileIndex: sourcePileIndex} = findCardInTableau(
+            record.topMovedCard,
+            game.state.tableau,
+          )
+          pendingHistoryRecords.push({
             move: MoveType.TABLEAU_TO_TABLEAU,
-            sourcePileIndex: record.sourcePileIndex,
+            sourcePileIndex,
             targetPileIndex: record.targetPileIndex,
             timeDelta: record.timeDelta,
-            topMovedCardIndex: record.topMovedCardIndex,
-          },
-          {
-            move: MoveType.REVEAL_TABLEAU_CARD,
-            pileIndex: record.sourcePileIndex,
-            timeDelta: record.cardRevealingTimeDelta,
-          },
-        )
+            topMovedCardIndex,
+          })
+        }
         break
       default:
-        expandedRecords.push(record)
+        pendingHistoryRecords.push(record)
         break
     }
-  }
 
-  const historyRecords: Array<IGame['history'][0][1]> = []
-  for (const record of expandedRecords) {
-    historyRecords.push(expandHistoryRecordTimestamp(
-      record,
-      lastItemOrNull(historyRecords)?.logicalTimestamp ?? 0,
-    ))
-  }
+    for (const pendingRecord of pendingHistoryRecords) {
+      const expandedRecord = expandHistoryRecordTimestamp(
+        pendingRecord,
+        lastItemOrNull(historyRecords)?.logicalTimestamp ?? 0,
+      )
+      historyRecords.push(expandedRecord)
 
-  let game = initialState
-  for (const record of historyRecords) {
-    if (record.move === MoveType.DRAW_CARDS && !game.state.stock.cards.length) {
-      game = executeMove(game, {
-        move: MoveType.REDEAL,
-      })
-    } else {
-      game = executeMove(game, record)
+      if (record.move === MoveType.DRAW_CARDS && !game.state.stock.cards.length) {
+        game = executeMove(game, {
+          move: MoveType.REDEAL,
+        })
+      } else {
+        game = executeMove(game, expandedRecord)
+      }
+      lastItem(game.history)[1].logicalTimestamp = expandedRecord.logicalTimestamp
     }
-    lastItem(game.history)[1].logicalTimestamp = record.logicalTimestamp
   }
+
   return game
 }
 
@@ -335,4 +386,21 @@ function expandHistoryRecordTimestamp(
     ...move,
     logicalTimestamp: previousLogicalTimestamp + timeDelta,
   }
+}
+
+function findCardInTableau(card: CompactCard, tableau: ITableau): {pileIndex: number, cardIndex: number} {
+  for (let pileIndex = 0; pileIndex < tableau.piles.length; pileIndex++) {
+    const pile = tableau.piles[pileIndex]
+    for (let cardIndex = 0; cardIndex < pile.cards.length; cardIndex++) {
+      const otherCard = pile.cards[cardIndex]
+      if (card.rank === otherCard.rank && card.color === otherCard.color) {
+        return {
+          cardIndex,
+          pileIndex,
+        }
+      }
+    }
+  }
+
+  throw new Error(`The provided card (${JSON.stringify(card)}) is not present in the provided tableau`)
 }
