@@ -107,7 +107,9 @@ export default function App(
   }
 
   function onCompact(): void {
-    console.log(game && JSON.stringify(compact(game))) // tslint:disable-line:no-console
+    const compactGameRepresentation = game && compact(game)
+    console.log(compactGameRepresentation) // tslint:disable-line:no-console
+    console.log(JSON.stringify(compactGameRepresentation)) // tslint:disable-line:no-console
   }
 }
 
