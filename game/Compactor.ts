@@ -10,6 +10,8 @@ export enum CompactMoveType {
   MULTIPLE_STOCK_MANIPULATIONS = 'CompactMoveType.MULTIPLE_STOCK_MANIPULATIONS',
   MULTIPLE_UNDO = 'CompactMoveType.MULTIPLE_UNDO',
   BREAK = 'CompactMoveType.BREAK',
+  CARD_REVEALING_TABLEAU_TO_FOUNDATION = 'CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION',
+  CARD_REVEALING_TABLEAU_TO_TABLEAU = 'CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU',
 }
 
 interface IMultipleStockManipulationsMove {
@@ -29,10 +31,28 @@ interface IBreakMove {
   readonly duration: number
 }
 
+interface ICardRevealingTableauToFoundationMove {
+  readonly move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION
+  readonly pileIndex: number
+  readonly timeDelta: number
+  readonly cardRevealTimeDelta: number
+}
+
+interface ICardRevealingTableauToTableauMove {
+  readonly move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU
+  readonly sourcePileIndex: number
+  readonly topMovedCardIndex: number
+  readonly targetPileIndex: number
+  readonly timeDelta: number
+  readonly cardRevealingTimeDelta: number
+}
+
 export type CompactMoveHistoryRecord =
   IMultipleStockManipulationsMove |
   IMultipleUndoMove |
-  IBreakMove
+  IBreakMove |
+  ICardRevealingTableauToFoundationMove |
+  ICardRevealingTableauToTableauMove
 
 export type CompactTimeHistoryRecord = Move & {
   readonly timeDelta: number,
@@ -168,6 +188,35 @@ function compactHistoryRecords(records: readonly CompactTimeHistoryRecord[]): Co
         })
         i++
         break
+      case record.move === MoveType.TABLEAU_TO_FOUNDATION || record.move === MoveType.TABLEAU_TO_TABLEAU:
+        const sourcePileIndex = record.move === MoveType.TABLEAU_TO_FOUNDATION ?
+          record.pileIndex
+        :
+          (record.move === MoveType.TABLEAU_TO_TABLEAU ? record.sourcePileIndex : null)
+        const nextRecord = records[i + 1]
+        if (nextRecord?.move === MoveType.REVEAL_TABLEAU_CARD && nextRecord.pileIndex === sourcePileIndex) {
+          if (record.move === MoveType.TABLEAU_TO_FOUNDATION) {
+            compactedRecords.push({
+              cardRevealTimeDelta: nextRecord.timeDelta,
+              move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION,
+              pileIndex: record.pileIndex,
+              timeDelta: record.timeDelta,
+            })
+          } else if (record.move === MoveType.TABLEAU_TO_TABLEAU) { // typecast
+            compactedRecords.push({
+              cardRevealingTimeDelta: nextRecord.timeDelta,
+              move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU,
+              sourcePileIndex: record.sourcePileIndex,
+              targetPileIndex: record.targetPileIndex,
+              timeDelta: record.timeDelta,
+              topMovedCardIndex: record.topMovedCardIndex,
+            })
+          }
+          i++
+        } else {
+          compactedRecords.push(record)
+        }
+        break
       default:
         compactedRecords.push(record)
         break
@@ -216,6 +265,36 @@ function expandHistoryRecords(
           {
             move: MoveType.RESUME,
             timeDelta: record.duration,
+          },
+        )
+        break
+      case CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION:
+        expandedRecords.push(
+          {
+            move: MoveType.TABLEAU_TO_FOUNDATION,
+            pileIndex: record.pileIndex,
+            timeDelta: record.timeDelta,
+          },
+          {
+            move: MoveType.REVEAL_TABLEAU_CARD,
+            pileIndex: record.pileIndex,
+            timeDelta: record.cardRevealTimeDelta,
+          },
+        )
+        break
+      case CompactMoveType.CARD_REVEALING_TABLEAU_TO_TABLEAU:
+        expandedRecords.push(
+          {
+            move: MoveType.TABLEAU_TO_TABLEAU,
+            sourcePileIndex: record.sourcePileIndex,
+            targetPileIndex: record.targetPileIndex,
+            timeDelta: record.timeDelta,
+            topMovedCardIndex: record.topMovedCardIndex,
+          },
+          {
+            move: MoveType.REVEAL_TABLEAU_CARD,
+            pileIndex: record.sourcePileIndex,
+            timeDelta: record.cardRevealingTimeDelta,
           },
         )
         break
