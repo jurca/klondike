@@ -44,7 +44,7 @@ interface ICardRevealingTableauToFoundationMove {
   readonly move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION
   readonly pileIndex: number
   readonly timeDelta: number
-  readonly cardRevealTimeDelta: number
+  readonly cardRevealingTimeDelta: number
 }
 
 interface ICardRevealingTableauToTableauMove {
@@ -215,7 +215,7 @@ function compactHistoryRecords(
         if (nextRecord?.move === MoveType.REVEAL_TABLEAU_CARD && nextRecord.pileIndex === sourcePileIndex) {
           if (record.move === MoveType.TABLEAU_TO_FOUNDATION) {
             compactedRecords.push({
-              cardRevealTimeDelta: nextRecord.timeDelta,
+              cardRevealingTimeDelta: nextRecord.timeDelta,
               move: CompactMoveType.CARD_REVEALING_TABLEAU_TO_FOUNDATION,
               pileIndex: record.pileIndex,
               timeDelta: record.timeDelta,
@@ -310,7 +310,7 @@ function expandHistoryRecords(
           {
             move: MoveType.REVEAL_TABLEAU_CARD,
             pileIndex: record.pileIndex,
-            timeDelta: record.cardRevealTimeDelta,
+            timeDelta: record.cardRevealingTimeDelta,
           },
         )
         break
