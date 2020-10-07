@@ -234,9 +234,10 @@ function moveTableauPilePart(
     !isValidTableauSequence(lastItem(targetPile.cards), topCardToMove)
   ) {
     throw new Error(
-      'The top moved card cannot be placed on top of the target tableau pile because it is not in rank sequence with ' +
-      'the current top card of the target pile or it is of the same french deck color (red/black) as the current top ' +
-      'card of the target pile',
+      `The top moved card (${topCardToMove.rank} ${topCardToMove.color}) cannot be placed on top of the target ` +
+      `tableau pile (${lastItem(targetPile.cards).rank} ${lastItem(targetPile.cards).color}) because it is not in ` +
+      'rank sequence with the current top card of the target pile or it is of the same french deck color (red/black) ' +
+      'as the current top card of the target pile',
     )
   }
   const newTableau = movePilePart(desk.tableau, sourcePile, topCardToMove, targetPile)
