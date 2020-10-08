@@ -78,10 +78,6 @@ export function serializeDeckFromDesk(desk: IDesk): string {
   return serializeDeck(cardsDeck)
 }
 
-export function serializeDeck(cardsDeck: ICard[]): string {
-  return cardsDeck.slice(0, -1).map(serializeCard).join('')
-}
-
 export function deserializeDeck(serializedDeck: string): ICard[] {
   const remainingCards = new Set(UNSERIALIZED_CARDS)
   return serializedDeck.split('').map((serializedCard) => {
@@ -90,6 +86,10 @@ export function deserializeDeck(serializedDeck: string): ICard[] {
     remainingCards.delete(card)
     return card
   }).concat([...remainingCards])
+}
+
+function serializeDeck(cardsDeck: ICard[]): string {
+  return cardsDeck.slice(0, -1).map(serializeCard).join('')
 }
 
 function serializeHistory(
