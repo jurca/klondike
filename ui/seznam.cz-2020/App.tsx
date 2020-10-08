@@ -36,6 +36,7 @@ interface IProps {
   onCloseModalContent: () => void
   onShowSettings: () => void
   onImport: () => void
+  onExitApp: () => void
 }
 
 export default function App(
@@ -52,7 +53,7 @@ export default function App(
     ...callbacks
   }: IProps,
 ) {
-  const {onMove, onNewGame, onReset, onShowHint, onPauseGame, onShowSettings, onImport} = callbacks
+  const {onMove, onNewGame, onReset, onShowHint, onPauseGame, onShowSettings, onImport, onExitApp} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const previousModalContent = usePrevious(modalContent)
 
@@ -68,7 +69,7 @@ export default function App(
           <button onClick={onCompact}>compact</button>
         </div>
       }
-      <MobilePhoneHeader onLeave={() => alert('Zatím není implementováno')} onShowSettings={onShowSettings}/>
+      <MobilePhoneHeader onLeave={onExitApp} onShowSettings={onShowSettings}/>
       <div className={style.primaryContent}>
         <SettingsContext.Provider value={settingsContextValue}>
           {isPaused ?

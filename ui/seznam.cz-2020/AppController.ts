@@ -124,6 +124,7 @@ export default class AppController {
           onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
           onShowSettings: this.onShowModalContent.bind(this, Settings, false),
           onImport: this.onImport,
+          onExitApp: this.onExitApp,
         },
       ),
       this.uiRoot,
@@ -321,6 +322,19 @@ export default class AppController {
       // tslint:disable-next-line:no-console
       console.error('Failed to clear the paused error storage', error)
     })
+  }
+
+  private onExitApp = async (): Promise<void> => {
+    const game = this.uiState.game && executeMove(this.uiState.game, {move: MoveType.PAUSE})
+
+    if (game) {
+      try {
+        await this.pausedGameStorage.setPausedGame(game)
+      } catch (savingError) {
+        // tslint:disable-next-line:no-console
+        console.error('Failed to save the game', savingError)
+      }
+    }
   }
 
   private onDeskStyleChange = (newStyle: DeskStyle): void => {
