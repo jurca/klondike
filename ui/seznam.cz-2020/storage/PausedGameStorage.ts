@@ -1,5 +1,5 @@
 import {IGame} from '../../../game/Game'
-import {deserialize, serialize} from '../../../game/Serializer'
+import {deserialize, serialize} from '../../../game/Serializer_v3'
 import IStorage from './IStorage'
 
 enum StorageKey {

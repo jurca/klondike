@@ -1,5 +1,5 @@
 import {getGameplayDuration, IGame, isVictory, resetGame} from '../../../game/Game'
-import {serializeDeckFromDesk} from '../../../game/Serializer'
+import {serializeDeckFromDesk} from '../../../game/Serializer_v3'
 import IStorage, {Serializable} from './IStorage'
 
 export interface IHighScoreEntry {

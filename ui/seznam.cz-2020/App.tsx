@@ -3,7 +3,7 @@ import {ICard} from '../../game/Card'
 import {compact} from '../../game/Compactor'
 import {IGame} from '../../game/Game'
 import {Move} from '../../game/Move'
-import {serialize} from '../../game/Serializer'
+import {serialize as serialize2} from '../../game/Serializer'
 import {serialize as serialize3} from '../../game/Serializer_v3'
 import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
@@ -103,7 +103,7 @@ export default function App(
   )
 
   function onExport(): void {
-    console.log(game && serialize(game)) // tslint:disable-line:no-console
+    console.log(game && serialize2(game)) // tslint:disable-line:no-console
   }
 
   function onCompact(): void {

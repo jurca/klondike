@@ -2,7 +2,7 @@ import {defaultStateRankingHeuristic, IBotOptions, makeMove} from '../../game/Bo
 import {createNewGame, executeMove, IGame, INewGameRules, isVictory, redoNextMove, resetGame, undoLastMove} from '../../game/Game.js'
 import {Move} from '../../game/Move.js'
 import {MoveConfidence} from '../../game/MoveHintGenerator.js'
-import {deserialize, serialize} from '../../game/Serializer.js'
+import {deserialize, serialize} from '../../game/Serializer_v3.js'
 import {render, tpl} from '../../node_modules/@jurca/-x-ignore/ignore-with-renderer.js'
 import {GameWinnability} from './App.js'
 

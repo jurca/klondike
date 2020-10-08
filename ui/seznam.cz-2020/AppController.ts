@@ -7,7 +7,7 @@ import {isVictory} from '../../game/Desk'
 import {createNewGame, executeMove, IGame, INewGameRules, isVictoryGuaranteed, resetGame} from '../../game/Game'
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
-import {deserialize} from '../../game/Serializer'
+import {deserialize as deserialize2} from '../../game/Serializer'
 import {deserialize as deserialize3} from '../../game/Serializer_v3'
 import {lastItemOrNull} from '../../game/util'
 import App from './App'
@@ -401,7 +401,7 @@ export default class AppController {
         this.updateUI({game: deserialize3(state)})
         break
       case '2':
-        this.updateUI({game: deserialize(state)})
+        this.updateUI({game: deserialize2(state)})
         break
       case '{':
         this.updateUI({game: expand(JSON.parse(state))})

@@ -1,6 +1,6 @@
 import GENERATOR_WORKER_CODE from '!!raw-loader!../../dist/winnableGamesGenerator'
 import {ICard} from '../../game/Card'
-import {deserializeDeck} from '../../game/Serializer'
+import {deserializeDeck} from '../../game/Serializer_v3'
 import {DRAW_1_PILES_7_ONLY_KING, DRAW_3_PILES_7_ONLY_KING} from './preGeneratedCardDecks'
 
 export default class WinnableGamesProvider {

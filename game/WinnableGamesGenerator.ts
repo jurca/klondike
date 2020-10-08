@@ -1,6 +1,6 @@
 import {IBotOptions} from './Bot'
 import {createGameWithBotPredicate, IBotSimulationOptions, INewGameRules} from './Game'
-import {serializeDeckFromDesk} from './Serializer'
+import {serializeDeckFromDesk} from './Serializer_v3'
 
 interface ICancellableScheduledTask {
   cancel(): void
