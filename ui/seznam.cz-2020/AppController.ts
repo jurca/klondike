@@ -297,12 +297,13 @@ export default class AppController {
       return
     }
 
+    const pausedGame = executeMove(game, {move: MoveType.PAUSE})
     this.updateUI({
       game: null,
       modalContentStack: [PausedGame],
-      pausedGame: executeMove(game, {move: MoveType.PAUSE}),
+      pausedGame,
     })
-    this.pausedGameStorage.setPausedGame(game).catch((error) => {
+    this.pausedGameStorage.setPausedGame(pausedGame).catch((error) => {
       // tslint:disable-next-line:no-console
       console.error('Failed to save the paused game', error)
     })
