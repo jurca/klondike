@@ -268,7 +268,6 @@ function expandHistoryRecords(
   initialState: IGame,
   records: readonly CompactHistoryRecord[],
 ): IGame {
-  const historyRecords: Array<IGame['history'][0][1]> = []
   let game = initialState
 
   for (const record of records) {
@@ -359,11 +358,10 @@ function expandHistoryRecords(
     for (const pendingRecord of pendingHistoryRecords) {
       const expandedRecord = expandHistoryRecordTimestamp(
         pendingRecord,
-        lastItemOrNull(historyRecords)?.logicalTimestamp ?? 0,
+        lastItemOrNull(game.history)?.[1].logicalTimestamp ?? 0,
       )
-      historyRecords.push(expandedRecord)
 
-      if (record.move === MoveType.DRAW_CARDS && !game.state.stock.cards.length) {
+      if (expandedRecord.move === MoveType.DRAW_CARDS && !game.state.stock.cards.length) {
         game = executeMove(game, {
           move: MoveType.REDEAL,
         })
