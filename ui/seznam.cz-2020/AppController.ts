@@ -418,9 +418,13 @@ export default class AppController {
   }
 
   private onCloseModalContent = (): void => {
-    this.updateUI({
-      modalContentStack: [],
-    })
+    if (!this.uiState.game && this.uiState.pausedGame) {
+      this.onResumePreviousGame()
+    } else {
+      this.updateUI({
+        modalContentStack: [],
+      })
+    }
   }
 
   private onLeaveCurrentModalContent = (): void => {
