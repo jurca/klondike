@@ -4,6 +4,7 @@ import {compact} from '../../game/Compactor'
 import {IGame} from '../../game/Game'
 import {Move} from '../../game/Move'
 import {serialize} from '../../game/Serializer'
+import {serialize as serialize3} from '../../game/Serializer_v3'
 import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
@@ -35,7 +36,6 @@ interface IProps {
   onCloseModalContent: () => void
   onShowSettings: () => void
   onImport: () => void
-  onExpand: () => void
 }
 
 export default function App(
@@ -52,7 +52,7 @@ export default function App(
     ...callbacks
   }: IProps,
 ) {
-  const {onMove, onNewGame, onReset, onShowHint, onPauseGame, onShowSettings, onImport, onExpand} = callbacks
+  const {onMove, onNewGame, onReset, onShowHint, onPauseGame, onShowSettings, onImport} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const previousModalContent = usePrevious(modalContent)
 
@@ -62,10 +62,10 @@ export default function App(
         <div className={style.toolbar}>
           <button onClick={onReset}>reset</button>
           <button onClick={callbacks.onBotMove}>bot</button>
-          <button onClick={onExport}>export</button>
           <button onClick={onImport}>import</button>
+          <button onClick={onExport}>export v2</button>
+          <button onClick={onExport3}>export v3</button>
           <button onClick={onCompact}>compact</button>
-          <button onClick={onExpand}>expand</button>
         </div>
       }
       <MobilePhoneHeader onLeave={() => alert('Zatím není implementováno')} onShowSettings={onShowSettings}/>
@@ -110,6 +110,10 @@ export default function App(
     const compactGameRepresentation = game && compact(game)
     console.log(compactGameRepresentation) // tslint:disable-line:no-console
     console.log(JSON.stringify(compactGameRepresentation)) // tslint:disable-line:no-console
+  }
+
+  function onExport3() {
+    console.log(game && serialize3(game)) // tslint:disable-line:no-console
   }
 }
 

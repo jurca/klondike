@@ -8,6 +8,7 @@ import {createNewGame, executeMove, IGame, INewGameRules, isVictoryGuaranteed, r
 import {Move, MoveType} from '../../game/Move'
 import {getMoveHints, HintGeneratorMode} from '../../game/MoveHintGenerator'
 import {deserialize} from '../../game/Serializer'
+import {deserialize as deserialize3} from '../../game/Serializer_v3'
 import {lastItemOrNull} from '../../game/util'
 import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
@@ -123,7 +124,6 @@ export default class AppController {
           onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
           onShowSettings: this.onShowModalContent.bind(this, Settings, false),
           onImport: this.onImport,
-          onExpand: this.onExpand,
         },
       ),
       this.uiRoot,
@@ -396,16 +396,19 @@ export default class AppController {
 
   private onImport = (): void => {
     const state = prompt('Exportovaný stav hry:') || ''
-    this.updateUI({
-      game: deserialize(state),
-    })
-  }
-
-  private onExpand = (): void => {
-    const state = prompt('Exportovaný stav hry:') || ''
-    this.updateUI({
-      game: expand(JSON.parse(state)),
-    })
+    switch (state.charAt(0)) {
+      case '3':
+        this.updateUI({game: deserialize3(state)})
+        break
+      case '2':
+        this.updateUI({game: deserialize(state)})
+        break
+      case '{':
+        this.updateUI({game: expand(JSON.parse(state))})
+        break
+      default:
+        throw new Error('Unsupported serialized game format')
+    }
   }
 
   private onShowModalContent = (newContent: ModalContentComponent, stack: boolean): void => {
