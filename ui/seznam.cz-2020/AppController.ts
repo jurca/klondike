@@ -200,18 +200,8 @@ export default class AppController {
 
     statePatch.hint = null
 
-    if (isVictory(statePatch.game.state) && !this.gameAddedToHighScores) {
-      this.gameAddedToHighScores = true
-      this.highScoresStorage.addGame(statePatch.game).catch((error) => {
-        // tslint:disable-next-line:no-console
-        console.error('Failed to add the won game to the high scores table', error)
-      })
-      this.statisticsStorage.addGame(statePatch.game).then((statistics) => {
-        this.gameplayStatistics = statistics
-      }).catch((error) => {
-        // tslint:disable-next-line:no-console
-        console.error('Failed to add the won game to the gameplay statistics', error)
-      })
+    if (isVictory(statePatch.game.state)) {
+      this.onVictory(statePatch.game)
     }
 
     if (this.uiState.automaticCompletionEnabled && isVictoryGuaranteed(statePatch.game)) {
@@ -491,6 +481,7 @@ export default class AppController {
 
     if (isVictory(statePatch.game.state)) {
       statePatch.isAutoCompletingGame = false
+      this.onVictory(statePatch.game)
     } else {
       this.automaticCompletionTimeoutId = window.setTimeout(
         this.executeAutoCompletionMove,
@@ -499,5 +490,21 @@ export default class AppController {
     }
 
     this.updateUI(statePatch)
+  }
+
+  private onVictory(wonGame: IGame): void {
+    if (!this.gameAddedToHighScores) {
+      this.gameAddedToHighScores = true
+      this.highScoresStorage.addGame(wonGame).catch((error) => {
+        // tslint:disable-next-line:no-console
+        console.error('Failed to add the won game to the high scores table', error)
+      })
+      this.statisticsStorage.addGame(wonGame).then((statistics) => {
+        this.gameplayStatistics = statistics
+      }).catch((error) => {
+        // tslint:disable-next-line:no-console
+        console.error('Failed to add the won game to the gameplay statistics', error)
+      })
+    }
   }
 }
