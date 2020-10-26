@@ -1,0 +1,61 @@
+:local(.congratulations) {
+  display: flex;
+
+  padding: 24px 32px;
+  min-height: 100%;
+  box-sizing: border-box;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:local(.titleImageWrapper) {
+  width: 100%;
+  max-width: 380px;
+}
+
+@media (min-aspect-ratio: 1.001/1) and (max-height: 470px) {
+  :local(.titleImageWrapper) {
+    display: none;
+  }
+}
+
+:local(.titleImage) {
+  display: block;
+
+  margin: auto;
+  width: 100%;
+  max-width: 44vmin;
+  height: auto;
+}
+
+:local(.title) {
+  margin: 40px 0 24px;
+
+  font-size: 140%;
+}
+
+@media (min-aspect-ratio: 1.001/1) and (max-height: 470px) {
+  :local(.title) {
+    margin-top: 0;
+  }
+}
+
+:local(.drawnCardsChoiceLabel) {
+  margin: 0 0 24px;
+
+  font-size: 90%;
+}
+
+:local(.buttons) {
+  display: flex;
+
+  width: 100%;
+
+  justify-content: center;
+}
+
+:local(.buttons) button:first-child {
+  margin-right: 16px;
+}

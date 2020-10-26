@@ -14,6 +14,7 @@ import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {DESK_SKINS, IDeskSkin} from './deskSkins'
 import DeskStyle from './DeskStyle'
+import Congratulations from './modalContent/Congratulations'
 import ModalContentComponent, {IModalContentComponentProps, IModalContentComponentStaticProps} from './modalContent/ModalContentComponent'
 import NewGame from './modalContent/NewGame'
 import PausedGame from './modalContent/PausedGame'
@@ -26,6 +27,7 @@ import WinnableGamesProvider from './WinnableGamesProvider'
 
 const AUTOMATIC_HINT_DELAY = 15_000
 const AUTOMATIC_COMPLETION_MOVE_INTERVAL = 250
+const CONGRATULATIONS_UI_SHOW_DELAY = 5_000
 
 interface IUIState {
   game: null | IGame
@@ -49,6 +51,7 @@ export default class AppController {
     ModalContentComponent,
     React.ComponentType & IModalContentComponentStaticProps
   >()
+  private congratulationsUiTimeoutId: null | number = null
 
   constructor(
     private readonly uiRoot: HTMLElement,
@@ -239,6 +242,10 @@ export default class AppController {
     statePatch.isAutoCompletingGame = false
     statePatch.modalContentStack = []
     this.gameAddedToHighScores = false
+    if (this.congratulationsUiTimeoutId) {
+      clearTimeout(this.congratulationsUiTimeoutId)
+      this.congratulationsUiTimeoutId = null
+    }
     this.updateUI(statePatch)
     this.updateAutomaticHintTimer()
   }
@@ -506,5 +513,15 @@ export default class AppController {
         console.error('Failed to add the won game to the gameplay statistics', error)
       })
     }
+
+    if (this.congratulationsUiTimeoutId) {
+      clearTimeout(this.congratulationsUiTimeoutId)
+    }
+    this.congratulationsUiTimeoutId = window.setTimeout(() => {
+      this.congratulationsUiTimeoutId = null
+      if (this.uiState.game && isVictory(this.uiState.game.state) && !this.uiState.modalContentStack.length) {
+        this.onShowModalContent(Congratulations, false)
+      }
+    }, CONGRATULATIONS_UI_SHOW_DELAY)
   }
 }
