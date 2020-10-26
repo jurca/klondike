@@ -9,7 +9,6 @@ import style from './app.css'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import Desk from './Desk'
 import {IDeskSkin} from './deskSkins'
-import GameIconsBackground from './GameIconsBackground'
 import MobilePhoneHeader from './MobilePhoneHeader'
 import {IModalContentComponentStaticProps} from './modalContent/ModalContentComponent'
 import ModalContentHost, {State, Type} from './ModalContentHost'
@@ -72,22 +71,18 @@ export default function App(
       <MobilePhoneHeader onLeave={onExitApp} onShowSettings={onShowSettings}/>
       <div className={style.primaryContent}>
         <SettingsContext.Provider value={settingsContextValue}>
-          {isPaused ?
-            <GameIconsBackground/>
-          :
-            <Desk
-              defaultTableauPiles={defaultTableauPiles}
-              game={game}
-              hint={hint}
-              stockPosition={stockPosition}
-              previewMode={false}
-              onMove={onMove}
-              onNewGame={onNewGame}
-              onPauseGame={onPauseGame}
-              onShowHint={onShowHint}
-              onShowSettings={onShowSettings}
-            />
-          }
+          <Desk
+            defaultTableauPiles={defaultTableauPiles}
+            game={game}
+            hint={hint}
+            stockPosition={stockPosition}
+            previewMode={isPaused}
+            onMove={onMove}
+            onNewGame={onNewGame}
+            onPauseGame={onPauseGame}
+            onShowHint={onShowHint}
+            onShowSettings={onShowSettings}
+          />
           <ModalContentHost
             state={modalContent ? State.OPEN : State.CLOSED}
             type={modalContent?.type ?? previousModalContent?.type ?? Type.FLOATING}
