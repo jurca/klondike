@@ -53,5 +53,9 @@
 
   width: 100%;
 
-  justify-content: space-between;
+  justify-content: center;
+}
+
+:local(.buttons) button:first-child {
+  margin-right: 16px;
 }
