@@ -15,7 +15,7 @@
 :local(.shadow) :local(.back),
 ui-draggable[is-dragged] :local(.front),
 ui-draggable[is-dragged] :local(.back) {
-  box-shadow: 0 0 0.1em #555;
+  box-shadow: 0 0 0.1em rgba(0, 0, 0, 0.25);
 }
 
 ui-draggable[is-selected] :local(.front),
