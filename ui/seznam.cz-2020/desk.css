@@ -14,6 +14,16 @@
   font-size: 11vmin;
 }
 
+@media (min-width: 900px) and (min-height: 900px) {
+  :local(.desk) {
+    font-size: 90px;
+  }
+
+  :local(.fullscreenMode) {
+    font-size: 99px;
+  }
+}
+
 :local(.background) {
   position: absolute;
   left: 0;
