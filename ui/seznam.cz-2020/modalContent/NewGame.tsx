@@ -1,4 +1,4 @@
-import NEW_GAME_IMAGE from '!!raw-loader!./new-game.svg'
+import DIFFICULTY_IMAGE from '!!raw-loader!./difficulty.svg'
 import * as React from 'react'
 import {Type} from '../ModalContentHost'
 import Button from './Button'
@@ -12,11 +12,11 @@ const NewGame: ModalContentComponent = Object.assign(function NewGameUI(props: I
   return (
     <div className={styles.newGame}>
       <div className={styles.titleImageWrapper}>
-        <img className={styles.titleImage} src={`data:image/svg+xml;base64,${btoa(NEW_GAME_IMAGE)}`} alt=''/>
+        <img className={styles.titleImage} src={`data:image/svg+xml;base64,${btoa(DIFFICULTY_IMAGE)}`} alt=''/>
       </div>
       <h1 className={styles.title}>Nová hra</h1>
       <p className={styles.drawnCardsChoiceLabel}>
-        Počet karet tažených z&nbsp;balíčku
+        Vyberte si obtížnost nové hry
       </p>
       <div className={styles.buttons}>
         <Button onClick={onStartNewGameWith1DrawnCard}>1 karta</Button>
