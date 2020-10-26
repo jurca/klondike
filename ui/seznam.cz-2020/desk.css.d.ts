@@ -4,6 +4,7 @@ interface CssExports {
   'background': string;
   'desk': string;
   'deskContent': string;
+  'fullscreenMode': string;
   'greenSImage': string;
   'greenSImageWrapper': string;
   'greenSInnerImageWrapper': string;

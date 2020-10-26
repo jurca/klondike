@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import * as React from 'react'
 import {Color, ICard, Rank, Side} from '../../game/Card'
 import {isVictory} from '../../game/Desk'
@@ -97,7 +98,10 @@ export default function Desk(
   }, [])
 
   return (
-    <div className={style.desk} style={{background: deskSkin.background}}>
+    <div
+      className={classnames(style.desk, isFullscreenActive && style.fullscreenMode)}
+      style={{background: deskSkin.background}}
+    >
       <div className={style.background}>
         {deskSkin.style === DeskStyle.GREEN_S_TILES &&
           <div className={style.greenSTiles}/>
