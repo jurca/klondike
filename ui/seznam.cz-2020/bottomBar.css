@@ -6,7 +6,7 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
-@media (max-width: 500px) or (max-height: 500px) {
+@media (max-width: 500px), (max-height: 500px) {
   :local(.bottomBar) {
     height: 1.3em;
   }
@@ -32,13 +32,13 @@
 }
 
 
-@media (max-width: 800px) or (max-height: 800px) {
+@media (max-width: 800px), (max-height: 800px) {
   :local(.content) {
     font-size: 0.22em;
   }
 }
 
-@media (max-width: 600px) or (max-height: 600px) {
+@media (max-width: 600px), (max-height: 600px) {
   :local(.content) {
     font-size: 0.28em;
   }
@@ -58,13 +58,13 @@
   justify-content: flex-start;
 }
 
-@media (max-width: 600px) or (max-height: 600px) {
+@media (max-width: 600px), (max-height: 600px) {
   :local(.buttonWrapper) {
     flex-basis: 8em;
   }
 }
 
-@media (max-width: 500px) or (max-height: 500px) {
+@media (max-width: 500px), (max-height: 500px) {
   :local(.buttonWrapper),
   :local(.buttonWrapper):first-child {
     flex-grow: 1;
@@ -90,7 +90,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 500px) or (max-height: 500px) {
+@media (max-width: 500px), (max-height: 500px) {
   :local(.button) {
     flex-direction: column;
   }
@@ -104,7 +104,7 @@
   height: 1em;
 }
 
-@media (max-width: 500px) or (max-height: 500px) {
+@media (max-width: 500px), (max-height: 500px) {
   :local(.icon) {
     margin: 0 0 0.4em;
     width: 1.8em;

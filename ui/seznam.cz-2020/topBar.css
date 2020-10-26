@@ -36,7 +36,7 @@
   font-size: 0.2em;
 }
 
-@media (max-width: 800px) or (max-height: 800px) {
+@media (max-width: 800px), (max-height: 800px) {
   :local(.textContent) {
     flex-basis: 14em;
 
@@ -44,13 +44,13 @@
   }
 }
 
-@media (max-width: 600px) or (max-height: 600px) {
+@media (max-width: 600px), (max-height: 600px) {
   :local(.textContent) {
     font-size: 0.28em;
   }
 }
 
-@media (max-width: 500px) or (max-height: 500px) {
+@media (max-width: 500px), (max-height: 500px) {
   :local(.textContent) {
     font-size: 0.34em;
   }
@@ -73,13 +73,13 @@
   font-weight: bold;
 }
 
-@media (max-width: 800px) or (max-height: 800px) {
+@media (max-width: 800px), (max-height: 800px) {
   :local(.title) {
     font-size: 0.33em;
   }
 }
 
-@media (max-width: 600px) or (max-height: 600px) {
+@media (max-width: 600px), (max-height: 600px) {
   :local(.title) {
     display: none;
   }
@@ -114,7 +114,7 @@
   height: 100%;
 }
 
-@media (max-width: 500px) or (max-height: 500px) {
+@media (max-width: 500px), (max-height: 500px) {
   :local(.isPhoneOrTablet) :local(.statsPane) {
     display: flex;
 

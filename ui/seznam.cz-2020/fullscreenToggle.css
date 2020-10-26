@@ -19,7 +19,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 500px) or (max-height: 500px) {
+@media (max-width: 500px), (max-height: 500px) {
   :local(.fullscreenToggle) {
     display: block;
   }
