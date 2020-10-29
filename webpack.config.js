@@ -31,6 +31,10 @@ module.exports = {
         ],
       },
       {
+        test: /\.woff2$/i,
+        use: 'url-loader',
+      },
+      {
         oneOf: [
           {
             test: /(?:(?:green|red)-s-tile|game-icons-background)\.svg$/i,

@@ -1,3 +1,24 @@
+@font-face {
+  font-family: 'PTSans';
+  src: url('font/PT%20Sans_Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PTSans';
+  src: url('font/PT%20Sans_Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Viga';
+  src: url('font/Viga-Regular-webfont.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 :local(.app) {
   display: flex;
 
@@ -5,6 +26,12 @@
   height: 100%;
 
   flex-direction: column;
+
+  font-family: PTSans;
+}
+
+:local(.app) button {
+  font-family: PTSans;
 }
 
 :local(.toolbar) {
