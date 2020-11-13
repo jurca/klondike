@@ -25,6 +25,12 @@ import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import StatisticsStorage, {Statistics} from './storage/StatisticsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
+declare global {
+  const sbrowser: undefined | {
+    terminateApp(): void,
+  }
+}
+
 const AUTOMATIC_HINT_DELAY = 15_000
 const AUTOMATIC_COMPLETION_MOVE_INTERVAL = 250
 const CONGRATULATIONS_UI_SHOW_DELAY = 5_000
@@ -331,6 +337,15 @@ export default class AppController {
       } catch (savingError) {
         // tslint:disable-next-line:no-console
         console.error('Failed to save the game', savingError)
+      }
+    }
+
+    if (typeof sbrowser === 'object' && sbrowser && typeof sbrowser.terminateApp === 'function') {
+      try {
+        sbrowser.terminateApp()
+      } catch (terminationError) {
+        // tslint:disable-next-line:no-console
+        console.error('Failed to terminate the app', terminationError)
       }
     }
   }
