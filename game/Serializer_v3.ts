@@ -251,7 +251,7 @@ function serializeHistory(
 
   return {
     serializedHistory: serializedHistory.join(''),
-    timeDeltaRemainder,
+    timeDeltaRemainder: Math.floor(timeDeltaRemainder),
   }
 }
 
