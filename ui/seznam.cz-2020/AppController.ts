@@ -340,14 +340,7 @@ export default class AppController {
       }
     }
 
-    if (typeof sbrowser === 'object' && sbrowser && typeof sbrowser.terminateApp === 'function') {
-      try {
-        sbrowser.terminateApp()
-      } catch (terminationError) {
-        // tslint:disable-next-line:no-console
-        console.error('Failed to terminate the app', terminationError)
-      }
-    }
+    location.href = 'menu.html'
   }
 
   private onDeskStyleChange = (newStyle: DeskStyle): void => {
