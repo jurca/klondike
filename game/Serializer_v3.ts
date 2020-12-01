@@ -219,7 +219,6 @@ export function deserialize(serializedState: string): IGame {
     },
     startTime: startTime + EPOCH_START,
   }
-  console.log(compactGame)
   return expand(compactGame)
 }
 
