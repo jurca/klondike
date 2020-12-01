@@ -33,11 +33,13 @@ function ThemePreview(props: IProps) {
           hint={null}
           stockPosition={props.stockPosition}
           previewMode={true}
+          isFullscreenActive={true}
           onMove={NOOP}
           onNewGame={NOOP}
           onPauseGame={NOOP}
           onShowHint={NOOP}
           onShowSettings={NOOP}
+          onSetFullscreen={NOOP}
         />
       </SettingsContext.Provider>
       <div className={styles.overlay}/>

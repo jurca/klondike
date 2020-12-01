@@ -18,6 +18,7 @@
   left: 50%;
   bottom: 24px;
 
-  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  min-width: 240px;
+
   transform: translateX(-50%);
 }

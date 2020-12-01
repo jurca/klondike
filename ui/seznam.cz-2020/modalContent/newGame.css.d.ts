@@ -2,7 +2,6 @@
 // Please do not change this file!
 interface CssExports {
   'buttons': string;
-  'drawnCardsChoiceLabel': string;
   'newGame': string;
   'title': string;
   'titleImage': string;

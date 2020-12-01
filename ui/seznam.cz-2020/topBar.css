@@ -1,5 +1,5 @@
 :local(.topBar) {
-  height: 0.6em;
+  height: 1.14em;
 
   color: #ffffff;
 
@@ -34,6 +34,7 @@
   align-items: center;
 
   font-size: 0.2em;
+  letter-spacing: 0.5px;
 }
 
 @media (max-width: 800px), (max-height: 800px) {
@@ -99,6 +100,7 @@
 
   background: transparent;
 
+  text-transform: uppercase;
   cursor: pointer;
 }
 

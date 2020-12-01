@@ -1,5 +1,5 @@
 :local(.bottomBar) {
-  height: 0.6em;
+  height: 1.14em;
 
   color: #ffffff;
 
@@ -29,6 +29,7 @@
   align-items: center;
 
   font-size: 0.2em;
+  letter-spacing: 0.5px;
 }
 
 

@@ -12,7 +12,7 @@
 
 :local(.titleImageWrapper) {
   width: 100%;
-  max-width: 380px;
+  max-width: 252px;
 }
 
 @media (min-aspect-ratio: 1.001/1) and (max-height: 470px) {
@@ -40,12 +40,6 @@
   :local(.title) {
     margin-top: 0;
   }
-}
-
-:local(.drawnCardsChoiceLabel) {
-  margin: 0 0 24px;
-
-  font-size: 90%;
 }
 
 :local(.buttons) {

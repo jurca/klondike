@@ -2,7 +2,8 @@
   display: none;
 
   padding: 0 0.2em;
-  height: 0.8em;
+  height: 52px;
+  flex-shrink: 0;
 
   justify-content: space-between;
   align-items: center;
@@ -24,9 +25,9 @@
   display: flex;
 
   border: none;
-  padding: 0;
-  width: 0.4em;
-  height: 0.4em;
+  padding: 8px;
+  width: 32px;
+  height: 32px;
 
   justify-content: center;
   align-items: center;

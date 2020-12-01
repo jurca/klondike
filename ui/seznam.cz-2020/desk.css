@@ -14,13 +14,13 @@
   font-size: 11vmin;
 }
 
-@media (min-width: 900px) and (min-height: 900px) {
+@media (min-width: 700px) and (min-height: 700px) {
   :local(.desk) {
-    font-size: 90px;
+    font-size: 70px;
   }
 
   :local(.fullscreenMode) {
-    font-size: 99px;
+    font-size: 77px;
   }
 }
 

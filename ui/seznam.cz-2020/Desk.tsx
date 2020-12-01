@@ -28,11 +28,13 @@ interface IProps {
   hint: null | ICard
   stockPosition: StockPosition
   previewMode: boolean
+  isFullscreenActive: boolean
   onMove(move: Move): void
   onNewGame(): void
   onPauseGame(): void
   onShowHint(): void
   onShowSettings(): void
+  onSetFullscreen(activateFullscreen: boolean): void
 }
 
 const VICTORY_SCREEN_OPTIONS = {
@@ -54,11 +56,13 @@ export default function Desk(
     hint,
     stockPosition,
     previewMode,
+    isFullscreenActive,
     onMove,
     onNewGame,
     onPauseGame,
     onShowHint,
     onShowSettings,
+    onSetFullscreen,
   }: IProps,
 ) {
   const {state: deskState, rules: gameRules} = game || {}
@@ -83,10 +87,9 @@ export default function Desk(
     diamondsFoundationRef,
   ])
 
-  const [isFullscreenActive, setFullscreen] = React.useState(false)
   const onToggleFullscreen = React.useMemo(
-    () => () => setFullscreen(!isFullscreenActive),
-    [isFullscreenActive, setFullscreen],
+    () => () => onSetFullscreen(!isFullscreenActive),
+    [isFullscreenActive, onSetFullscreen],
   )
 
   const victoryScreenActors = React.useMemo(() => new Map(Array.from(foundationRefs).map(

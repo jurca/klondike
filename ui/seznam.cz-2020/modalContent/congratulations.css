@@ -12,7 +12,7 @@
 
 :local(.titleImageWrapper) {
   width: 100%;
-  max-width: 380px;
+  max-width: 252px;
 }
 
 @media (min-aspect-ratio: 1.001/1) and (max-height: 470px) {

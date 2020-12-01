@@ -13,12 +13,14 @@
   position: relative;
 
   box-sizing: border-box;
-  border: 2px solid #cc0000;
+  border: 2px solid #e5e5e5;
   border-radius: calc(51px * 0.6);
   width: 100%;
   height: calc(51px * 0.6);
 
   cursor: pointer;
+
+  transition: border-color 0.1s ease-out;
 }
 
 :local(.ui)::before,
@@ -56,8 +58,15 @@
   transition: transform 0.1s ease-out;
 }
 
+:checked + :local(.ui) {
+  border-color: #cc0000;
+
+  transition-timing-function: ease-in;
+}
+
 :checked + :local(.ui)::before {
   background: #cc0000;
+
   transition-timing-function: ease-in;
 }
 

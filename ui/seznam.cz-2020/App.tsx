@@ -55,6 +55,7 @@ export default function App(
   const {onMove, onNewGame, onReset, onShowHint, onPauseGame, onShowSettings, onImport, onExitApp} = callbacks
   const settingsContextValue = React.useMemo(() => ({...deskSkin, cardBackFace}), [deskSkin, cardBackFace])
   const previousModalContent = usePrevious(modalContent)
+  const [isFullscreenActive, setFullscreen] = React.useState(false)
 
   return (
     <div className={style.app}>
@@ -68,7 +69,9 @@ export default function App(
           <button onClick={onCompact}>compact</button>
         </div>
       }
-      <MobilePhoneHeader onLeave={onExitApp} onShowSettings={onShowSettings}/>
+      {!isFullscreenActive &&
+        <MobilePhoneHeader onLeave={onExitApp} onShowSettings={onShowSettings}/>
+      }
       <div className={style.primaryContent}>
         <SettingsContext.Provider value={settingsContextValue}>
           <Desk
@@ -77,11 +80,13 @@ export default function App(
             hint={hint}
             stockPosition={stockPosition}
             previewMode={isPaused}
+            isFullscreenActive={isFullscreenActive}
             onMove={onMove}
             onNewGame={onNewGame}
             onPauseGame={onPauseGame}
             onShowHint={onShowHint}
             onShowSettings={onShowSettings}
+            onSetFullscreen={setFullscreen}
           />
           <ModalContentHost
             state={modalContent ? State.OPEN : State.CLOSED}
