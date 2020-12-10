@@ -14,7 +14,7 @@ const NewGame: ModalContentComponent = Object.assign(function NewGameUI(props: I
       <div className={styles.titleImageWrapper}>
         <img className={styles.titleImage} src={`data:image/svg+xml;base64,${btoa(DIFFICULTY_IMAGE)}`} alt=''/>
       </div>
-      <h1 className={styles.title}>Nová hra</h1>
+      <h1 className={styles.title}>Vyberte si obtížnost nové hry</h1>
       <div className={styles.buttons}>
         <Button onClick={onStartNewGameWith1DrawnCard}>1 karta</Button>
         <Button onClick={onStartNewGameWith3DrawnCards}>3 karty</Button>
@@ -22,7 +22,7 @@ const NewGame: ModalContentComponent = Object.assign(function NewGameUI(props: I
     </div>
   )
 }, {
-  title: 'Vyberte si obtížnost nové hry',
+  title: null,
   type: Type.FLOATING,
 })
 

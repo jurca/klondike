@@ -62,18 +62,10 @@
   justify-content: center;
 }
 
+:local(.buttons) button {
+  min-width: 128px;
+}
+
 :local(.buttons) button:first-child {
   margin-right: 16px;
-}
-
-@media (max-width: 380px) {
-  :local(.buttons) {
-    font-size: 80%;
-  }
-}
-
-@media (max-width: 340px) {
-  :local(.buttons) {
-    font-size: 70%;
-  }
 }

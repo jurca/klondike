@@ -115,7 +115,7 @@ export default function Desk(
       </div>
       <DragNDrop onEntityDragged={onElementDragged}>
         <div className={style.deskContent}>
-          {!isFullscreenActive && !previewMode &&
+          {!previewMode &&
             <TopBar game={game} onShowSettings={onShowSettings}/>
           }
 

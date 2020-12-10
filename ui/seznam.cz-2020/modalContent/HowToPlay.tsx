@@ -8,7 +8,7 @@ const HowToPlay: ModalContentComponent = Object.assign(function HowToPlayUI(prop
   return (
     <ModalContentWithBottomCloseButton {...props}>
       <div className={styles.howToPlay}>
-        <p>
+        <p className={styles.boldText}>
           Cílem hry je přesouváním karet z&nbsp;tahacího balíčku a herních sloupců vytvořit v&nbsp;odkládacích balíčkách
           čtyři postupky tvořené kartami stejné barvy seřazenými vzestupně od Esa (A) po Krále (K).
         </p>

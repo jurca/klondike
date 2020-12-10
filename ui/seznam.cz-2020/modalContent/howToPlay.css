@@ -3,3 +3,7 @@
 
   font-size: 14px;
 }
+
+:local(.boldText) {
+  font-weight: bold;
+}
