@@ -11,7 +11,7 @@
 }
 
 :local(.withBottomBar) {
-  border-bottom: 0.6em solid transparent;
+  border-bottom: 1.14em solid transparent;
 }
 
 @media (max-width: 500px), (max-height: 500px) {
