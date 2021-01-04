@@ -71,8 +71,8 @@
   flex: 0 0;
 
   font-family: Viga;
-  font-size: 0.3em;
-  font-weight: bold;
+  font-size: 0.4em;
+  letter-spacing: 0.5px;
 }
 
 @media (max-width: 800px), (max-height: 800px) {

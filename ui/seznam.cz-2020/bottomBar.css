@@ -85,6 +85,7 @@
   font-size: 1em;
   color: currentColor;
   text-transform: uppercase;
+  letter-spacing: inherit;
 
   background: transparent;
 
