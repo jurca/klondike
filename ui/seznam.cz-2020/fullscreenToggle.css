@@ -7,8 +7,8 @@
 
   border: none;
   border-radius: 100%;
-  width: 0.8em;
-  height: 0.8em;
+  width: 40px;
+  height: 40px;
   padding: 0;
 
   font-size: 1em;
@@ -31,9 +31,9 @@
 
 :local(.fullscreenToggle) svg {
   position: absolute;
-  left: 23%;
-  top: 23%;
+  left: 11px;
+  top: 11px;
 
-  width: 54%;
-  height: 54%;
+  width: 18px;
+  height: 18px;
 }
