@@ -59,7 +59,7 @@
   width: 100%;
   height: 100%;
   max-width: 600px;
-  max-height: 780px;
+  max-height: 600px;
   overflow: hidden;
 
   flex-direction: column;
@@ -74,6 +74,14 @@
 
 :local(.isOpen) :local(.ui) {
   transition-timing-function: ease-in;
+}
+
+:local(.isDrawer):local(.isMobilePhone) :local(.ui) {
+  top: 32px;
+
+  border-radius: 24px 24px 0 0;
+  max-height: none;
+  height: calc(100% - 64px);
 }
 
 :local(.isDrawer) :local(.ui) {
@@ -94,12 +102,9 @@
   }
 }
 
-@media (max-height: 780px) {
+@media (max-height: 600px) {
   :local(.isDrawer) :local(.ui) {
-    top: 32px;
-
     border-radius: 24px 24px 0 0;
-    height: calc(100% - 64px);
   }
 }
 

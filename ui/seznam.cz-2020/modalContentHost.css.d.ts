@@ -9,6 +9,7 @@ interface CssExports {
   'headerButtonContainer': string;
   'headerTitle': string;
   'isDrawer': string;
+  'isMobilePhone': string;
   'isOpen': string;
   'modalContentHost': string;
   'overlay': string;

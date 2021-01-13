@@ -2,6 +2,7 @@ import classnames from 'classnames'
 import * as React from 'react'
 import {getGameplayDuration, getMoveCount, IGame} from '../../game/Game'
 import Gear from './icon/gear.svg'
+import {isMobilePhoneOrAndroidTablet} from './mobilePhoneDetector'
 import style from './topBar.css'
 
 interface IProps {
@@ -27,12 +28,6 @@ export default function TopBar({game, onShowSettings}: IProps): React.ReactEleme
   :
     ['--', '--']
   const moveCount = game ? getMoveCount(game) : 0
-
-  const isMobilePhoneOrAndroidTablet = (
-    typeof navigator === 'object' &&
-    navigator &&
-    /(?: iPhone | Android )/.test(navigator.userAgent)
-  )
 
   return (
     <div className={classnames(style.topBar, isMobilePhoneOrAndroidTablet && style.isPhoneOrTablet)}>

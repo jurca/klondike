@@ -2,6 +2,7 @@ import classnames from 'classnames'
 import * as React from 'react'
 import Gear from './icon/gear.svg'
 import Left from './icon/left.svg'
+import {isMobilePhoneOrAndroidTablet} from './mobilePhoneDetector'
 import style from './mobilePhoneHeader.css'
 
 interface IProps {
@@ -10,12 +11,6 @@ interface IProps {
 }
 
 export default function MobilePhoneHeader({onLeave, onShowSettings}: IProps) {
-  const isMobilePhoneOrAndroidTablet = (
-    typeof navigator === 'object' &&
-    navigator &&
-    /(?: iPhone | Android )/.test(navigator.userAgent)
-  )
-
   return (
     <div className={classnames(style.mobilePhoneHeader, isMobilePhoneOrAndroidTablet && style.isPhoneOrTablet)}>
       <button className={style.button} onClick={onLeave}>

@@ -2,6 +2,7 @@ import classnames from 'classnames'
 import * as React from 'react'
 import CloseIcon from './icon/close.svg'
 import BackIcon from './icon/left.svg'
+import {isMobilePhoneOrAndroidTablet} from './mobilePhoneDetector'
 import styles from './modalContentHost.css'
 
 export enum State {
@@ -74,6 +75,7 @@ export default function ModalContentHost(props: IProps): null | React.ReactEleme
         props.type === Type.DRAWER && styles.isDrawer,
         props.header && styles.hasTitle,
         flipControls && styles.flipHeaderButtons,
+        isMobilePhoneOrAndroidTablet() && styles.isMobilePhone,
       )}
       onTransitionEnd={onTransitionEnd}
     >
