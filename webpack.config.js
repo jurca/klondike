@@ -8,7 +8,7 @@ module.exports = {
     [process.env.ENTRY_NAME]: [process.env.ENTRY_FILE],
   },
 
-  devtool: 'inline-source-map',
+  devtool: process.env.NODE_ENV !== 'production' ? 'inline-source-map' : false,
 
   module: {
     rules: [
