@@ -1,3 +1,4 @@
+import * as sbrowserApis from '@seznam/seznam.cz-browser-game-module-api'
 import {createElement} from 'react'
 import {render, unmountComponentAtNode} from 'react-dom'
 import {IBotOptions, makeMove} from '../../game/Bot'
@@ -25,12 +26,7 @@ import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
 import StatisticsStorage, {Statistics} from './storage/StatisticsStorage'
 import WinnableGamesProvider from './WinnableGamesProvider'
 
-declare global {
-  const sbrowser: undefined | {
-    terminateApp(): void,
-  }
-}
-
+const GAME_ID = 'solitaire'
 const AUTOMATIC_HINT_DELAY = 15_000
 const AUTOMATIC_COMPLETION_MOVE_INTERVAL = 250
 const CONGRATULATIONS_UI_SHOW_DELAY = 5_000
@@ -58,6 +54,10 @@ export default class AppController {
     React.ComponentType & IModalContentComponentStaticProps
   >()
   private congratulationsUiTimeoutId: null | number = null
+  private sessionStatistics = {
+    startedGames: 0,
+    wonGames: 0,
+  }
 
   constructor(
     private readonly uiRoot: HTMLElement,
@@ -254,6 +254,7 @@ export default class AppController {
     }
     this.updateUI(statePatch)
     this.updateAutomaticHintTimer()
+    this.sessionStatistics.startedGames++
   }
 
   private onShowHint = (): void => {
@@ -340,6 +341,7 @@ export default class AppController {
       }
     }
 
+    sbrowserApis.gamesExit(GAME_ID, this.sessionStatistics.startedGames, this.sessionStatistics.wonGames)
     location.href = 'menu.html'
   }
 
@@ -516,6 +518,7 @@ export default class AppController {
       })
       this.statisticsStorage.addGame(wonGame).then((statistics) => {
         this.gameplayStatistics = statistics
+        this.sessionStatistics.wonGames++
       }).catch((error) => {
         // tslint:disable-next-line:no-console
         console.error('Failed to add the won game to the gameplay statistics', error)
