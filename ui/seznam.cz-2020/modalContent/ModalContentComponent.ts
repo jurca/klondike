@@ -23,6 +23,7 @@ export interface IModalContentComponentProps {
   automaticCompletionEnabled: boolean
   defaultTableauPiles: number,
   winnableGamesProvider: WinnableGamesProvider,
+  totalStartedGames: number,
   onNewGame(drawnCards: 1 | 3): void
   onShowContent(newContent: ModalContentComponent, stack: boolean): void
   onLeaveCurrentModalContent(): void
@@ -33,4 +34,6 @@ export interface IModalContentComponentProps {
   onSetStockPosition(newPosition: StockPosition): void
   onSetAutomaticHintEnabled(enabled: boolean): void
   onSetAutomaticCompletionEnabled(enabled: boolean): void
+  onSignIn(): void
+  onExitApp(): void
 }

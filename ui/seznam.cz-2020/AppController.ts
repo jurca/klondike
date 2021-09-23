@@ -15,11 +15,13 @@ import App from './App'
 import CardBackfaceStyle from './CardBackfaceStyle'
 import {DESK_SKINS, IDeskSkin} from './deskSkins'
 import DeskStyle from './DeskStyle'
+import * as Limits from './conf/Limits'
 import Congratulations from './modalContent/Congratulations'
 import ModalContentComponent, {IModalContentComponentProps, IModalContentComponentStaticProps} from './modalContent/ModalContentComponent'
 import NewGame from './modalContent/NewGame'
 import PausedGame from './modalContent/PausedGame'
 import Settings from './modalContent/Settings'
+import SignIn from './modalContent/SignIn'
 import HighScoresStorage from './storage/HighScoresStorage'
 import PausedGameStorage from './storage/PausedGameStorage'
 import SettingsStorage, {StockPosition} from './storage/SettingsStorage'
@@ -69,6 +71,7 @@ export default class AppController {
     automaticCompletionEnabled: boolean,
     pausedGame: null | IGame,
     private gameplayStatistics: Statistics,
+    private readonly isUserSignedIn: boolean,
     private readonly settingsStorage: SettingsStorage,
     private readonly highScoresStorage: HighScoresStorage,
     private readonly pausedGameStorage: PausedGameStorage,
@@ -142,6 +145,8 @@ export default class AppController {
   }
 
   private get modalContentProps(): IModalContentComponentProps {
+    const statistics = this.gameplayStatistics
+    const totalStartedGames = statistics[1].startedGamesCount + statistics[3].startedGamesCount
     // tslint:disable:object-literal-sort-keys
     return {
       gameplayStats: this.gameplayStatistics,
@@ -150,6 +155,7 @@ export default class AppController {
       stockPosition: this.uiState.stockPosition,
       automaticHintEnabled: !!this.uiState.automaticHintDelay,
       automaticCompletionEnabled: this.uiState.automaticCompletionEnabled,
+      totalStartedGames,
       onNewGame: this.onNewWinnableGame,
       onShowContent: this.onShowModalContent,
       onLeaveCurrentModalContent: this.onLeaveCurrentModalContent,
@@ -162,6 +168,8 @@ export default class AppController {
       onSetStockPosition: this.onStockPositionChange,
       onSetAutomaticHintEnabled: this.onSetAutomaticHintEnabled,
       onSetAutomaticCompletionEnabled: this.onSetAutomaticCompletionEnabled,
+      onSignIn: this.onSignIn,
+      onExitApp: this.onExitApp,
     }
     // tslint:enable:object-literal-sort-keys
   }
@@ -243,6 +251,15 @@ export default class AppController {
 
   private onNewWinnableGame = (drawnCards: 1 | 3): void => {
     const statePatch: Partial<IUIState> = {}
+    
+    const statistics = this.gameplayStatistics
+    const totalStartedGames = statistics[1].startedGamesCount + statistics[3].startedGamesCount
+    if (!this.isUserSignedIn && totalStartedGames >= Limits.UNAUTHENTICATED_GAMES_LIMIT) {
+      statePatch.modalContentStack = [SignIn]
+      this.updateUI(statePatch)
+      return
+    }
+
     statePatch.game = this.createNewGame(drawnCards)
     statePatch.hint = null
     statePatch.isAutoCompletingGame = false
@@ -255,6 +272,9 @@ export default class AppController {
     this.updateUI(statePatch)
     this.updateAutomaticHintTimer()
     this.sessionStatistics.startedGames++
+    this.statisticsStorage.onNewGameStarted(drawnCards).then((statistics) => {
+      this.gameplayStatistics = statistics
+    })
   }
 
   private onShowHint = (): void => {
@@ -434,6 +454,29 @@ export default class AppController {
   }
 
   private onShowModalContent = (newContent: ModalContentComponent, stack: boolean): void => {
+    if (this.isUserSignedIn === false && newContent === NewGame) {
+      const statistics = this.gameplayStatistics
+      const totalStartedGames = statistics[1].startedGamesCount + statistics[3].startedGamesCount
+      if (
+        totalStartedGames === Limits.UNAUTHENTICATED_GAMES_WARNING ||
+        totalStartedGames >= Limits.UNAUTHENTICATED_GAMES_LIMIT
+      ) {
+        if (totalStartedGames < Limits.UNAUTHENTICATED_GAMES_LIMIT && this.uiState.modalContentStack[0] === SignIn) {
+          // Allow transitioning from the sign-in dialog to the new game dialog if the player has not reached the hard
+          // limit yet
+          this.updateUI({
+            modalContentStack: [newContent]
+          })
+          return
+        }
+
+        this.updateUI({
+          modalContentStack: [SignIn],
+        })
+        return
+      }
+    }
+
     this.updateUI({
       modalContentStack: stack ? this.uiState.modalContentStack.concat(newContent) : [newContent],
     })
@@ -453,6 +496,10 @@ export default class AppController {
     this.updateUI({
       modalContentStack: this.uiState.modalContentStack.slice(0, -1),
     })
+  }
+
+  private onSignIn = (): void => {
+    sbrowserApis.openLoginForm()
   }
 
   private updateAutomaticHintTimer(): void {

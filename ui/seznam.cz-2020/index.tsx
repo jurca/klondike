@@ -1,3 +1,4 @@
+import * as sbrowserApis from '@seznam/seznam.cz-browser-game-module-api'
 import AppController from './AppController'
 import {BOT_OPTIONS, DEFAULT_NEW_GAME_OPTIONS, MAX_HIGH_SCORE_TABLE_ENTRIES} from './config'
 import HighScoresStorage from './storage/HighScoresStorage'
@@ -9,6 +10,7 @@ import WinnableGamesProvider from './WinnableGamesProvider'
 
 const UI_CONTAINER_ID = 'app'
 const STORAGE_KEY_PREFIX = 'klondike-seznam.cz-2020'
+const USER_SIGNED_IN_CHECK_TIMEOUT = 1_000 // 1 second
 
 const highScoresStorage = new HighScoresStorage(
   primaryStorageFactory(`${STORAGE_KEY_PREFIX}.highScores.`),
@@ -18,6 +20,19 @@ const settingsStorage = new SettingsStorage(primaryStorageFactory(`${STORAGE_KEY
 const pausedGameStorage = new PausedGameStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.pausedGame.`))
 const statisticsStorage = new StatisticsStorage(primaryStorageFactory(`${STORAGE_KEY_PREFIX}.statistics.`))
 
+const isSignedInPromise = new Promise<boolean>((resolve) => {
+  try {
+    Promise.race([
+      sbrowserApis.isSignedIn(),
+      new Promise<never>(
+        (_, reject) => setTimeout(reject, USER_SIGNED_IN_CHECK_TIMEOUT, new Error('Sign-in check timed out')),
+      ),
+    ]).then(resolve, resolve.bind(null, false))
+  } catch {
+    resolve(false)
+  }
+})
+
 Promise.all([
   settingsStorage.getDeskSkin(),
   settingsStorage.getCardBackFaceStyle(),
@@ -26,8 +41,18 @@ Promise.all([
   settingsStorage.getEnableAutomaticCompletion(),
   pausedGameStorage.getPausedGame(),
   statisticsStorage.getStatistics(),
+  isSignedInPromise,
 ] as const).then(
-  ([deskSkin, cardBackFaceStyle, automaticHintDelay, stockPosition, automaticCompletionEnabled, pausedGame, statistics],
+  ([
+    deskSkin,
+    cardBackFaceStyle,
+    automaticHintDelay,
+    stockPosition,
+    automaticCompletionEnabled,
+    pausedGame,
+    statistics,
+    isUserSignedIn,
+  ],
 ) => {
   const uiRoot = document.getElementById(UI_CONTAINER_ID)
   if (!uiRoot) {
@@ -45,6 +70,7 @@ Promise.all([
     automaticCompletionEnabled,
     pausedGame,
     statistics,
+    isUserSignedIn,
     settingsStorage,
     highScoresStorage,
     pausedGameStorage,

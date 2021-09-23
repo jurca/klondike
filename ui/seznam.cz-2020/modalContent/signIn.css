@@ -1,0 +1,44 @@
+:local(.signIn) {
+  display: flex;
+
+  box-sizing: border-box;
+  height: 100%;
+  padding: 2px 32px 92px;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+:local(.illustration) {
+  width: 100%;
+  max-width: 150px;
+}
+
+:local(.illustrationImage) {
+  width: 100%;
+  height: auto;
+}
+
+:local(.title) {
+  margin: 26px 0 8px;
+
+  font-size: 21px;
+  font-weight: bold;
+}
+
+:local(.text) {
+  margin: 30px 0;
+  max-width: 260px;
+
+  text-align: center;
+}
+
+:local(.buttons) {
+  display: flex;
+
+  width: 100%;
+  max-width: 256px;
+
+  justify-content: space-between;
+}

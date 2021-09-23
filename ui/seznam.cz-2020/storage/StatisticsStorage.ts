@@ -3,6 +3,7 @@ import {MoveType} from '../../../game/Move'
 import IStorage, {Serializable} from './IStorage'
 
 export interface IGameplayStatistics {
+  readonly startedGamesCount: number
   readonly wonGamesCount: number
   readonly shortestWonGameDuration: number
   readonly longestWonGameDuration: number
@@ -21,6 +22,7 @@ const EMPTY_GAMEPLAY_STATISTICS: IGameplayStatistics = {
   longestWonGameDuration: 0,
   mostMovesToVictory: 0,
   shortestWonGameDuration: 0,
+  startedGamesCount: 0,
   wonGamesCount: 0,
 }
 
@@ -49,7 +51,34 @@ export default class StatisticsStorage {
         }
       }
 
-      return storedData as unknown as Statistics
+      const storedStatistics = storedData as unknown as Statistics
+      return {
+        ...storedStatistics,
+        1: {
+          ...EMPTY_GAMEPLAY_STATISTICS,
+          ...storedStatistics[1],
+        },
+        3: {
+          ...EMPTY_GAMEPLAY_STATISTICS,
+          ...storedStatistics[3],
+        },
+      }
+    })
+  }
+
+  public onNewGameStarted(drawnCards: 1 | 3): Promise<Statistics> {
+    return this.getStatistics().then((statistics) => {
+      const updatedStatistics: Statistics = {
+        ...statistics,
+        [drawnCards]: {
+          ...statistics[drawnCards],
+          startedGamesCount: statistics[drawnCards].startedGamesCount + 1,
+        }
+      }
+
+      return this.storage.set(StorageKey.STATISTICS, updatedStatistics as unknown as Serializable).then(
+        () => updatedStatistics,
+      )
     })
   }
 
@@ -73,9 +102,10 @@ export default class StatisticsStorage {
       const gameplayDuration = getGameplayDuration(game)
       const movesCount = getMoveCount(game)
 
-      const updatedStatistics = {
+      const updatedStatistics: Statistics = {
         ...statistics,
         [drawnCards]: {
+          ...statistics[drawnCards],
           gamesWonWithoutUndoCount: gameplayStatistics.gamesWonWithoutUndoCount + (undoMoveUsed ? 0 : 1),
           leastMovesToVictory:
             (gameplayStatistics.leastMovesToVictory ?
