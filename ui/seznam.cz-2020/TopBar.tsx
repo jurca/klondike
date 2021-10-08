@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import * as React from 'react'
 import {getGameplayDuration, getMoveCount, IGame} from '../../game/Game'
 import Gear from './icon/gear.svg'
-import {isMobilePhoneOrAndroidTablet} from './mobilePhoneDetector'
+import {isMobilePhone} from './mobilePhoneDetector'
 import style from './topBar.css'
 
 interface IProps {
@@ -30,7 +30,7 @@ export default function TopBar({game, onShowSettings}: IProps): React.ReactEleme
   const moveCount = game ? getMoveCount(game) : 0
 
   return (
-    <div className={classnames(style.topBar, isMobilePhoneOrAndroidTablet() && style.isPhoneOrTablet)}>
+    <div className={classnames(style.topBar, isMobilePhone() && style.isPhoneOrTablet)}>
       <div className={style.content}>
         <div className={classnames(style.sideContent, style.textContent, style.statsPane)}>
           Čas <span className={style.dynamicInfo}>
