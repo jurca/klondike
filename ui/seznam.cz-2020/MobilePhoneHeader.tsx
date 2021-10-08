@@ -12,7 +12,7 @@ interface IProps {
 
 export default function MobilePhoneHeader({onLeave, onShowSettings}: IProps) {
   return (
-    <div className={classnames(style.mobilePhoneHeader, isMobilePhoneOrAndroidTablet && style.isPhoneOrTablet)}>
+    <div className={classnames(style.mobilePhoneHeader, isMobilePhoneOrAndroidTablet() && style.isPhoneOrTablet)}>
       <button className={style.button} onClick={onLeave}>
         <Left/>
       </button>

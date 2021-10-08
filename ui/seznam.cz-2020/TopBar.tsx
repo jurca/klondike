@@ -30,7 +30,7 @@ export default function TopBar({game, onShowSettings}: IProps): React.ReactEleme
   const moveCount = game ? getMoveCount(game) : 0
 
   return (
-    <div className={classnames(style.topBar, isMobilePhoneOrAndroidTablet && style.isPhoneOrTablet)}>
+    <div className={classnames(style.topBar, isMobilePhoneOrAndroidTablet() && style.isPhoneOrTablet)}>
       <div className={style.content}>
         <div className={classnames(style.sideContent, style.textContent, style.statsPane)}>
           Čas <span className={style.dynamicInfo}>
