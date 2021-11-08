@@ -102,6 +102,7 @@
 
   text-transform: uppercase;
   cursor: pointer;
+  outline: none;
 }
 
 :local(.icon) {

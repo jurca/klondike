@@ -29,9 +29,10 @@
   font-size: 16px;
   line-height: 32px;
 
-  cursor: pointer;
-
   background: none;
+
+  cursor: pointer;
+  outline: none;
 }
 
 :local(.activeDrawnCardsButton) {

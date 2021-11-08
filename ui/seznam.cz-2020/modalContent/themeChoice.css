@@ -25,6 +25,7 @@
 
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
   cursor: pointer;
+  outline: none;
 }
 
 @media (max-width: 500px), (max-height: 500px) {

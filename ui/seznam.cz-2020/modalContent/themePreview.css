@@ -50,4 +50,5 @@
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
   transform: translateX(-50%);
   cursor: pointer;
+  outline: none;
 }

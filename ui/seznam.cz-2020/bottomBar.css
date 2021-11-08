@@ -90,6 +90,7 @@
   background: transparent;
 
   cursor: pointer;
+  outline: none;
 }
 
 @media (max-width: 500px), (max-height: 500px) {
