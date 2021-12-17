@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'button': string;
+  'ios': string;
   'isPhoneOrTablet': string;
   'mobilePhoneHeader': string;
   'title': string;

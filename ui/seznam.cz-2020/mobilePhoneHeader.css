@@ -49,7 +49,12 @@
 
   flex-grow: 1;
 
-  font-size: 0.5em;
-  font-weight: bold;
+  font-family: Roboto, Viga, sans-serif;;
+  font-size: 20px;
+  font-weight: normal;
   text-align: center;
+}
+
+:local(.ios) :local(.title) {
+  font-family: SF UI Text, Viga, sans-serif;
 }

@@ -11,8 +11,10 @@ interface IProps {
 }
 
 export default function MobilePhoneHeader({onLeave, onShowSettings}: IProps) {
+  const isIOS = /\(iPhone;/.test(navigator.userAgent)
+
   return (
-    <div className={classnames(style.mobilePhoneHeader, isMobilePhone() && style.isPhoneOrTablet)}>
+    <div className={classnames(style.mobilePhoneHeader, isMobilePhone() && style.isPhoneOrTablet, isIOS && style.ios)}>
       <button className={style.button} onClick={onLeave}>
         <Left/>
       </button>
