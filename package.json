@@ -62,7 +62,7 @@
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
-    "@seznam/seznam.cz-browser-game-module-api": "^2.0.0",
+    "@seznam/seznam.cz-browser-game-module-api": "^2.0.1",
     "classnames": "^2.2.6",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
