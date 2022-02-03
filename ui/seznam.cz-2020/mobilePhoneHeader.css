@@ -9,6 +9,7 @@
   align-items: center;
 
   font-size: 10vmin;
+  color: #404040;
 
   background: #f0f0f0;
 
@@ -33,6 +34,7 @@
   align-items: center;
 
   font-size: 1em;
+  color: currentColor;
 
   background: none;
 
