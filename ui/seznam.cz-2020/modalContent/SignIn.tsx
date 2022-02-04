@@ -32,15 +32,15 @@ const SignIn: ModalContentComponent = Object.assign(function SignIn(props: IModa
       }
       <div className={styles.buttons}>
         {signInRequired ?
-          <Button onClick={props.onExitApp}>
+          <Button className={styles.button} onClick={props.onExitApp}>
             Opustit hru
           </Button>
         :
-          <Button onClick={onContinue}>
+          <Button className={styles.button} onClick={onContinue}>
             Pokračovat
           </Button>
         }
-        <Button onClick={props.onSignIn}>
+        <Button className={styles.button} onClick={props.onSignIn}>
           Přihlásit se
         </Button>
       </div>
