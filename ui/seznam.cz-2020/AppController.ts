@@ -361,7 +361,8 @@ export default class AppController {
       }
     }
 
-    sbrowserApis.gamesExit(GAME_ID, this.sessionStatistics.startedGames, this.sessionStatistics.wonGames)
+    sbrowserApis.submitUsageStatistics(GAME_ID, this.sessionStatistics.startedGames, this.sessionStatistics.wonGames)
+    sbrowserApis.gamesExit()
     location.href = 'menu.html'
   }
 
